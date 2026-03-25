@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "repo_path": ".",
+  "generated_at": "2026-03-25T16:29:17Z",
+  "files": [
+    {
+      "path": ".github/workflows/set.yml",
+      "size": 485,
+      "language": "yaml",
+      "symbols_count": 0
+    },
+    {
+      "path": "README.md",
+      "size": 4119,
+      "language": "markdown",
+      "symbols_count": 0
+    },
+    {
+      "path": "action.yml",
+      "size": 7250,
+      "language": "yaml",
+      "symbols_count": 0
+    },
+    {
+      "path": "docs/config-apply-planning.md",
+      "size": 3134,
+      "language": "markdown",
+      "symbols_count": 0
+    },
+    {
+      "path": "docs/llmo-capability-map.md",
+      "size": 3112,
+      "language": "markdown",
+      "symbols_count": 0
+    },
+    {
+      "path": "docs/repo-config.md",
+      "size": 2605,
+      "language": "markdown",
+      "symbols_count": 0
+    },
+    {
+      "path": "docs/v0.1-scope.md",
+      "size": 3556,
+      "language": "markdown",
+      "symbols_count": 0
+    },
+    {
+      "path": "examples/repo-config.example.json",
+      "size": 588,
+      "language": "json",
+      "symbols_count": 0
+    },
+    {
+      "path": "registry/repos/markoblogo_AGENTS.md_generator.json",
+      "size": 503,
+      "language": "json",
+      "symbols_count": 0
+    },
+    {
+      "path": "registry/repos/markoblogo_SET.json",
+      "size": 479,
+      "language": "json",
+      "symbols_count": 0
+    },
+    {
+      "path": "registry/repos/markoblogo_lab.abvx.json",
+      "size": 588,
+      "language": "json",
+      "symbols_count": 0
+    },
+    {
+      "path": "schema/repo-config.v1.json",
+      "size": 527,
+      "language": "json",
+      "symbols_count": 0
+    },
+    {
+      "path": "scripts/plan_config_apply.py",
+      "size": 24714,
+      "language": "python",
+      "symbols_count": 28
+    },
+    {
+      "path": "scripts/resolve_inputs.py",
+      "size": 3429,
+      "language": "python",
+      "symbols_count": 3
+    },
+    {
+      "path": "scripts/validate_registry.py",
+      "size": 5690,
+      "language": "python",
+      "symbols_count": 7
+    },
+    {
+      "path": "scripts/write_summary.py",
+      "size": 3079,
+      "language": "python",
+      "symbols_count": 3
+    }
+  ],
+  "edges": [],
+  "entrypoints": [],
+  "changed_files": [
+    ".github/workflows/set.yml",
+    "registry/repos/markoblogo_SET.json"
+  ],
+  "entrypoint_files": [],
+  "slice": {
+    "focus": null,
+    "focus_matches": [],
+    "changed_only": true,
+    "changed_matches": [
+      ".github/workflows/set.yml",
+      "registry/repos/markoblogo_SET.json"
+    ]
+  },
+  "relevance": [
+    {
+      "path": ".github/workflows/set.yml",
+      "score": 48,
+      "signals": [
+        "git-changed"
+      ],
+      "distance_from_entrypoint": null,
+      "changed": true,
+      "entrypoint": false
+    },
+    {
+      "path": "registry/repos/markoblogo_SET.json",
+      "score": 48,
+      "signals": [
+        "git-changed"
+      ],
+      "distance_from_entrypoint": null,
+      "changed": true,
+      "entrypoint": false
+    }
+  ]
+}
