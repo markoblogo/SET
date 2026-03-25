@@ -8,6 +8,47 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_DIR = ROOT / 'registry' / 'repos'
 
 
+SUPPORTED_AGENTSGEN_FIELDS = {
+    'init': 'init',
+    'pack': 'pack',
+    'check': 'check',
+    'analyze_url': 'analyze',
+    'meta_url': 'meta',
+}
+
+
+def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
+    tools = data.get('tools', {}) if isinstance(data.get('tools'), dict) else {}
+    agentsgen = tools.get('agentsgen', {}) if isinstance(tools.get('agentsgen'), dict) else {}
+    capabilities: list[dict[str, object]] = []
+    for key, value in agentsgen.items():
+        requested = False
+        if isinstance(value, bool):
+            requested = value
+        elif isinstance(value, str):
+            requested = bool(value)
+        if value is None:
+            requested = False
+        if not requested:
+            continue
+        supported = key in SUPPORTED_AGENTSGEN_FIELDS
+        item: dict[str, object] = {
+            'tool': 'agentsgen',
+            'key': key,
+            'requested': True,
+            'supported_by_set': supported,
+        }
+        if supported:
+            item['set_input'] = SUPPORTED_AGENTSGEN_FIELDS[key]
+        else:
+            item['wiring_gap'] = {
+                'kind': 'missing-set-input',
+                'message': f'agentsgen.{key} is in registry but not yet wired into SET action inputs',
+            }
+        capabilities.append(item)
+    return capabilities
+
+
 def list_repo_configs() -> list[tuple[Path, dict[str, object]]]:
     entries: list[tuple[Path, dict[str, object]]] = []
     for path in sorted(REGISTRY_DIR.glob('*.json')):
@@ -56,7 +97,7 @@ def repo_slug(repo: str) -> str:
     return repo.replace('/', '-')
 
 
-def build_review_payload(repo: str, workflow: dict[str, object], unmapped: list[str]) -> dict[str, object]:
+def build_review_payload(repo: str, workflow: dict[str, object], capabilities: list[dict[str, object]], unmapped: list[str]) -> dict[str, object]:
     apply_readiness = 'blocked' if unmapped else 'ready'
     blocked_by = list(unmapped)
     workflow_yaml = render_workflow_yaml(workflow)
@@ -110,6 +151,7 @@ def build_review_payload(repo: str, workflow: dict[str, object], unmapped: list[
         'version': 1,
         'kind': 'set-pr-payload',
         'repo': repo,
+        'capabilities': capabilities,
         'apply_readiness': apply_readiness,
         'blocked_by': blocked_by,
         'next_action_label': 'Resolve unmapped fields' if unmapped else 'Review and apply planned workflow',
@@ -162,17 +204,19 @@ def build_plan(config_path: Path, data: dict[str, object]) -> dict[str, object]:
         with_block['meta'] = 'true'
         with_block['meta_url'] = meta_url
 
-    unmapped = []
-    for key in ('repomap', 'snippets'):
-        if agentsgen.get(key) is True:
-            unmapped.append(f'agentsgen.{key} is in registry but not yet wired into SET action inputs')
+    capabilities = build_capabilities(data)
+    unmapped = [
+        capability['wiring_gap']['message']
+        for capability in capabilities
+        if capability.get('wiring_gap')
+    ]
 
     workflow = {
         'path': '.github/workflows/set.yml',
         'uses': 'markoblogo/SET@main',
         'with': with_block,
     }
-    review_payload = build_review_payload(data['repo'], workflow, unmapped)
+    review_payload = build_review_payload(data['repo'], workflow, capabilities, unmapped)
     return {
         'version': 1,
         'mode': 'planning-only',
@@ -184,6 +228,7 @@ def build_plan(config_path: Path, data: dict[str, object]) -> dict[str, object]:
                 'workflow': workflow,
             }
         ],
+        'capabilities': capabilities,
         'review_payload': review_payload,
         'unmapped': unmapped,
         'notes': [
@@ -221,6 +266,14 @@ def derive_apply_readiness(plan: dict[str, object]) -> str:
 
 def derive_blocked_by(plan: dict[str, object]) -> list[str]:
     return list(plan.get('unmapped', []))
+
+
+def derive_wiring_gaps(plan: dict[str, object]) -> list[dict[str, object]]:
+    return [
+        capability['wiring_gap']
+        for capability in plan.get('capabilities', [])
+        if isinstance(capability, dict) and capability.get('wiring_gap')
+    ]
 
 
 def derive_next_action_label(plan: dict[str, object]) -> str:
@@ -261,8 +314,12 @@ def render_text(plan: dict[str, object]) -> str:
         lines.append('blocked_by:')
         for item in derive_blocked_by(plan):
             lines.append(f'  - {item}')
+        lines.append('wiring_gaps:')
+        for gap in derive_wiring_gaps(plan):
+            lines.append(f"  - {gap['message']}")
     lines.extend([
         f"apply_readiness: {derive_apply_readiness(plan)}",
+        f"wiring_gap_count: {len(derive_wiring_gaps(plan))}",
         f"next_action_label: {derive_next_action_label(plan)}",
         f"recommended_operator_step: {derive_recommended_operator_step(plan)}",
         f"next_shell_command: {derive_next_shell_command(plan)}",
@@ -306,6 +363,7 @@ def render_batch_text(plans: list[dict[str, object]]) -> str:
             f'  status_hint: {status_hint}',
             f'  priority_hint: {priority_hint}',
             f'  apply_readiness: {derive_apply_readiness(plan)}',
+            f'  wiring_gap_count: {len(derive_wiring_gaps(plan))}',
             f'  next_action_label: {derive_next_action_label(plan)}',
             f'  recommended_operator_step: {derive_recommended_operator_step(plan)}',
             f'  next_shell_command: {derive_next_shell_command(plan)}',
@@ -349,6 +407,7 @@ def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]
                 'priority_hint': derive_priority_hint(plan),
                 'apply_readiness': derive_apply_readiness(plan),
                 'blocked_by': derive_blocked_by(plan),
+                'wiring_gaps': derive_wiring_gaps(plan),
                 'next_action_label': derive_next_action_label(plan),
                 'recommended_operator_step': derive_recommended_operator_step(plan),
                 'next_shell_command': derive_next_shell_command(plan),
