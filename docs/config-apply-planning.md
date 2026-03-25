@@ -55,7 +55,7 @@ The `apply-simulation.json` payload shows the branch/apply sequence as a reviewa
 
 For multiple repos, the planner emits a compact batch summary in text mode and a `plans[]` array in JSON mode. With `--export-dir`, it also writes `batch-summary.json` plus one subdirectory per repo.
 
-Batch output also includes derived `status_hint` and `priority_hint` fields to help decide what to review first.
+Batch output also includes derived `status_hint`, `priority_hint`, `next_action_label`, and `recommended_operator_step` fields to help decide what to review first and what to do next.
 
 ## Current limits
 

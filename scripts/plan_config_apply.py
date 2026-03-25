@@ -108,6 +108,8 @@ def build_review_payload(repo: str, workflow: dict[str, object], unmapped: list[
         'version': 1,
         'kind': 'set-pr-payload',
         'repo': repo,
+        'next_action_label': 'Resolve unmapped fields' if unmapped else 'Review and apply planned workflow',
+        'recommended_operator_step': unmapped[0] if unmapped else apply_simulation['manual_steps'][0],
         'target_branch': 'main',
         'head_branch': branch_name,
         'target_workflow_path': workflow['path'],
@@ -205,6 +207,19 @@ def derive_priority_hint(plan: dict[str, object]) -> str:
         return 'high'
     return 'normal'
 
+
+def derive_next_action_label(plan: dict[str, object]) -> str:
+    if plan.get('unmapped'):
+        return 'Resolve unmapped fields'
+    return 'Review and apply planned workflow'
+
+
+def derive_recommended_operator_step(plan: dict[str, object]) -> str:
+    if plan.get('unmapped'):
+        return plan['unmapped'][0]
+    return plan['review_payload']['apply_simulation']['manual_steps'][0]
+
+
 def render_text(plan: dict[str, object]) -> str:
     workflow = plan['proposed_changes'][0]['workflow']
     with_block = workflow['with']
@@ -225,6 +240,8 @@ def render_text(plan: dict[str, object]) -> str:
         for item in unmapped:
             lines.append(f'  - {item}')
     lines.extend([
+        f"next_action_label: {derive_next_action_label(plan)}",
+        f"recommended_operator_step: {derive_recommended_operator_step(plan)}",
         'review_bundle:',
         '  - plan.json',
         '  - workflow.set.yml',
@@ -264,6 +281,8 @@ def render_batch_text(plans: list[dict[str, object]]) -> str:
             f'  title: {gh_pr["title"]}',
             f'  status_hint: {status_hint}',
             f'  priority_hint: {priority_hint}',
+            f'  next_action_label: {derive_next_action_label(plan)}',
+            f'  recommended_operator_step: {derive_recommended_operator_step(plan)}',
             f'  unmapped_count: {len(plan.get("unmapped", []))}',
         ])
     return '\n'.join(lines)
@@ -302,6 +321,8 @@ def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]
                 'title': plan['review_payload']['gh_pr_create']['title'],
                 'status_hint': derive_status_hint(plan),
                 'priority_hint': derive_priority_hint(plan),
+                'next_action_label': derive_next_action_label(plan),
+                'recommended_operator_step': derive_recommended_operator_step(plan),
                 'unmapped_count': len(plan.get('unmapped', [])),
             }
             for plan in plans
