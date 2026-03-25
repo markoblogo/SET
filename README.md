@@ -59,6 +59,15 @@ What v0.1 does:
 - Central registry (first home): `registry/repos/*.json`
 - Validate locally: `python3 scripts/validate_registry.py`
 
+
+## Config apply planning
+
+Planning-only helper for future PR-based config apply:
+
+- Docs: `docs/config-apply-planning.md`
+- Command: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx`
+- JSON mode: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --format json`
+
 ## Scope right now
 
 - Freeze the migration map from `LLMO`
