@@ -7,10 +7,10 @@ It stays deliberately small: presets define a baseline, and explicit inputs over
 Current working definition:
 - `agentsgen` = repo intelligence runtime
 - `SET` = orchestration layer / GitHub Action entrypoint
-- `lab.abvx` = public catalog and later control plane
+- `lab.abvx` = public catalog and read-only control plane
 - standalone tools such as `git-tweet` stay independent and are integrated by contract
 
-This repo starts intentionally small.
+This repo stays intentionally thin even after adding registry, planning, and drift-check layers.
 
 ## Example usage
 
@@ -49,6 +49,8 @@ What v0.1 does:
 - optionally runs `agentsgen meta <url>`
 - supports `workflow_preset` baselines with explicit input override
 - writes a compact GitHub Actions summary for the resolved run plan
+- owns the first central registry baseline for registered repos
+- compares expected registry-derived `set.yml` against local repo workflows in read-only mode
 
 ## Repo config contract
 
@@ -74,11 +76,11 @@ Planning-only helper for future PR-based config apply:
 - operator hints: planner payload now includes `apply_readiness`, `operator_queue`, `blocked_by`, structured capability `wiring_gaps`, `next_action_label`, `recommended_operator_step`, and `next_shell_command` for UI/operator flows
 - workflow loop closure: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --repo-root /absolute/path/to/repo` compares expected `set.yml` from registry against the real repo workflow and reports `matches`, `drift`, or `missing`
 
-## Scope right now
+## Current checkpoint
 
-- Freeze the migration map from `LLMO`
-- Freeze `SET` v0.1 scope
-- Keep the first GitHub Action thin
+- Keep the GitHub Action thin
+- Keep registry and planner contracts explicit
+- Use reviewable planning and drift checks before any future apply automation
 
 ## Docs
 
