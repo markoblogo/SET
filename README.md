@@ -53,7 +53,7 @@ What v0.1 does:
 - optionally runs `agentsgen snippets`
 - optionally runs `agentsgen analyze <url>`
 - optionally runs `agentsgen meta <url>`
-- optionally runs `agentsgen task init/evidence/verdict` as a proof-loop hook
+- optionally runs `agentsgen task init/evidence/verdict` as a proof-loop hook, including richer evidence/verdict summaries
 - supports `workflow_preset` baselines with explicit input override
 - writes a compact GitHub Actions summary for the resolved run plan
 - passes a first-class repomap policy through to `agentsgen understand` (`--compact-budget`, optional `--focus`, optional `--changed`) with explicit policy modes: `full`, `focus`, `changed`, `focus+changed`
@@ -70,7 +70,7 @@ What v0.1 does:
 - Central registry (first home): `registry/repos/*.json`
 - Validate locally: `python3 scripts/validate_registry.py`
 - `agentsgen.repomap_policy` lets each repo set compact budget, ranked-file limits, and optional focused/changed slice defaults without changing the Action contract
-- `agentsgen.proof_loop` lets a repo opt into contract/evidence/verdict artifacts for larger tasks
+- `agentsgen.proof_loop` lets a repo opt into contract/evidence/verdict artifacts for larger tasks, including evidence status, blocker counts, and review readiness
 - Derived policy modes in SET vocabulary: `full` (Full Repo Slice), `focus` (Focused Code Slice), `changed` (Changed Files Slice), `focus+changed` (Hybrid Slice)
 
 ## Config apply planning

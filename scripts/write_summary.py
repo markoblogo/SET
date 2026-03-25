@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -31,6 +32,16 @@ def _repomap_label(mode: str) -> str:
         'changed': 'Changed Files Slice',
         'focus+changed': 'Hybrid Slice',
     }.get(mode, 'Full Repo Slice')
+
+
+def _load_json(path: Path) -> dict[str, object] | None:
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding='utf-8'))
+    except Exception:
+        return None
+    return payload if isinstance(payload, dict) else None
 
 
 def main() -> int:
@@ -87,7 +98,34 @@ def main() -> int:
         body.append(_line('repomap slice', repomap_focus if repomap_focus else ('changed' if repomap_changed == 'true' else 'full')))
     if _enabled('SET_RESOLVED_PROOF_LOOP'):
         body.append(_line('proof loop', 'enabled'))
-        body.append(_line('proof task id', os.environ.get('SET_RESOLVED_PROOF_TASK_ID', '').strip() or 'missing'))
+        proof_task_id = os.environ.get('SET_RESOLVED_PROOF_TASK_ID', '').strip() or 'missing'
+        body.append(_line('proof task id', proof_task_id))
+        repo_root = Path(path_value)
+        proof_dir = repo_root / 'docs' / 'ai' / 'tasks' / proof_task_id
+        evidence = _load_json(proof_dir / 'evidence.json') or _load_json(proof_dir / 'evidence.generated.json')
+        verdict = _load_json(proof_dir / 'verdict.json') or _load_json(proof_dir / 'verdict.generated.json')
+        if isinstance(evidence, dict):
+            body.append(_line('proof evidence status', str(evidence.get('evidence_status', 'unknown'))))
+            check_summary = evidence.get('check_summary')
+            artifact_summary = evidence.get('artifact_summary')
+            if isinstance(check_summary, dict):
+                body.append(
+                    _line(
+                        'proof checks',
+                        f"passed {check_summary.get('passed', 0)}, failed {check_summary.get('failed', 0)}, pending {check_summary.get('pending', 0)}",
+                    )
+                )
+            if isinstance(artifact_summary, dict):
+                body.append(
+                    _line(
+                        'proof artifacts',
+                        f"present {artifact_summary.get('present', 0)} / total {artifact_summary.get('total', 0)}",
+                    )
+                )
+        if isinstance(verdict, dict):
+            body.append(_line('proof verdict', str(verdict.get('status', 'unknown'))))
+            body.append(_line('proof decision', str(verdict.get('decision', 'unknown'))))
+            body.append(_line('proof ready for apply', str(verdict.get('ready_for_apply', False)).lower()))
 
     if site_url:
         body.append(_line('site url', site_url))
