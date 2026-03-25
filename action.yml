@@ -145,8 +145,7 @@ runs:
         cmd=(agentsgen understand "${{ inputs.path }}")
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
-        printf '
-'
+        printf '\n'
         "${cmd[@]}"
 
     - name: Run agentsgen snippets
@@ -157,8 +156,7 @@ runs:
         cmd=(agentsgen snippets "${{ inputs.path }}")
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
-        printf '
-'
+        printf '\n'
         "${cmd[@]}"
 
     - name: Run agentsgen analyze
