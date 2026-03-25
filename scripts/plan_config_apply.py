@@ -27,6 +27,20 @@ DEFAULT_REPOMAP_POLICY = {
 }
 
 
+def repomap_policy_mode(policy: dict[str, object] | None) -> str:
+    if not isinstance(policy, dict):
+        return 'full'
+    focus = str(policy.get('focus', '') or '').strip()
+    changed = bool(policy.get('changed', False))
+    if focus and changed:
+        return 'focus+changed'
+    if focus:
+        return 'focus'
+    if changed:
+        return 'changed'
+    return 'full'
+
+
 def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
     tools = data.get('tools', {}) if isinstance(data.get('tools'), dict) else {}
     agentsgen = tools.get('agentsgen', {}) if isinstance(tools.get('agentsgen'), dict) else {}
@@ -201,6 +215,7 @@ def build_review_payload(
             [
                 '',
                 '## Repomap policy',
+                f"- `mode`: `{repomap_policy_mode(repomap_policy)}`",
                 f"- `compact_budget`: `{repomap_policy['compact_budget']}`",
                 f"- `top_ranked_files`: `{repomap_policy['top_ranked_files']}`",
             ]
@@ -241,6 +256,8 @@ def build_review_payload(
         'repo': repo,
         'capabilities': capabilities,
         'repomap_policy': repomap_policy,
+        'repomap_policy_mode': repomap_policy_mode(repomap_policy),
+        'repomap_policy_mode': repomap_policy_mode(repomap_policy),
         'apply_readiness': apply_readiness,
         'blocked_by': blocked_by,
         'operator_queue': '',
@@ -326,6 +343,7 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
         'repo': data['repo'],
         'source_config': str(config_path),
         'repomap_policy': repomap_policy,
+        'repomap_policy_mode': repomap_policy_mode(repomap_policy),
         'proposed_changes': [
             {
                 'type': 'workflow',

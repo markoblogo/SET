@@ -12,6 +12,18 @@ def _line(label: str, value: str) -> str:
     return f'- **{label}:** {value}\n'
 
 
+def _repomap_mode(focus: str, changed: str) -> str:
+    focus_value = focus.strip()
+    changed_enabled = changed.strip() == 'true'
+    if focus_value and changed_enabled:
+        return 'focus+changed'
+    if focus_value:
+        return 'focus'
+    if changed_enabled:
+        return 'changed'
+    return 'full'
+
+
 def main() -> int:
     summary_path = os.environ.get('GITHUB_STEP_SUMMARY', '').strip()
     if not summary_path:
@@ -58,6 +70,7 @@ def main() -> int:
     repomap_changed = os.environ.get('INPUT_REPOMAP_CHANGED', '').strip()
     if _enabled('SET_RESOLVED_REPOMAP'):
         body.append(_line('repomap compact budget', repomap_budget))
+        body.append(_line('repomap policy mode', _repomap_mode(repomap_focus, repomap_changed)))
         body.append(_line('repomap slice', repomap_focus if repomap_focus else ('changed' if repomap_changed == 'true' else 'full')))
 
     if site_url:

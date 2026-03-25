@@ -66,6 +66,7 @@ We can still add a YAML view later if the dashboard or authoring flow benefits f
 - `presets` is optional but must use known names
 - explicit tool fields win over preset defaults
 - `agentsgen.repomap_policy` is optional and currently supports `compact_budget`, `top_ranked_files`, `focus`, and `changed`
+- SET derives a first-class label from that policy for UI/planning: `full`, `focus`, `changed`, or `focus+changed`
 - no secrets live in registry config
 
 ## Central registry decision

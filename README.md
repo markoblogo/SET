@@ -53,7 +53,7 @@ What v0.1 does:
 - optionally runs `agentsgen meta <url>`
 - supports `workflow_preset` baselines with explicit input override
 - writes a compact GitHub Actions summary for the resolved run plan
-- passes a first-class repomap policy through to `agentsgen understand` (`--compact-budget`, optional `--focus`, optional `--changed`)
+- passes a first-class repomap policy through to `agentsgen understand` (`--compact-budget`, optional `--focus`, optional `--changed`) with explicit policy modes: `full`, `focus`, `changed`, `focus+changed`
 - owns the first central registry baseline for registered repos
 - compares expected registry-derived `set.yml` against local repo workflows in read-only mode
 
@@ -67,6 +67,7 @@ What v0.1 does:
 - Central registry (first home): `registry/repos/*.json`
 - Validate locally: `python3 scripts/validate_registry.py`
 - `agentsgen.repomap_policy` lets each repo set compact budget, ranked-file limits, and optional focused/changed slice defaults without changing the Action contract
+- Derived policy modes in SET vocabulary: `full`, `focus`, `changed`, `focus+changed`
 
 ## Config apply planning
 
