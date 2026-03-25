@@ -1,0 +1,89 @@
+name: 'SET'
+description: 'Thin orchestration entrypoint for agentsgen init/pack/check flows.'
+
+inputs:
+  agentsgen:
+    description: 'Enable the agentsgen tool family.'
+    required: false
+    default: 'true'
+  init:
+    description: 'Run agentsgen init.'
+    required: false
+    default: 'true'
+  pack:
+    description: 'Run agentsgen pack.'
+    required: false
+    default: 'false'
+  check:
+    description: 'Run agentsgen check --all --ci.'
+    required: false
+    default: 'false'
+  autodetect:
+    description: 'Enable agentsgen autodetect where supported.'
+    required: false
+    default: 'true'
+  preset:
+    description: 'Optional preset name passed to agentsgen init.'
+    required: false
+    default: ''
+  path:
+    description: 'Target path.'
+    required: false
+    default: '.'
+  agentsgen_ref:
+    description: 'Git ref used when installing agentsgen from GitHub.'
+    required: false
+    default: 'main'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install agentsgen
+      if: ${{ inputs.agentsgen == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        python -m pip install --upgrade pip
+        python -m pip install "git+https://github.com/markoblogo/AGENTS.md_generator.git@${{ inputs.agentsgen_ref }}"
+
+    - name: Run agentsgen init
+      if: ${{ inputs.agentsgen == 'true' && inputs.init == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        cmd=(agentsgen init "${{ inputs.path }}" --defaults)
+        if [ "${{ inputs.autodetect }}" = "true" ]; then
+          cmd+=(--autodetect)
+        fi
+        if [ -n "${{ inputs.preset }}" ]; then
+          cmd+=(--preset "${{ inputs.preset }}")
+        fi
+        printf 'Running:'
+        printf ' %q' "${cmd[@]}"
+        printf '\n'
+        "${cmd[@]}"
+
+    - name: Run agentsgen pack
+      if: ${{ inputs.agentsgen == 'true' && inputs.pack == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        cmd=(agentsgen pack "${{ inputs.path }}")
+        if [ "${{ inputs.autodetect }}" = "true" ]; then
+          cmd+=(--autodetect)
+        fi
+        printf 'Running:'
+        printf ' %q' "${cmd[@]}"
+        printf '\n'
+        "${cmd[@]}"
+
+    - name: Run agentsgen check
+      if: ${{ inputs.agentsgen == 'true' && inputs.check == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        agentsgen check "${{ inputs.path }}" --all --ci

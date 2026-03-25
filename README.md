@@ -8,7 +8,26 @@ Current working definition:
 - `lab.abvx` = public catalog and later control plane
 - standalone tools such as `git-tweet` stay independent and are integrated by contract
 
-This repo starts with planning docs first so the first implementation stays intentionally small.
+This repo starts intentionally small.
+
+## Example usage
+
+```yaml
+- uses: markoblogo/SET@main
+  with:
+    agentsgen: "true"
+    init: "true"
+    pack: "true"
+    check: "true"
+    autodetect: "true"
+    path: "."
+```
+
+What v0.1 does:
+- installs `agentsgen`
+- runs `agentsgen init`
+- optionally runs `agentsgen pack`
+- optionally runs `agentsgen check --all --ci`
 
 ## Scope right now
 
@@ -20,4 +39,3 @@ This repo starts with planning docs first so the first implementation stays inte
 
 - `docs/llmo-capability-map.md`
 - `docs/v0.1-scope.md`
-
