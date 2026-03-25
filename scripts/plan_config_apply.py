@@ -41,6 +41,15 @@ def repomap_policy_mode(policy: dict[str, object] | None) -> str:
     return 'full'
 
 
+def repomap_policy_label(mode: str) -> str:
+    return {
+        'full': 'Full Repo Slice',
+        'focus': 'Focused Code Slice',
+        'changed': 'Changed Files Slice',
+        'focus+changed': 'Hybrid Slice',
+    }.get(mode, 'Full Repo Slice')
+
+
 def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
     tools = data.get('tools', {}) if isinstance(data.get('tools'), dict) else {}
     agentsgen = tools.get('agentsgen', {}) if isinstance(tools.get('agentsgen'), dict) else {}
@@ -216,6 +225,7 @@ def build_review_payload(
                 '',
                 '## Repomap policy',
                 f"- `mode`: `{repomap_policy_mode(repomap_policy)}`",
+                f"- `label`: `{repomap_policy_label(repomap_policy_mode(repomap_policy))}`",
                 f"- `compact_budget`: `{repomap_policy['compact_budget']}`",
                 f"- `top_ranked_files`: `{repomap_policy['top_ranked_files']}`",
             ]
@@ -257,7 +267,10 @@ def build_review_payload(
         'capabilities': capabilities,
         'repomap_policy': repomap_policy,
         'repomap_policy_mode': repomap_policy_mode(repomap_policy),
+        'repomap_policy_label': repomap_policy_label(repomap_policy_mode(repomap_policy)),
+        'repomap_policy_label': repomap_policy_label(repomap_policy_mode(repomap_policy)),
         'repomap_policy_mode': repomap_policy_mode(repomap_policy),
+        'repomap_policy_label': repomap_policy_label(repomap_policy_mode(repomap_policy)),
         'apply_readiness': apply_readiness,
         'blocked_by': blocked_by,
         'operator_queue': '',

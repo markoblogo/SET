@@ -24,6 +24,15 @@ def _repomap_mode(focus: str, changed: str) -> str:
     return 'full'
 
 
+def _repomap_label(mode: str) -> str:
+    return {
+        'full': 'Full Repo Slice',
+        'focus': 'Focused Code Slice',
+        'changed': 'Changed Files Slice',
+        'focus+changed': 'Hybrid Slice',
+    }.get(mode, 'Full Repo Slice')
+
+
 def main() -> int:
     summary_path = os.environ.get('GITHUB_STEP_SUMMARY', '').strip()
     if not summary_path:
@@ -69,8 +78,10 @@ def main() -> int:
     repomap_focus = os.environ.get('INPUT_REPOMAP_FOCUS', '').strip()
     repomap_changed = os.environ.get('INPUT_REPOMAP_CHANGED', '').strip()
     if _enabled('SET_RESOLVED_REPOMAP'):
+        repomap_mode = _repomap_mode(repomap_focus, repomap_changed)
         body.append(_line('repomap compact budget', repomap_budget))
-        body.append(_line('repomap policy mode', _repomap_mode(repomap_focus, repomap_changed)))
+        body.append(_line('repomap policy mode', repomap_mode))
+        body.append(_line('repomap policy label', _repomap_label(repomap_mode)))
         body.append(_line('repomap slice', repomap_focus if repomap_focus else ('changed' if repomap_changed == 'true' else 'full')))
 
     if site_url:
