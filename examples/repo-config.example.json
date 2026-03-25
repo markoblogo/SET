@@ -15,7 +15,9 @@
       "meta_url": "https://example.com",
       "repomap_policy": {
         "compact_budget": 4000,
-        "top_ranked_files": 5
+        "top_ranked_files": 5,
+        "focus": null,
+        "changed": false
       }
     },
     "git_tweet": {

@@ -54,8 +54,11 @@ def main() -> int:
     analyze_url = os.environ.get('SET_RESOLVED_ANALYZE_URL', '').strip()
     meta_url = os.environ.get('SET_RESOLVED_META_URL', '').strip()
     repomap_budget = os.environ.get('INPUT_REPOMAP_COMPACT_BUDGET', '').strip() or '4000'
+    repomap_focus = os.environ.get('INPUT_REPOMAP_FOCUS', '').strip()
+    repomap_changed = os.environ.get('INPUT_REPOMAP_CHANGED', '').strip()
     if _enabled('SET_RESOLVED_REPOMAP'):
         body.append(_line('repomap compact budget', repomap_budget))
+        body.append(_line('repomap slice', repomap_focus if repomap_focus else ('changed' if repomap_changed == 'true' else 'full')))
 
     if site_url:
         body.append(_line('site url', site_url))

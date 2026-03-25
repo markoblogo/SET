@@ -22,6 +22,8 @@ SUPPORTED_AGENTSGEN_FIELDS = {
 DEFAULT_REPOMAP_POLICY = {
     'compact_budget': 4000,
     'top_ranked_files': 5,
+    'focus': None,
+    'changed': False,
 }
 
 
@@ -58,7 +60,7 @@ def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
     return capabilities
 
 
-def resolve_repomap_policy(agentsgen: dict[str, object]) -> dict[str, int] | None:
+def resolve_repomap_policy(agentsgen: dict[str, object]) -> dict[str, object] | None:
     repomap_enabled = agentsgen.get('repomap') is True
     policy = agentsgen.get('repomap_policy')
     if not repomap_enabled and not isinstance(policy, dict):
@@ -68,10 +70,16 @@ def resolve_repomap_policy(agentsgen: dict[str, object]) -> dict[str, int] | Non
     if isinstance(policy, dict):
         compact_budget = policy.get('compact_budget')
         top_ranked_files = policy.get('top_ranked_files')
+        focus = policy.get('focus')
+        changed = policy.get('changed')
         if isinstance(compact_budget, int) and compact_budget > 0:
             resolved['compact_budget'] = compact_budget
         if isinstance(top_ranked_files, int) and top_ranked_files > 0:
             resolved['top_ranked_files'] = top_ranked_files
+        if focus is None or isinstance(focus, str):
+            resolved['focus'] = focus
+        if isinstance(changed, bool):
+            resolved['changed'] = changed
     return resolved
 
 
@@ -164,7 +172,7 @@ def build_review_payload(
     workflow: dict[str, object],
     capabilities: list[dict[str, object]],
     unmapped: list[str],
-    repomap_policy: dict[str, int] | None,
+    repomap_policy: dict[str, object] | None,
 ) -> dict[str, object]:
     apply_readiness = 'blocked' if unmapped else 'ready'
     blocked_by = list(unmapped)
@@ -197,6 +205,9 @@ def build_review_payload(
                 f"- `top_ranked_files`: `{repomap_policy['top_ranked_files']}`",
             ]
         )
+        if repomap_policy.get('focus'):
+            body_lines.append(f"- `focus`: `{repomap_policy['focus']}`")
+        body_lines.append(f"- `changed`: `{str(bool(repomap_policy.get('changed', False))).lower()}`")
     body_lines.extend([
         '',
         '## Notes',
@@ -270,6 +281,10 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
             with_block[key] = 'true' if agentsgen[key] else 'false'
     if agentsgen.get('repomap') is True and repomap_policy:
         with_block['repomap_compact_budget'] = str(repomap_policy['compact_budget'])
+        if isinstance(repomap_policy.get('focus'), str) and str(repomap_policy.get('focus')).strip():
+            with_block['repomap_focus'] = str(repomap_policy['focus']).strip()
+        if repomap_policy.get('changed') is True:
+            with_block['repomap_changed'] = 'true'
 
     site = data.get('site') if isinstance(data.get('site'), dict) else {}
     site_url = site.get('url') if isinstance(site, dict) else None

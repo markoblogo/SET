@@ -34,6 +34,14 @@ inputs:
     description: 'Approximate token budget passed to agentsgen understand --compact-budget.'
     required: false
     default: '4000'
+  repomap_focus:
+    description: 'Optional query passed to agentsgen understand --focus.'
+    required: false
+    default: ''
+  repomap_changed:
+    description: 'When true, passes --changed to agentsgen understand.'
+    required: false
+    default: ''
   snippets:
     description: 'Run agentsgen snippets for canonical README extracts. Leave empty to inherit workflow_preset or default behavior.'
     required: false
@@ -149,6 +157,12 @@ runs:
         cmd=(agentsgen understand "${{ inputs.path }}")
         if [ -n "${{ inputs.repomap_compact_budget }}" ]; then
           cmd+=(--compact-budget "${{ inputs.repomap_compact_budget }}")
+        fi
+        if [ -n "${{ inputs.repomap_focus }}" ]; then
+          cmd+=(--focus "${{ inputs.repomap_focus }}")
+        fi
+        if [ "${{ inputs.repomap_changed }}" = "true" ]; then
+          cmd+=(--changed)
         fi
         printf 'Running:'
         printf ' %q' "${cmd[@]}"

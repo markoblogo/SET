@@ -15,7 +15,9 @@
       "meta_url": "https://lab.abvx.xyz",
       "repomap_policy": {
         "compact_budget": 3000,
-        "top_ranked_files": 3
+        "top_ranked_files": 3,
+        "focus": null,
+        "changed": false
       }
     },
     "git_tweet": {

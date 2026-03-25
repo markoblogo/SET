@@ -26,6 +26,8 @@ This repo stays intentionally thin even after adding registry, planning, and dri
     check: "true"
     repomap: "true"
     repomap_compact_budget: "4000"
+    repomap_focus: "cli"
+    repomap_changed: "false"
     analyze: "true"
     analyze_url: "https://example.com"
     meta: "true"
@@ -51,7 +53,7 @@ What v0.1 does:
 - optionally runs `agentsgen meta <url>`
 - supports `workflow_preset` baselines with explicit input override
 - writes a compact GitHub Actions summary for the resolved run plan
-- passes a first-class compact repomap budget through to `agentsgen understand`
+- passes a first-class repomap policy through to `agentsgen understand` (`--compact-budget`, optional `--focus`, optional `--changed`)
 - owns the first central registry baseline for registered repos
 - compares expected registry-derived `set.yml` against local repo workflows in read-only mode
 
@@ -64,7 +66,7 @@ What v0.1 does:
 - Example config: `examples/repo-config.example.json`
 - Central registry (first home): `registry/repos/*.json`
 - Validate locally: `python3 scripts/validate_registry.py`
-- `agentsgen.repomap_policy` lets each repo set compact budget and ranked-file limits without changing the Action contract
+- `agentsgen.repomap_policy` lets each repo set compact budget, ranked-file limits, and optional focused/changed slice defaults without changing the Action contract
 
 ## Config apply planning
 

@@ -77,12 +77,16 @@ def validate_config(path: Path) -> dict[str, object]:
         repomap_policy = agentsgen.get('repomap_policy')
         if repomap_policy is not None:
             _require(isinstance(repomap_policy, dict), f'{path.name}: agentsgen.repomap_policy must be an object')
-            unknown_policy = set(repomap_policy) - {'compact_budget', 'top_ranked_files'}
+            unknown_policy = set(repomap_policy) - {'compact_budget', 'top_ranked_files', 'focus', 'changed'}
             _require(not unknown_policy, f"{path.name}: unknown repomap_policy keys: {', '.join(sorted(unknown_policy))}")
             if 'compact_budget' in repomap_policy:
                 _validate_positive_int(repomap_policy['compact_budget'], f'{path.name}: agentsgen.repomap_policy.compact_budget')
             if 'top_ranked_files' in repomap_policy:
                 _validate_positive_int(repomap_policy['top_ranked_files'], f'{path.name}: agentsgen.repomap_policy.top_ranked_files')
+            if 'focus' in repomap_policy:
+                _require(repomap_policy['focus'] is None or isinstance(repomap_policy['focus'], str), f'{path.name}: agentsgen.repomap_policy.focus must be string or null')
+            if 'changed' in repomap_policy:
+                _require(isinstance(repomap_policy['changed'], bool), f'{path.name}: agentsgen.repomap_policy.changed must be boolean')
 
     git_tweet = tools.get('git_tweet')
     if git_tweet is not None:

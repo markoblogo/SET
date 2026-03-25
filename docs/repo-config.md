@@ -40,7 +40,9 @@ We can still add a YAML view later if the dashboard or authoring flow benefits f
       "repomap": false,
       "repomap_policy": {
         "compact_budget": 4000,
-        "top_ranked_files": 5
+        "top_ranked_files": 5,
+        "focus": null,
+        "changed": false
       },
       "snippets": false,
       "analyze_url": null,
@@ -63,7 +65,7 @@ We can still add a YAML view later if the dashboard or authoring flow benefits f
 - `tools` is required
 - `presets` is optional but must use known names
 - explicit tool fields win over preset defaults
-- `agentsgen.repomap_policy` is optional and currently supports `compact_budget` and `top_ranked_files`
+- `agentsgen.repomap_policy` is optional and currently supports `compact_budget`, `top_ranked_files`, `focus`, and `changed`
 - no secrets live in registry config
 
 ## Central registry decision
