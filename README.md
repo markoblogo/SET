@@ -67,6 +67,7 @@ Planning-only helper for future PR-based config apply:
 - Docs: `docs/config-apply-planning.md`
 - Command: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx`
 - JSON mode: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --format json`
+- Review bundle export: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --export-dir /tmp/set-plan`
 
 ## Scope right now
 
