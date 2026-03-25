@@ -68,6 +68,7 @@ Planning-only helper for future PR-based config apply:
 - Command: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx`
 - JSON mode: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --format json`
 - Review bundle export: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --export-dir /tmp/set-plan`
+- gh-ready payload: includes `base`, `head`, `title`, and `body_file` fields for a later `gh pr create` step
 
 ## Scope right now
 
