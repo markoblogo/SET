@@ -157,7 +157,7 @@ def build_review_payload(repo: str, workflow: dict[str, object], capabilities: l
         'capabilities': capabilities,
         'apply_readiness': apply_readiness,
         'blocked_by': blocked_by,
-        'operator_queue': 'blocked-by-orchestrator' if unmapped else 'review-later',
+        'operator_queue': '',
         'next_action_label': 'Resolve unmapped fields' if unmapped else 'Review and apply planned workflow',
         'recommended_operator_step': unmapped[0] if unmapped else apply_simulation['manual_steps'][0],
         'next_shell_command': apply_simulation['manual_steps'][0],
@@ -221,7 +221,7 @@ def build_plan(config_path: Path, data: dict[str, object]) -> dict[str, object]:
         'with': with_block,
     }
     review_payload = build_review_payload(data['repo'], workflow, capabilities, unmapped)
-    return {
+    plan = {
         'version': 1,
         'mode': 'planning-only',
         'repo': data['repo'],
@@ -240,6 +240,8 @@ def build_plan(config_path: Path, data: dict[str, object]) -> dict[str, object]:
             'Use the output to review the intended SET workflow before any future apply step.',
         ],
     }
+    plan['review_payload']['operator_queue'] = derive_operator_queue(plan)
+    return plan
 
 
 
