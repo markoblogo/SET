@@ -69,7 +69,7 @@ Planning-only helper for future PR-based config apply:
 - gh-ready payload: includes `base`, `head`, `title`, and `body_file` fields for a later `gh pr create` step
 - apply simulation: previews branch name, target file write, commit message, and manual apply commands
 - batch mode: accepts multiple repos or `--all` for a planning-only multi-repo summary with status/priority hints
-- operator hints: planner payload now includes `next_action_label`, `recommended_operator_step`, and `next_shell_command` for UI/operator flows
+- operator hints: planner payload now includes `apply_readiness`, `blocked_by`, `next_action_label`, `recommended_operator_step`, and `next_shell_command` for UI/operator flows
 
 ## Scope right now
 

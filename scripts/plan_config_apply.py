@@ -57,6 +57,8 @@ def repo_slug(repo: str) -> str:
 
 
 def build_review_payload(repo: str, workflow: dict[str, object], unmapped: list[str]) -> dict[str, object]:
+    apply_readiness = 'blocked' if unmapped else 'ready'
+    blocked_by = list(unmapped)
     workflow_yaml = render_workflow_yaml(workflow)
     branch_name = f'codex/set-plan-{repo_slug(repo)}'
     title = f'chore(set): plan config apply for {repo}'
@@ -108,6 +110,8 @@ def build_review_payload(repo: str, workflow: dict[str, object], unmapped: list[
         'version': 1,
         'kind': 'set-pr-payload',
         'repo': repo,
+        'apply_readiness': apply_readiness,
+        'blocked_by': blocked_by,
         'next_action_label': 'Resolve unmapped fields' if unmapped else 'Review and apply planned workflow',
         'recommended_operator_step': unmapped[0] if unmapped else apply_simulation['manual_steps'][0],
         'next_shell_command': apply_simulation['manual_steps'][0],
@@ -209,6 +213,16 @@ def derive_priority_hint(plan: dict[str, object]) -> str:
     return 'normal'
 
 
+def derive_apply_readiness(plan: dict[str, object]) -> str:
+    if plan.get('unmapped'):
+        return 'blocked'
+    return 'ready'
+
+
+def derive_blocked_by(plan: dict[str, object]) -> list[str]:
+    return list(plan.get('unmapped', []))
+
+
 def derive_next_action_label(plan: dict[str, object]) -> str:
     if plan.get('unmapped'):
         return 'Resolve unmapped fields'
@@ -244,7 +258,11 @@ def render_text(plan: dict[str, object]) -> str:
         lines.append('unmapped:')
         for item in unmapped:
             lines.append(f'  - {item}')
+        lines.append('blocked_by:')
+        for item in derive_blocked_by(plan):
+            lines.append(f'  - {item}')
     lines.extend([
+        f"apply_readiness: {derive_apply_readiness(plan)}",
         f"next_action_label: {derive_next_action_label(plan)}",
         f"recommended_operator_step: {derive_recommended_operator_step(plan)}",
         f"next_shell_command: {derive_next_shell_command(plan)}",
@@ -287,6 +305,7 @@ def render_batch_text(plans: list[dict[str, object]]) -> str:
             f'  title: {gh_pr["title"]}',
             f'  status_hint: {status_hint}',
             f'  priority_hint: {priority_hint}',
+            f'  apply_readiness: {derive_apply_readiness(plan)}',
             f'  next_action_label: {derive_next_action_label(plan)}',
             f'  recommended_operator_step: {derive_recommended_operator_step(plan)}',
             f'  next_shell_command: {derive_next_shell_command(plan)}',
@@ -328,6 +347,8 @@ def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]
                 'title': plan['review_payload']['gh_pr_create']['title'],
                 'status_hint': derive_status_hint(plan),
                 'priority_hint': derive_priority_hint(plan),
+                'apply_readiness': derive_apply_readiness(plan),
+                'blocked_by': derive_blocked_by(plan),
                 'next_action_label': derive_next_action_label(plan),
                 'recommended_operator_step': derive_recommended_operator_step(plan),
                 'next_shell_command': derive_next_shell_command(plan),
