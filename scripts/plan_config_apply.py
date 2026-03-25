@@ -43,6 +43,7 @@ def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
         else:
             item['wiring_gap'] = {
                 'kind': 'missing-set-input',
+                'capability': f'agentsgen.{key}',
                 'message': f'agentsgen.{key} is in registry but not yet wired into SET action inputs',
             }
         capabilities.append(item)
