@@ -186,6 +186,25 @@ def build_plan(config_path: Path, data: dict[str, object]) -> dict[str, object]:
     }
 
 
+
+
+def derive_status_hint(plan: dict[str, object]) -> str:
+    if plan.get('unmapped'):
+        return 'needs-wiring'
+    return 'ready-for-review'
+
+
+def derive_priority_hint(plan: dict[str, object]) -> str:
+    workflow = plan['proposed_changes'][0]['workflow']
+    preset = workflow['with'].get('workflow_preset')
+    if plan['repo'] == 'markoblogo/lab.abvx':
+        return 'high'
+    if plan.get('unmapped'):
+        return 'medium'
+    if preset == 'site-ai':
+        return 'high'
+    return 'normal'
+
 def render_text(plan: dict[str, object]) -> str:
     workflow = plan['proposed_changes'][0]['workflow']
     with_block = workflow['with']
@@ -233,6 +252,8 @@ def render_text(plan: dict[str, object]) -> str:
 def render_batch_text(plans: list[dict[str, object]]) -> str:
     lines = ['SET config apply batch summary', f'repo_count: {len(plans)}']
     for plan in plans:
+        status_hint = derive_status_hint(plan)
+        priority_hint = derive_priority_hint(plan)
         workflow = plan['proposed_changes'][0]['workflow']
         gh_pr = plan['review_payload']['gh_pr_create']
         lines.extend([
@@ -241,6 +262,8 @@ def render_batch_text(plans: list[dict[str, object]]) -> str:
             f'  target_workflow: {workflow["path"]}',
             f'  head_branch: {gh_pr["head"]}',
             f'  title: {gh_pr["title"]}',
+            f'  status_hint: {status_hint}',
+            f'  priority_hint: {priority_hint}',
             f'  unmapped_count: {len(plan.get("unmapped", []))}',
         ])
     return '\n'.join(lines)
@@ -277,6 +300,8 @@ def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]
                 'head_branch': plan['review_payload']['gh_pr_create']['head'],
                 'target_workflow': plan['proposed_changes'][0]['workflow']['path'],
                 'title': plan['review_payload']['gh_pr_create']['title'],
+                'status_hint': derive_status_hint(plan),
+                'priority_hint': derive_priority_hint(plan),
                 'unmapped_count': len(plan.get('unmapped', [])),
             }
             for plan in plans
