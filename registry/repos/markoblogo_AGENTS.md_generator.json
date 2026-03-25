@@ -9,7 +9,11 @@
       "repomap": true,
       "snippets": true,
       "analyze_url": null,
-      "meta_url": null
+      "meta_url": null,
+      "repomap_policy": {
+        "compact_budget": 4000,
+        "top_ranked_files": 5
+      }
     },
     "git_tweet": {
       "enabled": false

@@ -12,6 +12,7 @@ ALLOWED_AGENTSGEN_KEYS = {
     'pack',
     'check',
     'repomap',
+    'repomap_policy',
     'snippets',
     'analyze_url',
     'meta_url',
@@ -34,6 +35,10 @@ def _validate_bool_or_none(value: object, field: str) -> None:
 
 def _validate_url_or_none(value: object, field: str) -> None:
     _require(value is None or isinstance(value, str), f'{field} must be string or null')
+
+
+def _validate_positive_int(value: object, field: str) -> None:
+    _require(isinstance(value, int) and value > 0, f'{field} must be a positive integer')
 
 
 def validate_config(path: Path) -> dict[str, object]:
@@ -69,6 +74,15 @@ def validate_config(path: Path) -> dict[str, object]:
         for key in ('analyze_url', 'meta_url'):
             if key in agentsgen:
                 _validate_url_or_none(agentsgen[key], f'{path.name}: agentsgen.{key}')
+        repomap_policy = agentsgen.get('repomap_policy')
+        if repomap_policy is not None:
+            _require(isinstance(repomap_policy, dict), f'{path.name}: agentsgen.repomap_policy must be an object')
+            unknown_policy = set(repomap_policy) - {'compact_budget', 'top_ranked_files'}
+            _require(not unknown_policy, f"{path.name}: unknown repomap_policy keys: {', '.join(sorted(unknown_policy))}")
+            if 'compact_budget' in repomap_policy:
+                _validate_positive_int(repomap_policy['compact_budget'], f'{path.name}: agentsgen.repomap_policy.compact_budget')
+            if 'top_ranked_files' in repomap_policy:
+                _validate_positive_int(repomap_policy['top_ranked_files'], f'{path.name}: agentsgen.repomap_policy.top_ranked_files')
 
     git_tweet = tools.get('git_tweet')
     if git_tweet is not None:

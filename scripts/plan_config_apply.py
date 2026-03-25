@@ -19,6 +19,11 @@ SUPPORTED_AGENTSGEN_FIELDS = {
     'meta_url': 'meta',
 }
 
+DEFAULT_REPOMAP_POLICY = {
+    'compact_budget': 4000,
+    'top_ranked_files': 5,
+}
+
 
 def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
     tools = data.get('tools', {}) if isinstance(data.get('tools'), dict) else {}
@@ -51,6 +56,23 @@ def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
             }
         capabilities.append(item)
     return capabilities
+
+
+def resolve_repomap_policy(agentsgen: dict[str, object]) -> dict[str, int] | None:
+    repomap_enabled = agentsgen.get('repomap') is True
+    policy = agentsgen.get('repomap_policy')
+    if not repomap_enabled and not isinstance(policy, dict):
+        return None
+
+    resolved = dict(DEFAULT_REPOMAP_POLICY)
+    if isinstance(policy, dict):
+        compact_budget = policy.get('compact_budget')
+        top_ranked_files = policy.get('top_ranked_files')
+        if isinstance(compact_budget, int) and compact_budget > 0:
+            resolved['compact_budget'] = compact_budget
+        if isinstance(top_ranked_files, int) and top_ranked_files > 0:
+            resolved['top_ranked_files'] = top_ranked_files
+    return resolved
 
 
 def list_repo_configs() -> list[tuple[Path, dict[str, object]]]:
@@ -137,7 +159,13 @@ def compare_workflow(plan: dict[str, object], repo_root: Path) -> dict[str, obje
     return result
 
 
-def build_review_payload(repo: str, workflow: dict[str, object], capabilities: list[dict[str, object]], unmapped: list[str]) -> dict[str, object]:
+def build_review_payload(
+    repo: str,
+    workflow: dict[str, object],
+    capabilities: list[dict[str, object]],
+    unmapped: list[str],
+    repomap_policy: dict[str, int] | None,
+) -> dict[str, object]:
     apply_readiness = 'blocked' if unmapped else 'ready'
     blocked_by = list(unmapped)
     workflow_yaml = render_workflow_yaml(workflow)
@@ -160,6 +188,15 @@ def build_review_payload(repo: str, workflow: dict[str, object], capabilities: l
         body_lines.extend(['', '## Unmapped fields'])
         for item in unmapped:
             body_lines.append(f'- {item}')
+    if repomap_policy:
+        body_lines.extend(
+            [
+                '',
+                '## Repomap policy',
+                f"- `compact_budget`: `{repomap_policy['compact_budget']}`",
+                f"- `top_ranked_files`: `{repomap_policy['top_ranked_files']}`",
+            ]
+        )
     body_lines.extend([
         '',
         '## Notes',
@@ -192,6 +229,7 @@ def build_review_payload(repo: str, workflow: dict[str, object], capabilities: l
         'kind': 'set-pr-payload',
         'repo': repo,
         'capabilities': capabilities,
+        'repomap_policy': repomap_policy,
         'apply_readiness': apply_readiness,
         'blocked_by': blocked_by,
         'operator_queue': '',
@@ -221,6 +259,7 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
     agentsgen = tools.get('agentsgen', {}) if isinstance(tools.get('agentsgen'), dict) else {}
     presets = data.get('presets', []) if isinstance(data.get('presets'), list) else []
     workflow_preset = pick_workflow_preset([p for p in presets if isinstance(p, str)])
+    repomap_policy = resolve_repomap_policy(agentsgen)
 
     with_block: dict[str, str] = {'agentsgen': 'true', 'autodetect': 'true', 'path': '.'}
     if workflow_preset:
@@ -229,6 +268,8 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
     for key in ('init', 'pack', 'check', 'repomap', 'snippets'):
         if key in agentsgen and isinstance(agentsgen[key], bool):
             with_block[key] = 'true' if agentsgen[key] else 'false'
+    if agentsgen.get('repomap') is True and repomap_policy:
+        with_block['repomap_compact_budget'] = str(repomap_policy['compact_budget'])
 
     site = data.get('site') if isinstance(data.get('site'), dict) else {}
     site_url = site.get('url') if isinstance(site, dict) else None
@@ -257,12 +298,19 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
         'uses': 'markoblogo/SET@main',
         'with': with_block,
     }
-    review_payload = build_review_payload(data['repo'], workflow, capabilities, unmapped)
+    review_payload = build_review_payload(
+        data['repo'],
+        workflow,
+        capabilities,
+        unmapped,
+        repomap_policy,
+    )
     plan = {
         'version': 1,
         'mode': 'planning-only',
         'repo': data['repo'],
         'source_config': str(config_path),
+        'repomap_policy': repomap_policy,
         'proposed_changes': [
             {
                 'type': 'workflow',
@@ -385,6 +433,7 @@ def render_text(plan: dict[str, object]) -> str:
         f"recommended_operator_step: {derive_recommended_operator_step(plan)}",
         f"next_shell_command: {derive_next_shell_command(plan)}",
         f"workflow_sync_status: {derive_workflow_sync_status(plan)}",
+        f"repomap_policy: {json.dumps(plan.get('repomap_policy')) if plan.get('repomap_policy') else 'none'}",
         'review_bundle:',
         '  - plan.json',
         '  - workflow.set.yml',
@@ -489,6 +538,7 @@ def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]
                 'recommended_operator_step': derive_recommended_operator_step(plan),
                 'next_shell_command': derive_next_shell_command(plan),
                 'workflow_sync_status': derive_workflow_sync_status(plan),
+                'repomap_policy': plan.get('repomap_policy'),
                 'workflow_check': plan.get('workflow_check'),
                 'unmapped_count': len(plan.get('unmapped', [])),
             }

@@ -64,6 +64,7 @@ What v0.1 does:
 - Example config: `examples/repo-config.example.json`
 - Central registry (first home): `registry/repos/*.json`
 - Validate locally: `python3 scripts/validate_registry.py`
+- `agentsgen.repomap_policy` lets each repo set compact budget and ranked-file limits without changing the Action contract
 
 ## Config apply planning
 
@@ -78,6 +79,7 @@ Planning-only helper for future PR-based config apply:
 - batch mode: accepts multiple repos or `--all` for a planning-only multi-repo summary with status/priority hints
 - operator hints: planner payload now includes `apply_readiness`, `operator_queue`, `blocked_by`, structured capability `wiring_gaps`, `next_action_label`, `recommended_operator_step`, and `next_shell_command` for UI/operator flows
 - workflow loop closure: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --repo-root /absolute/path/to/repo` compares expected `set.yml` from registry against the real repo workflow and reports `matches`, `drift`, or `missing`
+- repomap policy now flows through planning output so downstream control-plane views can show compact status and top ranked files per repo
 
 ## Current checkpoint
 
