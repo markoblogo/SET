@@ -157,6 +157,7 @@ def build_review_payload(repo: str, workflow: dict[str, object], capabilities: l
         'capabilities': capabilities,
         'apply_readiness': apply_readiness,
         'blocked_by': blocked_by,
+        'operator_queue': 'blocked-by-orchestrator' if unmapped else 'review-later',
         'next_action_label': 'Resolve unmapped fields' if unmapped else 'Review and apply planned workflow',
         'recommended_operator_step': unmapped[0] if unmapped else apply_simulation['manual_steps'][0],
         'next_shell_command': apply_simulation['manual_steps'][0],
@@ -279,6 +280,14 @@ def derive_wiring_gaps(plan: dict[str, object]) -> list[dict[str, object]]:
     ]
 
 
+def derive_operator_queue(plan: dict[str, object]) -> str:
+    if derive_apply_readiness(plan) == 'blocked' and derive_wiring_gaps(plan):
+        return 'blocked-by-orchestrator'
+    if derive_apply_readiness(plan) == 'ready' and derive_priority_hint(plan) == 'high':
+        return 'ready-now'
+    return 'review-later'
+
+
 def derive_next_action_label(plan: dict[str, object]) -> str:
     if plan.get('unmapped'):
         return 'Resolve unmapped fields'
@@ -322,6 +331,7 @@ def render_text(plan: dict[str, object]) -> str:
             lines.append(f"  - {gap['message']}")
     lines.extend([
         f"apply_readiness: {derive_apply_readiness(plan)}",
+        f"operator_queue: {derive_operator_queue(plan)}",
         f"wiring_gap_count: {len(derive_wiring_gaps(plan))}",
         f"next_action_label: {derive_next_action_label(plan)}",
         f"recommended_operator_step: {derive_recommended_operator_step(plan)}",
@@ -366,6 +376,7 @@ def render_batch_text(plans: list[dict[str, object]]) -> str:
             f'  status_hint: {status_hint}',
             f'  priority_hint: {priority_hint}',
             f'  apply_readiness: {derive_apply_readiness(plan)}',
+            f'  operator_queue: {derive_operator_queue(plan)}',
             f'  wiring_gap_count: {len(derive_wiring_gaps(plan))}',
             f'  next_action_label: {derive_next_action_label(plan)}',
             f'  recommended_operator_step: {derive_recommended_operator_step(plan)}',
@@ -409,6 +420,7 @@ def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]
                 'status_hint': derive_status_hint(plan),
                 'priority_hint': derive_priority_hint(plan),
                 'apply_readiness': derive_apply_readiness(plan),
+                'operator_queue': derive_operator_queue(plan),
                 'blocked_by': derive_blocked_by(plan),
                 'wiring_gaps': derive_wiring_gaps(plan),
                 'next_action_label': derive_next_action_label(plan),

@@ -55,7 +55,7 @@ The `apply-simulation.json` payload shows the branch/apply sequence as a reviewa
 
 For multiple repos, the planner emits a compact batch summary in text mode and a `plans[]` array in JSON mode. With `--export-dir`, it also writes `batch-summary.json` plus one subdirectory per repo.
 
-Batch output also includes derived `status_hint`, `priority_hint`, `apply_readiness`, `blocked_by`, structured capability-level `wiring_gaps`, `next_action_label`, `recommended_operator_step`, and `next_shell_command` fields to help decide what to review first, what is actually blocked, what is missing in the orchestrator, what to do next, and what command is safe to copy.
+Batch output also includes derived `status_hint`, `priority_hint`, `apply_readiness`, `operator_queue`, `blocked_by`, structured capability-level `wiring_gaps`, `next_action_label`, `recommended_operator_step`, and `next_shell_command` fields to help decide what to review first, what is actually blocked, what is missing in the orchestrator, what to do next, what is ready now, and what command is safe to copy.
 
 ## Current limits
 
