@@ -125,7 +125,11 @@ def main() -> int:
         if isinstance(verdict, dict):
             body.append(_line('proof verdict', str(verdict.get('status', 'unknown'))))
             body.append(_line('proof decision', str(verdict.get('decision', 'unknown'))))
+            body.append(_line('proof blockers', str(len(verdict.get('blocking_details', []) or verdict.get('blocking_items', []) or []))))
             body.append(_line('proof ready for apply', str(verdict.get('ready_for_apply', False)).lower()))
+            recommendation = str(verdict.get('recommendation', '') or '')
+            if recommendation:
+                body.append(_line('proof recommendation', recommendation))
 
     if site_url:
         body.append(_line('site url', site_url))

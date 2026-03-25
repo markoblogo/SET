@@ -286,13 +286,48 @@ runs:
         if [ "${SET_RESOLVED_PACK}" = "true" ]; then
           evidence_cmd+=(--artifact "docs/ai/how-to-run.md" --artifact "llms.txt")
         fi
-        for name in init_cmd evidence_cmd verdict_cmd; do
-          declare -n current="$name"
-          printf 'Running:'
-          printf ' %q' "${current[@]}"
-          printf '\n'
-          "${current[@]}"
+        printf 'Running:'
+        printf ' %q' "${init_cmd[@]}"
+        printf '\n'
+        "${init_cmd[@]}"
+        printf 'Running:'
+        printf ' %q' "${evidence_cmd[@]}"
+        printf '\n'
+        "${evidence_cmd[@]}"
+        blocking_items=()
+        while IFS= read -r artifact_path; do
+          [ -n "${artifact_path}" ] || continue
+          if [ ! -e "${{ inputs.path }}/${artifact_path}" ]; then
+            blocking_items+=("high: expected proof artifact is missing: ${artifact_path}")
+          fi
+        done < <(
+          printf '%s\n' \
+            "docs/ai/tasks/${SET_RESOLVED_PROOF_TASK_ID}/contract.md" \
+            "docs/ai/tasks/${SET_RESOLVED_PROOF_TASK_ID}/evidence.json" \
+            "docs/ai/tasks/${SET_RESOLVED_PROOF_TASK_ID}/verdict.json"
+          if [ "${SET_RESOLVED_REPOMAP}" = "true" ]; then
+            printf '%s\n' "docs/ai/repomap.compact.md" "agents.knowledge.json"
+          fi
+          if [ "${SET_RESOLVED_SNIPPETS}" = "true" ]; then
+            printf '%s\n' "README_SNIPPETS.generated.md"
+          fi
+          if [ "${SET_RESOLVED_ANALYZE}" = "true" ]; then
+            printf '%s\n' "docs/ai/llmo-score.json"
+          fi
+          if [ "${SET_RESOLVED_META}" = "true" ]; then
+            printf '%s\n' "docs/ai/llmo-meta.json"
+          fi
+          if [ "${SET_RESOLVED_PACK}" = "true" ]; then
+            printf '%s\n' "docs/ai/how-to-run.md" "llms.txt"
+          fi
+        )
+        for item in "${blocking_items[@]}"; do
+          verdict_cmd+=(--blocking-item "${item}")
         done
+        printf 'Running:'
+        printf ' %q' "${verdict_cmd[@]}"
+        printf '\n'
+        "${verdict_cmd[@]}"
 
     - name: Write execution summary
       if: ${{ always() }}
