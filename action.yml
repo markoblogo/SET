@@ -14,6 +14,14 @@ inputs:
     description: 'Run agentsgen pack.'
     required: false
     default: 'false'
+  site_pack:
+    description: 'Run agentsgen pack in public-site mode.'
+    required: false
+    default: 'false'
+  site_url:
+    description: 'Public URL passed to agentsgen pack --site.'
+    required: false
+    default: ''
   check:
     description: 'Run agentsgen check --all --ci.'
     required: false
@@ -91,6 +99,13 @@ runs:
         cmd=(agentsgen pack "${{ inputs.path }}")
         if [ "${{ inputs.autodetect }}" = "true" ]; then
           cmd+=(--autodetect)
+        fi
+        if [ "${{ inputs.site_pack }}" = "true" ]; then
+          if [ -z "${{ inputs.site_url }}" ]; then
+            echo "ERROR: site_url is required when site_pack=true" >&2
+            exit 1
+          fi
+          cmd+=(--site "${{ inputs.site_url }}")
         fi
         printf 'Running:'
         printf ' %q' "${cmd[@]}"

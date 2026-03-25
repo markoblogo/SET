@@ -18,6 +18,8 @@ This repo starts intentionally small.
     agentsgen: "true"
     init: "true"
     pack: "true"
+    site_pack: "true"
+    site_url: "https://example.com"
     check: "true"
     analyze: "true"
     analyze_url: "https://example.com"
@@ -31,6 +33,7 @@ What v0.1 does:
 - installs `agentsgen`
 - runs `agentsgen init`
 - optionally runs `agentsgen pack`
+- optionally runs `agentsgen pack --site <url>`
 - optionally runs `agentsgen check --all --ci`
 - optionally runs `agentsgen analyze <url>`
 - optionally runs `agentsgen meta <url>`
