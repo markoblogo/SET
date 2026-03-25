@@ -72,6 +72,7 @@ Planning-only helper for future PR-based config apply:
 - apply simulation: previews branch name, target file write, commit message, and manual apply commands
 - batch mode: accepts multiple repos or `--all` for a planning-only multi-repo summary with status/priority hints
 - operator hints: planner payload now includes `apply_readiness`, `operator_queue`, `blocked_by`, structured capability `wiring_gaps`, `next_action_label`, `recommended_operator_step`, and `next_shell_command` for UI/operator flows
+- workflow loop closure: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --repo-root /absolute/path/to/repo` compares expected `set.yml` from registry against the real repo workflow and reports `matches`, `drift`, or `missing`
 
 ## Scope right now
 

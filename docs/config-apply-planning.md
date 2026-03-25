@@ -26,6 +26,8 @@ python3 scripts/plan_config_apply.py markoblogo/lab.abvx --format json
 python3 scripts/plan_config_apply.py markoblogo/lab.abvx --export-dir /tmp/set-plan
 python3 scripts/plan_config_apply.py markoblogo/AGENTS.md_generator markoblogo/lab.abvx
 python3 scripts/plan_config_apply.py --all --format json
+python3 scripts/plan_config_apply.py markoblogo/lab.abvx --repo-root /absolute/path/to/lab.abvx
+python3 scripts/plan_config_apply.py markoblogo/AGENTS.md_generator --repo-root /absolute/path/to/AGENTS.md\ Generator
 ```
 
 ## Current output
@@ -56,6 +58,8 @@ The `apply-simulation.json` payload shows the branch/apply sequence as a reviewa
 For multiple repos, the planner emits a compact batch summary in text mode and a `plans[]` array in JSON mode. With `--export-dir`, it also writes `batch-summary.json` plus one subdirectory per repo.
 
 Batch output also includes derived `status_hint`, `priority_hint`, `apply_readiness`, `operator_queue`, `blocked_by`, structured capability-level `wiring_gaps`, `next_action_label`, `recommended_operator_step`, and `next_shell_command` fields to help decide what to review first, what is actually blocked, what is missing in the orchestrator, what to do next, what is ready now, and what command is safe to copy.
+
+When `--repo-root` is provided, the planner also compares the expected `.github/workflows/set.yml` against the real file in that local checkout and adds a read-only `workflow_check` result with status `matches`, `drift`, or `missing`.
 
 ## Current limits
 

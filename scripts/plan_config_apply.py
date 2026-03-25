@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
 from pathlib import Path
 
@@ -100,6 +101,42 @@ def repo_slug(repo: str) -> str:
     return repo.replace('/', '-')
 
 
+def normalize_workflow_text(text: str) -> str:
+    return text.rstrip() + '\n'
+
+
+def compare_workflow(plan: dict[str, object], repo_root: Path) -> dict[str, object]:
+    workflow = plan['proposed_changes'][0]['workflow']
+    relative_path = Path(workflow['path'])
+    actual_path = repo_root / relative_path
+    expected_text = normalize_workflow_text(render_workflow_yaml(workflow))
+    result: dict[str, object] = {
+        'repo_root': str(repo_root),
+        'workflow_path': str(relative_path),
+        'actual_path': str(actual_path),
+        'status': 'missing',
+        'diff_preview': [],
+    }
+    if not actual_path.exists():
+        return result
+    actual_text = normalize_workflow_text(actual_path.read_text())
+    if actual_text == expected_text:
+        result['status'] = 'matches'
+        return result
+    diff_lines = list(
+        difflib.unified_diff(
+            expected_text.splitlines(),
+            actual_text.splitlines(),
+            fromfile='expected/.github/workflows/set.yml',
+            tofile=str(relative_path),
+            lineterm='',
+        )
+    )
+    result['status'] = 'drift'
+    result['diff_preview'] = diff_lines[:80]
+    return result
+
+
 def build_review_payload(repo: str, workflow: dict[str, object], capabilities: list[dict[str, object]], unmapped: list[str]) -> dict[str, object]:
     apply_readiness = 'blocked' if unmapped else 'ready'
     blocked_by = list(unmapped)
@@ -179,7 +216,7 @@ def build_review_payload(repo: str, workflow: dict[str, object], capabilities: l
     }
 
 
-def build_plan(config_path: Path, data: dict[str, object]) -> dict[str, object]:
+def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | None = None) -> dict[str, object]:
     tools = data.get('tools', {}) if isinstance(data.get('tools'), dict) else {}
     agentsgen = tools.get('agentsgen', {}) if isinstance(tools.get('agentsgen'), dict) else {}
     presets = data.get('presets', []) if isinstance(data.get('presets'), list) else []
@@ -241,6 +278,8 @@ def build_plan(config_path: Path, data: dict[str, object]) -> dict[str, object]:
         ],
     }
     plan['review_payload']['operator_queue'] = derive_operator_queue(plan)
+    if repo_root is not None:
+        plan['workflow_check'] = compare_workflow(plan, repo_root)
     return plan
 
 
@@ -306,6 +345,13 @@ def derive_next_shell_command(plan: dict[str, object]) -> str:
     return plan['review_payload']['apply_simulation']['manual_steps'][0]
 
 
+def derive_workflow_sync_status(plan: dict[str, object]) -> str:
+    workflow_check = plan.get('workflow_check')
+    if isinstance(workflow_check, dict):
+        return str(workflow_check.get('status', 'unknown'))
+    return 'not-checked'
+
+
 def render_text(plan: dict[str, object]) -> str:
     workflow = plan['proposed_changes'][0]['workflow']
     with_block = workflow['with']
@@ -338,6 +384,7 @@ def render_text(plan: dict[str, object]) -> str:
         f"next_action_label: {derive_next_action_label(plan)}",
         f"recommended_operator_step: {derive_recommended_operator_step(plan)}",
         f"next_shell_command: {derive_next_shell_command(plan)}",
+        f"workflow_sync_status: {derive_workflow_sync_status(plan)}",
         'review_bundle:',
         '  - plan.json',
         '  - workflow.set.yml',
@@ -359,6 +406,18 @@ def render_text(plan: dict[str, object]) -> str:
     ])
     for step in apply_sim['manual_steps']:
         lines.append(f'    - {step}')
+    workflow_check = plan.get('workflow_check')
+    if isinstance(workflow_check, dict):
+        lines.extend([
+            'workflow_check:',
+            f"  status: {workflow_check.get('status', 'unknown')}",
+            f"  actual_path: {workflow_check.get('actual_path', 'unknown')}",
+        ])
+        diff_preview = workflow_check.get('diff_preview', [])
+        if diff_preview:
+            lines.append('  diff_preview:')
+            for item in diff_preview:
+                lines.append(f'    {item}')
     return '\n'.join(lines)
 
 
@@ -383,6 +442,7 @@ def render_batch_text(plans: list[dict[str, object]]) -> str:
             f'  next_action_label: {derive_next_action_label(plan)}',
             f'  recommended_operator_step: {derive_recommended_operator_step(plan)}',
             f'  next_shell_command: {derive_next_shell_command(plan)}',
+            f'  workflow_sync_status: {derive_workflow_sync_status(plan)}',
             f'  unmapped_count: {len(plan.get("unmapped", []))}',
         ])
     return '\n'.join(lines)
@@ -428,6 +488,8 @@ def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]
                 'next_action_label': derive_next_action_label(plan),
                 'recommended_operator_step': derive_recommended_operator_step(plan),
                 'next_shell_command': derive_next_shell_command(plan),
+                'workflow_sync_status': derive_workflow_sync_status(plan),
+                'workflow_check': plan.get('workflow_check'),
                 'unmapped_count': len(plan.get('unmapped', [])),
             }
             for plan in plans
@@ -450,16 +512,37 @@ def resolve_targets(repos: list[str], use_all: bool) -> list[tuple[Path, dict[st
     return [load_config(repo) for repo in repos]
 
 
+def resolve_repo_roots(targets: list[tuple[Path, dict[str, object]]], values: list[str]) -> dict[str, Path]:
+    if not values:
+        return {}
+    repo_names = [str(data['repo']) for _, data in targets]
+    multi = len(repo_names) > 1
+    mapping: dict[str, Path] = {}
+    for value in values:
+        if '=' in value:
+            repo, path = value.split('=', 1)
+            if repo not in repo_names:
+                raise SystemExit(f'Unknown repo in --repo-root mapping: {repo}')
+            mapping[repo] = Path(path)
+            continue
+        if multi:
+            raise SystemExit('For multiple repos, pass --repo-root owner/name=/absolute/path')
+        mapping[repo_names[0]] = Path(value)
+    return mapping
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description='Planning-only SET config apply helper.')
     parser.add_argument('repos', nargs='*', help='Repo name(s) in owner/name format')
     parser.add_argument('--all', action='store_true', help='Plan against every repo in registry/repos')
     parser.add_argument('--format', choices=('text', 'json'), default='text')
     parser.add_argument('--export-dir', help='Optional local directory for reviewable planner outputs.')
+    parser.add_argument('--repo-root', action='append', default=[], help='Optional local repo root path for workflow drift checking. Use /path for one repo or owner/name=/path for multiple repos.')
     args = parser.parse_args()
 
     targets = resolve_targets(args.repos, args.all)
-    plans = [build_plan(config_path, data) for config_path, data in targets]
+    repo_roots = resolve_repo_roots(targets, args.repo_root)
+    plans = [build_plan(config_path, data, repo_roots.get(str(data['repo']))) for config_path, data in targets]
     multi = len(plans) > 1
     if args.export_dir:
         if multi:
