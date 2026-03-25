@@ -26,6 +26,14 @@ inputs:
     description: 'Run agentsgen check --all --ci. Leave empty to inherit workflow_preset or default behavior.'
     required: false
     default: ''
+  repomap:
+    description: 'Run agentsgen understand for deterministic repo map artifacts. Leave empty to inherit workflow_preset or default behavior.'
+    required: false
+    default: ''
+  snippets:
+    description: 'Run agentsgen snippets for canonical README extracts. Leave empty to inherit workflow_preset or default behavior.'
+    required: false
+    default: ''
   analyze:
     description: 'Run agentsgen analyze against a public URL. Leave empty to inherit workflow_preset or default behavior.'
     required: false
@@ -128,6 +136,30 @@ runs:
       run: |
         set -euo pipefail
         agentsgen check "${{ inputs.path }}" --all --ci
+
+    - name: Run agentsgen repomap
+      if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_REPOMAP == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        cmd=(agentsgen understand "${{ inputs.path }}")
+        printf 'Running:'
+        printf ' %q' "${cmd[@]}"
+        printf '
+'
+        "${cmd[@]}"
+
+    - name: Run agentsgen snippets
+      if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_SNIPPETS == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        cmd=(agentsgen snippets "${{ inputs.path }}")
+        printf 'Running:'
+        printf ' %q' "${cmd[@]}"
+        printf '
+'
+        "${cmd[@]}"
 
     - name: Run agentsgen analyze
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_ANALYZE == 'true' }}

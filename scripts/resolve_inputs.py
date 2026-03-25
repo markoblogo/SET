@@ -39,6 +39,8 @@ def main() -> int:
         'SET_RESOLVED_PACK': _resolve_flag(os.environ.get('INPUT_PACK', ''), preset, 'PACK', 'false'),
         'SET_RESOLVED_SITE_PACK': _resolve_flag(os.environ.get('INPUT_SITE_PACK', ''), preset, 'SITE_PACK', 'false'),
         'SET_RESOLVED_CHECK': _resolve_flag(os.environ.get('INPUT_CHECK', ''), preset, 'CHECK', 'false'),
+        'SET_RESOLVED_REPOMAP': _resolve_flag(os.environ.get('INPUT_REPOMAP', ''), preset, 'REPOMAP', 'false'),
+        'SET_RESOLVED_SNIPPETS': _resolve_flag(os.environ.get('INPUT_SNIPPETS', ''), preset, 'SNIPPETS', 'false'),
         'SET_RESOLVED_ANALYZE': _resolve_flag(os.environ.get('INPUT_ANALYZE', ''), preset, 'ANALYZE', 'false'),
         'SET_RESOLVED_META': _resolve_flag(os.environ.get('INPUT_META', ''), preset, 'META', 'false'),
     }
@@ -64,6 +66,8 @@ def main() -> int:
         f"pack={resolved['SET_RESOLVED_PACK']}, "
         f"site_pack={resolved['SET_RESOLVED_SITE_PACK']}, "
         f"check={resolved['SET_RESOLVED_CHECK']}, "
+        f"repomap={resolved['SET_RESOLVED_REPOMAP']}, "
+        f"snippets={resolved['SET_RESOLVED_SNIPPETS']}, "
         f"analyze={resolved['SET_RESOLVED_ANALYZE']}, "
         f"meta={resolved['SET_RESOLVED_META']}"
     )

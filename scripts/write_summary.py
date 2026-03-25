@@ -32,6 +32,10 @@ def main() -> int:
         operations.append('pack')
     if _enabled('SET_RESOLVED_CHECK'):
         operations.append('check --all --ci')
+    if _enabled('SET_RESOLVED_REPOMAP'):
+        operations.append('understand')
+    if _enabled('SET_RESOLVED_SNIPPETS'):
+        operations.append('snippets')
     if _enabled('SET_RESOLVED_ANALYZE'):
         operations.append('analyze')
     if _enabled('SET_RESOLVED_META'):

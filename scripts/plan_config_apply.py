@@ -12,6 +12,8 @@ SUPPORTED_AGENTSGEN_FIELDS = {
     'init': 'init',
     'pack': 'pack',
     'check': 'check',
+    'repomap': 'repomap',
+    'snippets': 'snippets',
     'analyze_url': 'analyze',
     'meta_url': 'meta',
 }
@@ -186,7 +188,7 @@ def build_plan(config_path: Path, data: dict[str, object]) -> dict[str, object]:
     if workflow_preset:
         with_block['workflow_preset'] = workflow_preset
 
-    for key in ('init', 'pack', 'check'):
+    for key in ('init', 'pack', 'check', 'repomap', 'snippets'):
         if key in agentsgen and isinstance(agentsgen[key], bool):
             with_block[key] = 'true' if agentsgen[key] else 'false'
 
