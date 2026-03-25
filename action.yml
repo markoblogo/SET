@@ -26,6 +26,14 @@ inputs:
     description: 'Public URL passed to agentsgen analyze.'
     required: false
     default: ''
+  meta:
+    description: 'Run agentsgen meta against a public URL.'
+    required: false
+    default: 'false'
+  meta_url:
+    description: 'Public URL passed to agentsgen meta.'
+    required: false
+    default: ''
   autodetect:
     description: 'Enable agentsgen autodetect where supported.'
     required: false
@@ -106,6 +114,21 @@ runs:
           exit 1
         fi
         cmd=(agentsgen analyze "${{ inputs.analyze_url }}" "${{ inputs.path }}")
+        printf 'Running:'
+        printf ' %q' "${cmd[@]}"
+        printf '\n'
+        "${cmd[@]}"
+
+    - name: Run agentsgen meta
+      if: ${{ inputs.agentsgen == 'true' && inputs.meta == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        if [ -z "${{ inputs.meta_url }}" ]; then
+          echo "ERROR: meta_url is required when meta=true" >&2
+          exit 1
+        fi
+        cmd=(agentsgen meta "${{ inputs.meta_url }}" "${{ inputs.path }}")
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
         printf '\n'
