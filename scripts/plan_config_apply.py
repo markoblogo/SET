@@ -110,6 +110,7 @@ def build_review_payload(repo: str, workflow: dict[str, object], unmapped: list[
         'repo': repo,
         'next_action_label': 'Resolve unmapped fields' if unmapped else 'Review and apply planned workflow',
         'recommended_operator_step': unmapped[0] if unmapped else apply_simulation['manual_steps'][0],
+        'next_shell_command': apply_simulation['manual_steps'][0],
         'target_branch': 'main',
         'head_branch': branch_name,
         'target_workflow_path': workflow['path'],
@@ -220,6 +221,10 @@ def derive_recommended_operator_step(plan: dict[str, object]) -> str:
     return plan['review_payload']['apply_simulation']['manual_steps'][0]
 
 
+def derive_next_shell_command(plan: dict[str, object]) -> str:
+    return plan['review_payload']['apply_simulation']['manual_steps'][0]
+
+
 def render_text(plan: dict[str, object]) -> str:
     workflow = plan['proposed_changes'][0]['workflow']
     with_block = workflow['with']
@@ -242,6 +247,7 @@ def render_text(plan: dict[str, object]) -> str:
     lines.extend([
         f"next_action_label: {derive_next_action_label(plan)}",
         f"recommended_operator_step: {derive_recommended_operator_step(plan)}",
+        f"next_shell_command: {derive_next_shell_command(plan)}",
         'review_bundle:',
         '  - plan.json',
         '  - workflow.set.yml',
@@ -283,6 +289,7 @@ def render_batch_text(plans: list[dict[str, object]]) -> str:
             f'  priority_hint: {priority_hint}',
             f'  next_action_label: {derive_next_action_label(plan)}',
             f'  recommended_operator_step: {derive_recommended_operator_step(plan)}',
+            f'  next_shell_command: {derive_next_shell_command(plan)}',
             f'  unmapped_count: {len(plan.get("unmapped", []))}',
         ])
     return '\n'.join(lines)
@@ -323,6 +330,7 @@ def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]
                 'priority_hint': derive_priority_hint(plan),
                 'next_action_label': derive_next_action_label(plan),
                 'recommended_operator_step': derive_recommended_operator_step(plan),
+                'next_shell_command': derive_next_shell_command(plan),
                 'unmapped_count': len(plan.get('unmapped', [])),
             }
             for plan in plans
