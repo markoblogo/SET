@@ -291,8 +291,8 @@ runs:
         if [ "${SET_RESOLVED_PACK}" = "true" ]; then
           evidence_cmd+=(--artifact "docs/ai/how-to-run.md" --artifact "llms.txt")
         fi
-        if [ -n "${INPUT_PROOF_EXPECTED_ARTIFACTS:-}" ]; then
-          IFS=',' read -r -a extra_expected <<< "${INPUT_PROOF_EXPECTED_ARTIFACTS}"
+        if [ -n "${{ inputs.proof_expected_artifacts }}" ]; then
+          IFS=',' read -r -a extra_expected <<< "${{ inputs.proof_expected_artifacts }}"
         else
           extra_expected=()
         fi
