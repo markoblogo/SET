@@ -73,6 +73,26 @@ def build_review_payload(repo: str, workflow: dict[str, object], unmapped: list[
         '- Planning only: no branch, no PR, no write to target repo.',
     ])
     body = '\n'.join(body_lines) + '\n'
+    apply_simulation = {
+        'repo': repo,
+        'base_branch': 'main',
+        'head_branch': branch_name,
+        'target_files': [
+            {
+                'path': workflow['path'],
+                'source_export': 'workflow.set.yml',
+                'action': 'write',
+            }
+        ],
+        'suggested_commit_message': title,
+        'manual_steps': [
+            f'git checkout -b {branch_name}',
+            f'cp workflow.set.yml {workflow["path"]}',
+            f'git add {workflow["path"]}',
+            f'git commit -m "{title}"',
+            f'gh pr create --repo {repo} --base main --head {branch_name} --title "{title}" --body-file pr-body.md',
+        ],
+    }
     return {
         'version': 1,
         'kind': 'set-pr-payload',
@@ -91,6 +111,7 @@ def build_review_payload(repo: str, workflow: dict[str, object], unmapped: list[
             'title': title,
             'body_file': 'pr-body.md',
         },
+        'apply_simulation': apply_simulation,
     }
 
 
@@ -157,6 +178,8 @@ def build_plan(config_path: Path, data: dict[str, object]) -> dict[str, object]:
 def render_text(plan: dict[str, object]) -> str:
     workflow = plan['proposed_changes'][0]['workflow']
     with_block = workflow['with']
+    gh_pr = plan['review_payload']['gh_pr_create']
+    apply_sim = plan['review_payload']['apply_simulation']
     lines = [
         'SET config apply plan',
         f"repo: {plan['repo']}",
@@ -171,19 +194,28 @@ def render_text(plan: dict[str, object]) -> str:
         lines.append('unmapped:')
         for item in unmapped:
             lines.append(f'  - {item}')
-    gh_pr = plan['review_payload']['gh_pr_create']
     lines.extend([
         'review_bundle:',
         '  - plan.json',
         '  - workflow.set.yml',
         '  - pr-body.md',
+        '  - gh-pr-create.json',
+        '  - apply-simulation.json',
         'gh_pr_create:',
         f"  repo: {gh_pr['repo']}",
         f"  base: {gh_pr['base']}",
         f"  head: {gh_pr['head']}",
         f"  title: {gh_pr['title']}",
         f"  body_file: {gh_pr['body_file']}",
+        'apply_simulation:',
+        f"  base_branch: {apply_sim['base_branch']}",
+        f"  head_branch: {apply_sim['head_branch']}",
+        f"  target_file: {apply_sim['target_files'][0]['path']}",
+        f"  commit_message: {apply_sim['suggested_commit_message']}",
+        '  manual_steps:',
     ])
+    for step in apply_sim['manual_steps']:
+        lines.append(f'    - {step}')
     return '\n'.join(lines)
 
 
@@ -195,6 +227,7 @@ def export_plan(plan: dict[str, object], export_dir: Path) -> list[Path]:
         'workflow.set.yml': review_payload['workflow_yaml'],
         'pr-body.md': review_payload['body'],
         'gh-pr-create.json': json.dumps(review_payload['gh_pr_create'], indent=2) + '\n',
+        'apply-simulation.json': json.dumps(review_payload['apply_simulation'], indent=2) + '\n',
     }
     written = []
     for name, content in outputs.items():

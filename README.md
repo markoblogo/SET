@@ -48,7 +48,6 @@ What v0.1 does:
 - supports `workflow_preset` baselines with explicit input override
 - writes a compact GitHub Actions summary for the resolved run plan
 
-
 ## Repo config contract
 
 `SET` now owns the first real repo-config contract and central registry baseline.
@@ -59,7 +58,6 @@ What v0.1 does:
 - Central registry (first home): `registry/repos/*.json`
 - Validate locally: `python3 scripts/validate_registry.py`
 
-
 ## Config apply planning
 
 Planning-only helper for future PR-based config apply:
@@ -69,6 +67,7 @@ Planning-only helper for future PR-based config apply:
 - JSON mode: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --format json`
 - Review bundle export: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --export-dir /tmp/set-plan`
 - gh-ready payload: includes `base`, `head`, `title`, and `body_file` fields for a later `gh pr create` step
+- apply simulation: previews branch name, target file write, commit message, and manual apply commands
 
 ## Scope right now
 

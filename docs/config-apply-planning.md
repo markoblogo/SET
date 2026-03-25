@@ -34,7 +34,7 @@ The planner currently emits:
 - the `uses: markoblogo/SET@main` block
 - the resolved `with:` inputs derived from registry config
 - an `unmapped` list for registry fields not yet wired into the action
-- a review payload with PR title/body, gh-ready PR fields, and ready-to-review workflow YAML
+- a review payload with PR title/body, gh-ready PR fields, apply simulation, and ready-to-review workflow YAML
 
 When `--export-dir` is used, the planner writes:
 
@@ -42,10 +42,12 @@ When `--export-dir` is used, the planner writes:
 - `workflow.set.yml`
 - `pr-body.md`
 - `gh-pr-create.json`
+- `apply-simulation.json`
 
 These files are local review artifacts only. They are not applied to the target repo.
 
 The `gh-pr-create.json` payload is meant to be directly reusable by a future manual `gh pr create` step.
+The `apply-simulation.json` payload shows the branch/apply sequence as a reviewable dry run.
 
 ## Current limits
 
