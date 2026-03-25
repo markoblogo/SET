@@ -46,6 +46,7 @@ What v0.1 does:
 - optionally runs `agentsgen analyze <url>`
 - optionally runs `agentsgen meta <url>`
 - supports `workflow_preset` baselines with explicit input override
+- writes a compact GitHub Actions summary for the resolved run plan
 
 ## Scope right now
 

@@ -158,3 +158,10 @@ runs:
         printf ' %q' "${cmd[@]}"
         printf '\n'
         "${cmd[@]}"
+
+    - name: Write execution summary
+      if: ${{ always() }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        python "${GITHUB_ACTION_PATH}/scripts/write_summary.py"
