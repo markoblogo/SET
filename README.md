@@ -48,6 +48,17 @@ What v0.1 does:
 - supports `workflow_preset` baselines with explicit input override
 - writes a compact GitHub Actions summary for the resolved run plan
 
+
+## Repo config contract
+
+`SET` now owns the first real repo-config contract and central registry baseline.
+
+- Contract docs: `docs/repo-config.md`
+- Canonical schema: `schema/repo-config.v1.json`
+- Example config: `examples/repo-config.example.json`
+- Central registry (first home): `registry/repos/*.json`
+- Validate locally: `python3 scripts/validate_registry.py`
+
 ## Scope right now
 
 - Freeze the migration map from `LLMO`

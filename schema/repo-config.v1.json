@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "repo": "owner/name",
+  "site": {
+    "url": "https://example.com"
+  },
+  "tools": {
+    "agentsgen": {
+      "init": true,
+      "pack": true,
+      "check": true,
+      "repomap": false,
+      "snippets": false,
+      "analyze_url": null,
+      "meta_url": null
+    },
+    "git_tweet": {
+      "enabled": false
+    }
+  },
+  "presets": [
+    "repo-docs"
+  ]
+}

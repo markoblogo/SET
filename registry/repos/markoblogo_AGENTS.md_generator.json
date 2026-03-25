@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "repo": "markoblogo/AGENTS.md_generator",
+  "tools": {
+    "agentsgen": {
+      "init": true,
+      "pack": true,
+      "check": true,
+      "repomap": true,
+      "snippets": true,
+      "analyze_url": null,
+      "meta_url": null
+    },
+    "git_tweet": {
+      "enabled": false
+    }
+  },
+  "presets": [
+    "repo-docs"
+  ]
+}

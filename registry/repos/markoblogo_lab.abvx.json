@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "repo": "markoblogo/lab.abvx",
+  "site": {
+    "url": "https://lab.abvx.xyz"
+  },
+  "tools": {
+    "agentsgen": {
+      "init": true,
+      "pack": true,
+      "check": true,
+      "repomap": false,
+      "snippets": false,
+      "analyze_url": "https://lab.abvx.xyz",
+      "meta_url": "https://lab.abvx.xyz"
+    },
+    "git_tweet": {
+      "enabled": false
+    }
+  },
+  "presets": [
+    "repo-docs",
+    "site-ai"
+  ]
+}
