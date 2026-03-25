@@ -32,6 +32,8 @@ This repo stays intentionally thin even after adding registry, planning, and dri
     analyze_url: "https://example.com"
     meta: "true"
     meta_url: "https://example.com"
+    proof_loop: "true"
+    proof_task_id: "proof-loop-v0"
     autodetect: "true"
     path: "."
 ```
@@ -51,6 +53,7 @@ What v0.1 does:
 - optionally runs `agentsgen snippets`
 - optionally runs `agentsgen analyze <url>`
 - optionally runs `agentsgen meta <url>`
+- optionally runs `agentsgen task init/evidence/verdict` as a proof-loop hook
 - supports `workflow_preset` baselines with explicit input override
 - writes a compact GitHub Actions summary for the resolved run plan
 - passes a first-class repomap policy through to `agentsgen understand` (`--compact-budget`, optional `--focus`, optional `--changed`) with explicit policy modes: `full`, `focus`, `changed`, `focus+changed`
@@ -67,6 +70,7 @@ What v0.1 does:
 - Central registry (first home): `registry/repos/*.json`
 - Validate locally: `python3 scripts/validate_registry.py`
 - `agentsgen.repomap_policy` lets each repo set compact budget, ranked-file limits, and optional focused/changed slice defaults without changing the Action contract
+- `agentsgen.proof_loop` lets a repo opt into contract/evidence/verdict artifacts for larger tasks
 - Derived policy modes in SET vocabulary: `full` (Full Repo Slice), `focus` (Focused Code Slice), `changed` (Changed Files Slice), `focus+changed` (Hybrid Slice)
 
 ## Config apply planning

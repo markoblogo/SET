@@ -43,6 +43,7 @@ def main() -> int:
         'SET_RESOLVED_SNIPPETS': _resolve_flag(os.environ.get('INPUT_SNIPPETS', ''), preset, 'SNIPPETS', 'false'),
         'SET_RESOLVED_ANALYZE': _resolve_flag(os.environ.get('INPUT_ANALYZE', ''), preset, 'ANALYZE', 'false'),
         'SET_RESOLVED_META': _resolve_flag(os.environ.get('INPUT_META', ''), preset, 'META', 'false'),
+        'SET_RESOLVED_PROOF_LOOP': _resolve_flag(os.environ.get('INPUT_PROOF_LOOP', ''), preset, 'PROOF_LOOP', 'false'),
     }
 
     site_url = os.environ.get('INPUT_SITE_URL', '').strip()
@@ -52,6 +53,7 @@ def main() -> int:
     resolved['SET_RESOLVED_SITE_URL'] = default_site_url
     resolved['SET_RESOLVED_ANALYZE_URL'] = analyze_url or default_site_url
     resolved['SET_RESOLVED_META_URL'] = meta_url or default_site_url
+    resolved['SET_RESOLVED_PROOF_TASK_ID'] = os.environ.get('INPUT_PROOF_TASK_ID', '').strip() or preset.get('PROOF_TASK_ID', '')
 
     output_path = os.environ['GITHUB_ENV']
     with open(output_path, 'a', encoding='utf-8') as fh:
@@ -69,7 +71,8 @@ def main() -> int:
         f"repomap={resolved['SET_RESOLVED_REPOMAP']}, "
         f"snippets={resolved['SET_RESOLVED_SNIPPETS']}, "
         f"analyze={resolved['SET_RESOLVED_ANALYZE']}, "
-        f"meta={resolved['SET_RESOLVED_META']}"
+        f"meta={resolved['SET_RESOLVED_META']}, "
+        f"proof_loop={resolved['SET_RESOLVED_PROOF_LOOP']}"
     )
     print(summary)
     return 0

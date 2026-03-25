@@ -16,6 +16,7 @@ ALLOWED_AGENTSGEN_KEYS = {
     'snippets',
     'analyze_url',
     'meta_url',
+    'proof_loop',
 }
 ALLOWED_GIT_TWEET_KEYS = {'enabled'}
 
@@ -87,6 +88,15 @@ def validate_config(path: Path) -> dict[str, object]:
                 _require(repomap_policy['focus'] is None or isinstance(repomap_policy['focus'], str), f'{path.name}: agentsgen.repomap_policy.focus must be string or null')
             if 'changed' in repomap_policy:
                 _require(isinstance(repomap_policy['changed'], bool), f'{path.name}: agentsgen.repomap_policy.changed must be boolean')
+        proof_loop = agentsgen.get('proof_loop')
+        if proof_loop is not None:
+            _require(isinstance(proof_loop, dict), f'{path.name}: agentsgen.proof_loop must be an object')
+            unknown_proof = set(proof_loop) - {'enabled', 'task_id'}
+            _require(not unknown_proof, f"{path.name}: unknown proof_loop keys: {', '.join(sorted(unknown_proof))}")
+            if 'enabled' in proof_loop:
+                _require(isinstance(proof_loop['enabled'], bool), f'{path.name}: agentsgen.proof_loop.enabled must be boolean')
+            if 'task_id' in proof_loop:
+                _require(proof_loop['task_id'] is None or isinstance(proof_loop['task_id'], str), f'{path.name}: agentsgen.proof_loop.task_id must be string or null')
 
     git_tweet = tools.get('git_tweet')
     if git_tweet is not None:

@@ -61,6 +61,8 @@ def main() -> int:
         operations.append('analyze')
     if _enabled('SET_RESOLVED_META'):
         operations.append('meta')
+    if _enabled('SET_RESOLVED_PROOF_LOOP'):
+        operations.append('proof-loop')
 
     body = []
     body.append('## SET execution summary\n\n')
@@ -83,6 +85,9 @@ def main() -> int:
         body.append(_line('repomap policy mode', repomap_mode))
         body.append(_line('repomap policy label', _repomap_label(repomap_mode)))
         body.append(_line('repomap slice', repomap_focus if repomap_focus else ('changed' if repomap_changed == 'true' else 'full')))
+    if _enabled('SET_RESOLVED_PROOF_LOOP'):
+        body.append(_line('proof loop', 'enabled'))
+        body.append(_line('proof task id', os.environ.get('SET_RESOLVED_PROOF_TASK_ID', '').strip() or 'missing'))
 
     if site_url:
         body.append(_line('site url', site_url))

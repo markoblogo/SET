@@ -50,11 +50,30 @@ def repomap_policy_label(mode: str) -> str:
     }.get(mode, 'Full Repo Slice')
 
 
+
+
+
+def resolve_proof_loop_config(agentsgen: dict[str, object]) -> dict[str, object] | None:
+    proof_loop = agentsgen.get('proof_loop')
+    if not isinstance(proof_loop, dict):
+        return None
+    enabled = proof_loop.get('enabled') is True
+    task_id = proof_loop.get('task_id')
+    if not enabled and not task_id:
+        return None
+    return {
+        'enabled': enabled,
+        'task_id': str(task_id).strip() if isinstance(task_id, str) and str(task_id).strip() else None,
+    }
+
+
 def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
     tools = data.get('tools', {}) if isinstance(data.get('tools'), dict) else {}
     agentsgen = tools.get('agentsgen', {}) if isinstance(tools.get('agentsgen'), dict) else {}
     capabilities: list[dict[str, object]] = []
     for key, value in agentsgen.items():
+        if key == 'proof_loop':
+            continue
         requested = False
         if isinstance(value, bool):
             requested = value
@@ -80,6 +99,16 @@ def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
                 'message': f'agentsgen.{key} is in registry but not yet wired into SET action inputs',
             }
         capabilities.append(item)
+    proof_loop = resolve_proof_loop_config(agentsgen)
+    if proof_loop and proof_loop.get('enabled'):
+        capabilities.append({
+            'tool': 'agentsgen',
+            'key': 'proof_loop',
+            'requested': True,
+            'supported_by_set': True,
+            'set_input': 'proof_loop',
+            'task_id': proof_loop.get('task_id'),
+        })
     return capabilities
 
 
@@ -196,6 +225,7 @@ def build_review_payload(
     capabilities: list[dict[str, object]],
     unmapped: list[str],
     repomap_policy: dict[str, object] | None,
+    proof_loop: dict[str, object] | None,
 ) -> dict[str, object]:
     apply_readiness = 'blocked' if unmapped else 'ready'
     blocked_by = list(unmapped)
@@ -233,6 +263,13 @@ def build_review_payload(
         if repomap_policy.get('focus'):
             body_lines.append(f"- `focus`: `{repomap_policy['focus']}`")
         body_lines.append(f"- `changed`: `{str(bool(repomap_policy.get('changed', False))).lower()}`")
+    if proof_loop and proof_loop.get('enabled'):
+        body_lines.extend([
+            '',
+            '## Proof loop',
+            '- `enabled`: `true`',
+            f"- `task_id`: `{proof_loop.get('task_id') or 'missing'}`",
+        ])
     body_lines.extend([
         '',
         '## Notes',
@@ -267,6 +304,7 @@ def build_review_payload(
         'capabilities': capabilities,
         'repomap_policy': repomap_policy,
         'repomap_policy_mode': repomap_policy_mode(repomap_policy),
+        'proof_loop': proof_loop,
         'repomap_policy_label': repomap_policy_label(repomap_policy_mode(repomap_policy)),
         'repomap_policy_label': repomap_policy_label(repomap_policy_mode(repomap_policy)),
         'repomap_policy_mode': repomap_policy_mode(repomap_policy),
@@ -301,6 +339,7 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
     presets = data.get('presets', []) if isinstance(data.get('presets'), list) else []
     workflow_preset = pick_workflow_preset([p for p in presets if isinstance(p, str)])
     repomap_policy = resolve_repomap_policy(agentsgen)
+    proof_loop = resolve_proof_loop_config(agentsgen)
 
     with_block: dict[str, str] = {'agentsgen': 'true', 'autodetect': 'true', 'path': '.'}
     if workflow_preset:
@@ -330,6 +369,10 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
     if isinstance(meta_url, str) and meta_url:
         with_block['meta'] = 'true'
         with_block['meta_url'] = meta_url
+    if proof_loop and proof_loop.get('enabled'):
+        with_block['proof_loop'] = 'true'
+        if proof_loop.get('task_id'):
+            with_block['proof_task_id'] = str(proof_loop['task_id'])
 
     capabilities = build_capabilities(data)
     unmapped = [
@@ -337,6 +380,9 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
         for capability in capabilities
         if capability.get('wiring_gap')
     ]
+
+    if proof_loop and proof_loop.get('enabled') and not proof_loop.get('task_id'):
+        unmapped.append('agentsgen.proof_loop is enabled but proof_task_id is missing')
 
     workflow = {
         'path': '.github/workflows/set.yml',
@@ -349,6 +395,7 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
         capabilities,
         unmapped,
         repomap_policy,
+        proof_loop,
     )
     plan = {
         'version': 1,
@@ -357,6 +404,7 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
         'source_config': str(config_path),
         'repomap_policy': repomap_policy,
         'repomap_policy_mode': repomap_policy_mode(repomap_policy),
+        'proof_loop': proof_loop,
         'proposed_changes': [
             {
                 'type': 'workflow',
@@ -480,6 +528,7 @@ def render_text(plan: dict[str, object]) -> str:
         f"next_shell_command: {derive_next_shell_command(plan)}",
         f"workflow_sync_status: {derive_workflow_sync_status(plan)}",
         f"repomap_policy: {json.dumps(plan.get('repomap_policy')) if plan.get('repomap_policy') else 'none'}",
+        f"proof_loop: {json.dumps(plan.get('proof_loop')) if plan.get('proof_loop') else 'none'}",
         'review_bundle:',
         '  - plan.json',
         '  - workflow.set.yml',

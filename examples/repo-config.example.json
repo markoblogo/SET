@@ -18,6 +18,10 @@
         "top_ranked_files": 5,
         "focus": null,
         "changed": false
+      },
+      "proof_loop": {
+        "enabled": false,
+        "task_id": null
       }
     },
     "git_tweet": {
