@@ -21,3 +21,6 @@ jobs:
           snippets: "false"
           repomap_compact_budget: "2500"
           repomap_changed: "true"
+          proof_loop: "true"
+          proof_task_id: "proof-loop-blocked"
+          proof_expected_artifacts: "docs/ai/proof/manual-review.md"

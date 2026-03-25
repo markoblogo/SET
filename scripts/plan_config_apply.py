@@ -59,11 +59,17 @@ def resolve_proof_loop_config(agentsgen: dict[str, object]) -> dict[str, object]
         return None
     enabled = proof_loop.get('enabled') is True
     task_id = proof_loop.get('task_id')
-    if not enabled and not task_id:
+    expected_artifacts = [
+        str(item).strip()
+        for item in proof_loop.get('expected_artifacts', [])
+        if isinstance(item, str) and str(item).strip()
+    ]
+    if not enabled and not task_id and not expected_artifacts:
         return None
     return {
         'enabled': enabled,
         'task_id': str(task_id).strip() if isinstance(task_id, str) and str(task_id).strip() else None,
+        'expected_artifacts': expected_artifacts,
     }
 
 
@@ -270,6 +276,10 @@ def build_review_payload(
             '- `enabled`: `true`',
             f"- `task_id`: `{proof_loop.get('task_id') or 'missing'}`",
         ])
+        if proof_loop.get('expected_artifacts'):
+            body_lines.append(
+                f"- `expected_artifacts`: `{', '.join(str(item) for item in proof_loop.get('expected_artifacts', []))}`"
+            )
     body_lines.extend([
         '',
         '## Notes',
@@ -373,6 +383,10 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
         with_block['proof_loop'] = 'true'
         if proof_loop.get('task_id'):
             with_block['proof_task_id'] = str(proof_loop['task_id'])
+        if proof_loop.get('expected_artifacts'):
+            with_block['proof_expected_artifacts'] = ','.join(
+                str(item) for item in proof_loop.get('expected_artifacts', [])
+            )
 
     capabilities = build_capabilities(data)
     unmapped = [

@@ -49,7 +49,8 @@ We can still add a YAML view later if the dashboard or authoring flow benefits f
       "meta_url": null,
       "proof_loop": {
         "enabled": false,
-        "task_id": null
+        "task_id": null,
+        "expected_artifacts": []
       }
     },
     "git_tweet": {
@@ -70,7 +71,7 @@ We can still add a YAML view later if the dashboard or authoring flow benefits f
 - `presets` is optional but must use known names
 - explicit tool fields win over preset defaults
 - `agentsgen.repomap_policy` is optional and currently supports `compact_budget`, `top_ranked_files`, `focus`, and `changed`
-- `agentsgen.proof_loop` is optional and currently supports `enabled` and `task_id`
+- `agentsgen.proof_loop` is optional and currently supports `enabled`, `task_id`, and `expected_artifacts`
 - SET derives a first-class label from that policy for UI/planning: `full` (Full Repo Slice), `focus` (Focused Code Slice), `changed` (Changed Files Slice), `focus+changed` (Hybrid Slice)
 - no secrets live in registry config
 

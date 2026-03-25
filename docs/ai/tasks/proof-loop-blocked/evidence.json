@@ -1,0 +1,64 @@
+{
+  "version": 2,
+  "generated_by": "agentsgen",
+  "generated_at": "2026-03-25T17:50:14Z",
+  "task_id": "proof-loop-blocked",
+  "checks": [
+    {
+      "name": "set-proof-loop",
+      "status": "passed",
+      "required": true,
+      "kind": "check"
+    }
+  ],
+  "check_summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "pending": 0,
+    "recorded": 0
+  },
+  "changed_files": [
+    ".github/workflows/set.yml",
+    "README.md",
+    "action.yml",
+    "docs/ai/tasks/proof-loop-blocked/contract.md",
+    "docs/repo-config.md",
+    "examples/repo-config.example.json",
+    "registry/repos/markoblogo_SET.json",
+    "schema/repo-config.v1.json",
+    "scripts/plan_config_apply.py",
+    "scripts/validate_registry.py"
+  ],
+  "changed_files_count": 10,
+  "artifacts": [
+    "agents.knowledge.json",
+    "docs/ai/repomap.compact.md"
+  ],
+  "artifact_details": [
+    {
+      "path": "agents.knowledge.json",
+      "kind": "json",
+      "present": true
+    },
+    {
+      "path": "docs/ai/repomap.compact.md",
+      "kind": "markdown",
+      "present": true
+    }
+  ],
+  "artifact_summary": {
+    "total": 2,
+    "present": 2,
+    "missing": 0
+  },
+  "contract_present": true,
+  "evidence_status": "complete",
+  "repo_state": {
+    "git_available": true,
+    "working_tree_dirty": true
+  },
+  "notes": [
+    "Controlled blocked case for proof queue."
+  ]
+}

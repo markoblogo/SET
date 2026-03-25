@@ -21,7 +21,8 @@
       },
       "proof_loop": {
         "enabled": false,
-        "task_id": null
+        "task_id": null,
+        "expected_artifacts": []
       }
     },
     "git_tweet": {

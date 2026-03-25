@@ -91,12 +91,16 @@ def validate_config(path: Path) -> dict[str, object]:
         proof_loop = agentsgen.get('proof_loop')
         if proof_loop is not None:
             _require(isinstance(proof_loop, dict), f'{path.name}: agentsgen.proof_loop must be an object')
-            unknown_proof = set(proof_loop) - {'enabled', 'task_id'}
+            unknown_proof = set(proof_loop) - {'enabled', 'task_id', 'expected_artifacts'}
             _require(not unknown_proof, f"{path.name}: unknown proof_loop keys: {', '.join(sorted(unknown_proof))}")
             if 'enabled' in proof_loop:
                 _require(isinstance(proof_loop['enabled'], bool), f'{path.name}: agentsgen.proof_loop.enabled must be boolean')
             if 'task_id' in proof_loop:
                 _require(proof_loop['task_id'] is None or isinstance(proof_loop['task_id'], str), f'{path.name}: agentsgen.proof_loop.task_id must be string or null')
+            if 'expected_artifacts' in proof_loop:
+                _require(isinstance(proof_loop['expected_artifacts'], list), f'{path.name}: agentsgen.proof_loop.expected_artifacts must be a list')
+                for item in proof_loop['expected_artifacts']:
+                    _require(isinstance(item, str) and item.strip(), f'{path.name}: agentsgen.proof_loop.expected_artifacts items must be non-empty strings')
 
     git_tweet = tools.get('git_tweet')
     if git_tweet is not None:

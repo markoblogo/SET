@@ -70,7 +70,7 @@ What v0.1 does:
 - Central registry (first home): `registry/repos/*.json`
 - Validate locally: `python3 scripts/validate_registry.py`
 - `agentsgen.repomap_policy` lets each repo set compact budget, ranked-file limits, and optional focused/changed slice defaults without changing the Action contract
-- `agentsgen.proof_loop` lets a repo opt into contract/evidence/verdict artifacts for larger tasks, including evidence status, blocker counts, and review readiness
+- `agentsgen.proof_loop` lets a repo opt into contract/evidence/verdict artifacts for larger tasks, including evidence status, blocker counts, review readiness, and optional expected-artifact blockers
 - Derived policy modes in SET vocabulary: `full` (Full Repo Slice), `focus` (Focused Code Slice), `changed` (Changed Files Slice), `focus+changed` (Hybrid Slice)
 
 ## Config apply planning

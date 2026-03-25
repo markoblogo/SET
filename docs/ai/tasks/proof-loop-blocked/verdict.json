@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "generated_by": "agentsgen",
+  "generated_at": "2026-03-25T17:50:14Z",
+  "task_id": "proof-loop-blocked",
+  "status": "needs-review",
+  "summary": "Blocked proof-loop demo due to intentionally missing artifact.",
+  "blocking_items": [
+    "high: expected proof artifact is missing: docs/ai/proof/manual-review.md"
+  ],
+  "blocking_details": [
+    {
+      "message": "expected proof artifact is missing: docs/ai/proof/manual-review.md",
+      "severity": "high",
+      "blocks_apply": true
+    }
+  ],
+  "evidence_status": "complete",
+  "check_summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "pending": 0,
+    "recorded": 0
+  },
+  "artifact_summary": {
+    "total": 2,
+    "present": 2,
+    "missing": 0
+  },
+  "review_ready": false,
+  "ready_for_apply": false,
+  "decision": "blocked",
+  "recommendation": "Resolve blockers, refresh evidence, then re-run verdict."
+}

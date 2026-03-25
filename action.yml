@@ -70,6 +70,10 @@ inputs:
     description: 'Task id used for agentsgen task init/evidence/verdict when proof_loop=true.'
     required: false
     default: ''
+  proof_expected_artifacts:
+    description: 'Optional comma-separated list of proof artifacts that must exist before verdict can become review-ready.'
+    required: false
+    default: ''
   autodetect:
     description: 'Enable agentsgen autodetect where supported.'
     required: false
@@ -114,6 +118,7 @@ runs:
         INPUT_META_URL: ${{ inputs.meta_url }}
         INPUT_PROOF_LOOP: ${{ inputs.proof_loop }}
         INPUT_PROOF_TASK_ID: ${{ inputs.proof_task_id }}
+        INPUT_PROOF_EXPECTED_ARTIFACTS: ${{ inputs.proof_expected_artifacts }}
         INPUT_AUTODETECT: ${{ inputs.autodetect }}
         INPUT_WORKFLOW_PRESET: ${{ inputs.workflow_preset }}
         INPUT_PRESET: ${{ inputs.preset }}
@@ -286,6 +291,11 @@ runs:
         if [ "${SET_RESOLVED_PACK}" = "true" ]; then
           evidence_cmd+=(--artifact "docs/ai/how-to-run.md" --artifact "llms.txt")
         fi
+        if [ -n "${INPUT_PROOF_EXPECTED_ARTIFACTS:-}" ]; then
+          IFS=',' read -r -a extra_expected <<< "${INPUT_PROOF_EXPECTED_ARTIFACTS}"
+        else
+          extra_expected=()
+        fi
         printf 'Running:'
         printf ' %q' "${init_cmd[@]}"
         printf '\n'
@@ -320,6 +330,10 @@ runs:
           if [ "${SET_RESOLVED_PACK}" = "true" ]; then
             printf '%s\n' "docs/ai/how-to-run.md" "llms.txt"
           fi
+          for artifact_path in "${extra_expected[@]}"; do
+            artifact_path="$(printf '%s' "${artifact_path}" | xargs)"
+            [ -n "${artifact_path}" ] && printf '%s\n' "${artifact_path}"
+          done
         )
         for item in "${blocking_items[@]}"; do
           verdict_cmd+=(--blocking-item "${item}")
