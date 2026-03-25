@@ -19,6 +19,8 @@ This repo starts intentionally small.
     init: "true"
     pack: "true"
     check: "true"
+    analyze: "true"
+    analyze_url: "https://example.com"
     autodetect: "true"
     path: "."
 ```
@@ -28,6 +30,7 @@ What v0.1 does:
 - runs `agentsgen init`
 - optionally runs `agentsgen pack`
 - optionally runs `agentsgen check --all --ci`
+- optionally runs `agentsgen analyze <url>`
 
 ## Scope right now
 

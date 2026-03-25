@@ -18,6 +18,14 @@ inputs:
     description: 'Run agentsgen check --all --ci.'
     required: false
     default: 'false'
+  analyze:
+    description: 'Run agentsgen analyze against a public URL.'
+    required: false
+    default: 'false'
+  analyze_url:
+    description: 'Public URL passed to agentsgen analyze.'
+    required: false
+    default: ''
   autodetect:
     description: 'Enable agentsgen autodetect where supported.'
     required: false
@@ -87,3 +95,18 @@ runs:
       run: |
         set -euo pipefail
         agentsgen check "${{ inputs.path }}" --all --ci
+
+    - name: Run agentsgen analyze
+      if: ${{ inputs.agentsgen == 'true' && inputs.analyze == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        if [ -z "${{ inputs.analyze_url }}" ]; then
+          echo "ERROR: analyze_url is required when analyze=true" >&2
+          exit 1
+        fi
+        cmd=(agentsgen analyze "${{ inputs.analyze_url }}" "${{ inputs.path }}")
+        printf 'Running:'
+        printf ' %q' "${cmd[@]}"
+        printf '\n'
+        "${cmd[@]}"
