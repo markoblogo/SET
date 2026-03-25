@@ -24,6 +24,8 @@ This repo stays intentionally thin even after adding registry, planning, and dri
     site_pack: "true"
     site_url: "https://example.com"
     check: "true"
+    repomap: "true"
+    repomap_compact_budget: "4000"
     analyze: "true"
     analyze_url: "https://example.com"
     meta: "true"
@@ -43,12 +45,13 @@ What v0.1 does:
 - optionally runs `agentsgen pack`
 - optionally runs `agentsgen pack --site <url>`
 - optionally runs `agentsgen check --all --ci`
-- optionally runs `agentsgen understand`
+- optionally runs `agentsgen understand --compact-budget <tokens>`
 - optionally runs `agentsgen snippets`
 - optionally runs `agentsgen analyze <url>`
 - optionally runs `agentsgen meta <url>`
 - supports `workflow_preset` baselines with explicit input override
 - writes a compact GitHub Actions summary for the resolved run plan
+- passes a first-class compact repomap budget through to `agentsgen understand`
 - owns the first central registry baseline for registered repos
 - compares expected registry-derived `set.yml` against local repo workflows in read-only mode
 

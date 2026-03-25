@@ -30,6 +30,10 @@ inputs:
     description: 'Run agentsgen understand for deterministic repo map artifacts. Leave empty to inherit workflow_preset or default behavior.'
     required: false
     default: ''
+  repomap_compact_budget:
+    description: 'Approximate token budget passed to agentsgen understand --compact-budget.'
+    required: false
+    default: '4000'
   snippets:
     description: 'Run agentsgen snippets for canonical README extracts. Leave empty to inherit workflow_preset or default behavior.'
     required: false
@@ -143,6 +147,9 @@ runs:
       run: |
         set -euo pipefail
         cmd=(agentsgen understand "${{ inputs.path }}")
+        if [ -n "${{ inputs.repomap_compact_budget }}" ]; then
+          cmd+=(--compact-budget "${{ inputs.repomap_compact_budget }}")
+        fi
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
         printf '\n'

@@ -53,6 +53,10 @@ def main() -> int:
     site_url = os.environ.get('SET_RESOLVED_SITE_URL', '').strip()
     analyze_url = os.environ.get('SET_RESOLVED_ANALYZE_URL', '').strip()
     meta_url = os.environ.get('SET_RESOLVED_META_URL', '').strip()
+    repomap_budget = os.environ.get('INPUT_REPOMAP_COMPACT_BUDGET', '').strip() or '4000'
+    if _enabled('SET_RESOLVED_REPOMAP'):
+        body.append(_line('repomap compact budget', repomap_budget))
+
     if site_url:
         body.append(_line('site url', site_url))
     if _enabled('SET_RESOLVED_ANALYZE') and analyze_url:
