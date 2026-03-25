@@ -96,6 +96,29 @@ runs:
   steps:
     - name: Resolve workflow preset
       shell: bash
+      env:
+        INPUT_AGENTSGEN: ${{ inputs.agentsgen }}
+        INPUT_INIT: ${{ inputs.init }}
+        INPUT_PACK: ${{ inputs.pack }}
+        INPUT_SITE_PACK: ${{ inputs.site_pack }}
+        INPUT_SITE_URL: ${{ inputs.site_url }}
+        INPUT_CHECK: ${{ inputs.check }}
+        INPUT_REPOMAP: ${{ inputs.repomap }}
+        INPUT_REPOMAP_COMPACT_BUDGET: ${{ inputs.repomap_compact_budget }}
+        INPUT_REPOMAP_FOCUS: ${{ inputs.repomap_focus }}
+        INPUT_REPOMAP_CHANGED: ${{ inputs.repomap_changed }}
+        INPUT_SNIPPETS: ${{ inputs.snippets }}
+        INPUT_ANALYZE: ${{ inputs.analyze }}
+        INPUT_ANALYZE_URL: ${{ inputs.analyze_url }}
+        INPUT_META: ${{ inputs.meta }}
+        INPUT_META_URL: ${{ inputs.meta_url }}
+        INPUT_PROOF_LOOP: ${{ inputs.proof_loop }}
+        INPUT_PROOF_TASK_ID: ${{ inputs.proof_task_id }}
+        INPUT_AUTODETECT: ${{ inputs.autodetect }}
+        INPUT_WORKFLOW_PRESET: ${{ inputs.workflow_preset }}
+        INPUT_PRESET: ${{ inputs.preset }}
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_AGENTSGEN_REF: ${{ inputs.agentsgen_ref }}
       run: |
         set -euo pipefail
         python "${GITHUB_ACTION_PATH}/scripts/resolve_inputs.py"
@@ -272,6 +295,15 @@ runs:
     - name: Write execution summary
       if: ${{ always() }}
       shell: bash
+      env:
+        INPUT_REPOMAP_COMPACT_BUDGET: ${{ inputs.repomap_compact_budget }}
+        INPUT_REPOMAP_FOCUS: ${{ inputs.repomap_focus }}
+        INPUT_REPOMAP_CHANGED: ${{ inputs.repomap_changed }}
+        INPUT_WORKFLOW_PRESET: ${{ inputs.workflow_preset }}
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_AUTODETECT: ${{ inputs.autodetect }}
+        INPUT_PRESET: ${{ inputs.preset }}
+        INPUT_AGENTSGEN_REF: ${{ inputs.agentsgen_ref }}
       run: |
         set -euo pipefail
         python "${GITHUB_ACTION_PATH}/scripts/write_summary.py"
