@@ -2,6 +2,8 @@
 
 Thin orchestration repo for the ABVX development tools ecosystem.
 
+It stays deliberately small: presets define a baseline, and explicit inputs override the preset when you need per-repo control.
+
 Current working definition:
 - `agentsgen` = repo intelligence runtime
 - `SET` = orchestration layer / GitHub Action entrypoint
@@ -15,6 +17,7 @@ This repo starts intentionally small.
 ```yaml
 - uses: markoblogo/SET@main
   with:
+    workflow_preset: "site-ai"
     agentsgen: "true"
     init: "true"
     pack: "true"
@@ -29,6 +32,11 @@ This repo starts intentionally small.
     path: "."
 ```
 
+Preset baselines:
+- `minimal` -> repo bootstrap only
+- `repo-docs` -> init + pack + check
+- `site-ai` -> repo-docs + site pack + analyze + meta
+
 What v0.1 does:
 - installs `agentsgen`
 - runs `agentsgen init`
@@ -37,6 +45,7 @@ What v0.1 does:
 - optionally runs `agentsgen check --all --ci`
 - optionally runs `agentsgen analyze <url>`
 - optionally runs `agentsgen meta <url>`
+- supports `workflow_preset` baselines with explicit input override
 
 ## Scope right now
 

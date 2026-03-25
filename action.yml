@@ -1,43 +1,43 @@
 name: 'SET'
-description: 'Thin orchestration entrypoint for agentsgen init/pack/check flows.'
+description: 'Thin orchestration entrypoint for agentsgen repo-docs, site-ai, and check flows.'
 
 inputs:
   agentsgen:
     description: 'Enable the agentsgen tool family.'
     required: false
-    default: 'true'
+    default: ''
   init:
-    description: 'Run agentsgen init.'
+    description: 'Run agentsgen init. Leave empty to inherit workflow_preset or default behavior.'
     required: false
-    default: 'true'
+    default: ''
   pack:
-    description: 'Run agentsgen pack.'
+    description: 'Run agentsgen pack. Leave empty to inherit workflow_preset or default behavior.'
     required: false
-    default: 'false'
+    default: ''
   site_pack:
-    description: 'Run agentsgen pack in public-site mode.'
+    description: 'Run agentsgen pack in public-site mode. Leave empty to inherit workflow_preset or default behavior.'
     required: false
-    default: 'false'
+    default: ''
   site_url:
     description: 'Public URL passed to agentsgen pack --site.'
     required: false
     default: ''
   check:
-    description: 'Run agentsgen check --all --ci.'
+    description: 'Run agentsgen check --all --ci. Leave empty to inherit workflow_preset or default behavior.'
     required: false
-    default: 'false'
+    default: ''
   analyze:
-    description: 'Run agentsgen analyze against a public URL.'
+    description: 'Run agentsgen analyze against a public URL. Leave empty to inherit workflow_preset or default behavior.'
     required: false
-    default: 'false'
+    default: ''
   analyze_url:
     description: 'Public URL passed to agentsgen analyze.'
     required: false
     default: ''
   meta:
-    description: 'Run agentsgen meta against a public URL.'
+    description: 'Run agentsgen meta against a public URL. Leave empty to inherit workflow_preset or default behavior.'
     required: false
-    default: 'false'
+    default: ''
   meta_url:
     description: 'Public URL passed to agentsgen meta.'
     required: false
@@ -46,6 +46,10 @@ inputs:
     description: 'Enable agentsgen autodetect where supported.'
     required: false
     default: 'true'
+  workflow_preset:
+    description: 'Optional orchestration preset: minimal, repo-docs, or site-ai.'
+    required: false
+    default: ''
   preset:
     description: 'Optional preset name passed to agentsgen init.'
     required: false
@@ -62,12 +66,18 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Resolve workflow preset
+      shell: bash
+      run: |
+        set -euo pipefail
+        python "${GITHUB_ACTION_PATH}/scripts/resolve_inputs.py"
+
     - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
     - name: Install agentsgen
-      if: ${{ inputs.agentsgen == 'true' }}
+      if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' }}
       shell: bash
       run: |
         set -euo pipefail
@@ -75,7 +85,7 @@ runs:
         python -m pip install "git+https://github.com/markoblogo/AGENTS.md_generator.git@${{ inputs.agentsgen_ref }}"
 
     - name: Run agentsgen init
-      if: ${{ inputs.agentsgen == 'true' && inputs.init == 'true' }}
+      if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_INIT == 'true' }}
       shell: bash
       run: |
         set -euo pipefail
@@ -92,7 +102,7 @@ runs:
         "${cmd[@]}"
 
     - name: Run agentsgen pack
-      if: ${{ inputs.agentsgen == 'true' && inputs.pack == 'true' }}
+      if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_PACK == 'true' }}
       shell: bash
       run: |
         set -euo pipefail
@@ -100,12 +110,12 @@ runs:
         if [ "${{ inputs.autodetect }}" = "true" ]; then
           cmd+=(--autodetect)
         fi
-        if [ "${{ inputs.site_pack }}" = "true" ]; then
-          if [ -z "${{ inputs.site_url }}" ]; then
-            echo "ERROR: site_url is required when site_pack=true" >&2
+        if [ "${SET_RESOLVED_SITE_PACK}" = "true" ]; then
+          if [ -z "${SET_RESOLVED_SITE_URL}" ]; then
+            echo "ERROR: site_url is required when site_pack=true or workflow_preset enables site mode" >&2
             exit 1
           fi
-          cmd+=(--site "${{ inputs.site_url }}")
+          cmd+=(--site "${SET_RESOLVED_SITE_URL}")
         fi
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
@@ -113,37 +123,37 @@ runs:
         "${cmd[@]}"
 
     - name: Run agentsgen check
-      if: ${{ inputs.agentsgen == 'true' && inputs.check == 'true' }}
+      if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_CHECK == 'true' }}
       shell: bash
       run: |
         set -euo pipefail
         agentsgen check "${{ inputs.path }}" --all --ci
 
     - name: Run agentsgen analyze
-      if: ${{ inputs.agentsgen == 'true' && inputs.analyze == 'true' }}
+      if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_ANALYZE == 'true' }}
       shell: bash
       run: |
         set -euo pipefail
-        if [ -z "${{ inputs.analyze_url }}" ]; then
-          echo "ERROR: analyze_url is required when analyze=true" >&2
+        if [ -z "${SET_RESOLVED_ANALYZE_URL}" ]; then
+          echo "ERROR: analyze_url is required when analyze=true or workflow_preset enables analyze" >&2
           exit 1
         fi
-        cmd=(agentsgen analyze "${{ inputs.analyze_url }}" "${{ inputs.path }}")
+        cmd=(agentsgen analyze "${SET_RESOLVED_ANALYZE_URL}" "${{ inputs.path }}")
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
         printf '\n'
         "${cmd[@]}"
 
     - name: Run agentsgen meta
-      if: ${{ inputs.agentsgen == 'true' && inputs.meta == 'true' }}
+      if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_META == 'true' }}
       shell: bash
       run: |
         set -euo pipefail
-        if [ -z "${{ inputs.meta_url }}" ]; then
-          echo "ERROR: meta_url is required when meta=true" >&2
+        if [ -z "${SET_RESOLVED_META_URL}" ]; then
+          echo "ERROR: meta_url is required when meta=true or workflow_preset enables meta" >&2
           exit 1
         fi
-        cmd=(agentsgen meta "${{ inputs.meta_url }}" "${{ inputs.path }}")
+        cmd=(agentsgen meta "${SET_RESOLVED_META_URL}" "${{ inputs.path }}")
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
         printf '\n'
