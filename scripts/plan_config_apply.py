@@ -8,9 +8,17 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_DIR = ROOT / 'registry' / 'repos'
 
 
-def load_config(repo: str) -> tuple[Path, dict[str, object]]:
+def list_repo_configs() -> list[tuple[Path, dict[str, object]]]:
+    entries: list[tuple[Path, dict[str, object]]] = []
     for path in sorted(REGISTRY_DIR.glob('*.json')):
         data = json.loads(path.read_text())
+        if isinstance(data, dict) and isinstance(data.get('repo'), str):
+            entries.append((path, data))
+    return entries
+
+
+def load_config(repo: str) -> tuple[Path, dict[str, object]]:
+    for path, data in list_repo_configs():
         if data.get('repo') == repo:
             return path, data
     raise SystemExit(f'Repo config not found for {repo!r}')
@@ -44,10 +52,13 @@ def render_workflow_yaml(workflow: dict[str, object]) -> str:
     return '\n'.join(lines) + '\n'
 
 
+def repo_slug(repo: str) -> str:
+    return repo.replace('/', '-')
+
+
 def build_review_payload(repo: str, workflow: dict[str, object], unmapped: list[str]) -> dict[str, object]:
     workflow_yaml = render_workflow_yaml(workflow)
-    repo_slug = repo.replace('/', '-')
-    branch_name = f'codex/set-plan-{repo_slug}'
+    branch_name = f'codex/set-plan-{repo_slug(repo)}'
     title = f'chore(set): plan config apply for {repo}'
     body_lines = [
         f'# Planned SET workflow for `{repo}`',
@@ -219,6 +230,22 @@ def render_text(plan: dict[str, object]) -> str:
     return '\n'.join(lines)
 
 
+def render_batch_text(plans: list[dict[str, object]]) -> str:
+    lines = ['SET config apply batch summary', f'repo_count: {len(plans)}']
+    for plan in plans:
+        workflow = plan['proposed_changes'][0]['workflow']
+        gh_pr = plan['review_payload']['gh_pr_create']
+        lines.extend([
+            f'- {plan["repo"]}',
+            f'  workflow_preset: {workflow["with"].get("workflow_preset", "none")}',
+            f'  target_workflow: {workflow["path"]}',
+            f'  head_branch: {gh_pr["head"]}',
+            f'  title: {gh_pr["title"]}',
+            f'  unmapped_count: {len(plan.get("unmapped", []))}',
+        ])
+    return '\n'.join(lines)
+
+
 def export_plan(plan: dict[str, object], export_dir: Path) -> list[Path]:
     export_dir.mkdir(parents=True, exist_ok=True)
     review_payload = plan['review_payload']
@@ -237,26 +264,91 @@ def export_plan(plan: dict[str, object], export_dir: Path) -> list[Path]:
     return written
 
 
+def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]:
+    export_dir.mkdir(parents=True, exist_ok=True)
+    written: list[Path] = []
+    summary = {
+        'version': 1,
+        'mode': 'planning-only-batch',
+        'repo_count': len(plans),
+        'repos': [
+            {
+                'repo': plan['repo'],
+                'head_branch': plan['review_payload']['gh_pr_create']['head'],
+                'target_workflow': plan['proposed_changes'][0]['workflow']['path'],
+                'title': plan['review_payload']['gh_pr_create']['title'],
+                'unmapped_count': len(plan.get('unmapped', [])),
+            }
+            for plan in plans
+        ],
+    }
+    batch_path = export_dir / 'batch-summary.json'
+    batch_path.write_text(json.dumps(summary, indent=2) + '\n')
+    written.append(batch_path)
+    for plan in plans:
+        repo_dir = export_dir / repo_slug(plan['repo'])
+        written.extend(export_plan(plan, repo_dir))
+    return written
+
+
+def resolve_targets(repos: list[str], use_all: bool) -> list[tuple[Path, dict[str, object]]]:
+    if use_all:
+        return list_repo_configs()
+    if not repos:
+        raise SystemExit('Provide at least one repo or use --all')
+    return [load_config(repo) for repo in repos]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description='Planning-only SET config apply helper.')
-    parser.add_argument('repo', help='Repo name in owner/name format')
+    parser.add_argument('repos', nargs='*', help='Repo name(s) in owner/name format')
+    parser.add_argument('--all', action='store_true', help='Plan against every repo in registry/repos')
     parser.add_argument('--format', choices=('text', 'json'), default='text')
     parser.add_argument('--export-dir', help='Optional local directory for reviewable planner outputs.')
     args = parser.parse_args()
 
-    config_path, data = load_config(args.repo)
-    plan = build_plan(config_path, data)
+    targets = resolve_targets(args.repos, args.all)
+    plans = [build_plan(config_path, data) for config_path, data in targets]
+    multi = len(plans) > 1
     if args.export_dir:
-        written = export_plan(plan, Path(args.export_dir))
-        plan['exported_files'] = [str(path) for path in written]
-    if args.format == 'json':
-        print(json.dumps(plan, indent=2))
+        if multi:
+            written = export_batch(plans, Path(args.export_dir))
+            for plan in plans:
+                repo_dir = Path(args.export_dir) / repo_slug(plan['repo'])
+                plan['exported_files'] = [str(path) for path in sorted(repo_dir.iterdir())]
+            batch_summary_path = Path(args.export_dir) / 'batch-summary.json'
+        else:
+            written = export_plan(plans[0], Path(args.export_dir))
+            plans[0]['exported_files'] = [str(path) for path in written]
+            batch_summary_path = None
     else:
-        print(render_text(plan))
-        if args.export_dir:
-            print('exported_files:')
-            for path in plan['exported_files']:
-                print(f'  - {path}')
+        written = []
+        batch_summary_path = None
+
+    if args.format == 'json':
+        if multi:
+            payload = {'version': 1, 'mode': 'planning-only-batch', 'repo_count': len(plans), 'plans': plans}
+            if batch_summary_path:
+                payload['batch_summary_file'] = str(batch_summary_path)
+            print(json.dumps(payload, indent=2))
+        else:
+            print(json.dumps(plans[0], indent=2))
+    else:
+        if multi:
+            print(render_batch_text(plans))
+            if args.export_dir:
+                print('exported_files:')
+                if batch_summary_path:
+                    print(f'  - {batch_summary_path}')
+                for plan in plans:
+                    for path in plan.get('exported_files', []):
+                        print(f'  - {path}')
+        else:
+            print(render_text(plans[0]))
+            if args.export_dir:
+                print('exported_files:')
+                for path in plans[0]['exported_files']:
+                    print(f'  - {path}')
     return 0
 
 

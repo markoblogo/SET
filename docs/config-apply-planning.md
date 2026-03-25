@@ -24,11 +24,15 @@ Before adding any repo mutation or PR automation, we want one safe intermediate 
 python3 scripts/plan_config_apply.py markoblogo/lab.abvx
 python3 scripts/plan_config_apply.py markoblogo/lab.abvx --format json
 python3 scripts/plan_config_apply.py markoblogo/lab.abvx --export-dir /tmp/set-plan
+python3 scripts/plan_config_apply.py markoblogo/AGENTS.md_generator markoblogo/lab.abvx
+python3 scripts/plan_config_apply.py --all --format json
 ```
 
 ## Current output
 
 The planner currently emits:
+
+For a single repo:
 
 - one proposed workflow target: `.github/workflows/set.yml`
 - the `uses: markoblogo/SET@main` block
@@ -48,6 +52,8 @@ These files are local review artifacts only. They are not applied to the target 
 
 The `gh-pr-create.json` payload is meant to be directly reusable by a future manual `gh pr create` step.
 The `apply-simulation.json` payload shows the branch/apply sequence as a reviewable dry run.
+
+For multiple repos, the planner emits a compact batch summary in text mode and a `plans[]` array in JSON mode. With `--export-dir`, it also writes `batch-summary.json` plus one subdirectory per repo.
 
 ## Current limits
 

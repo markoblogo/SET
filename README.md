@@ -68,6 +68,7 @@ Planning-only helper for future PR-based config apply:
 - Review bundle export: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --export-dir /tmp/set-plan`
 - gh-ready payload: includes `base`, `head`, `title`, and `body_file` fields for a later `gh pr create` step
 - apply simulation: previews branch name, target file write, commit message, and manual apply commands
+- batch mode: accepts multiple repos or `--all` for a planning-only multi-repo summary
 
 ## Scope right now
 
