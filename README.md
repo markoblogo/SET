@@ -8,6 +8,7 @@ Current working definition:
 - `agentsgen` = repo intelligence runtime
 - `SET` = orchestration layer / GitHub Action entrypoint
 - `lab.abvx` = public catalog and read-only control plane
+- `ID` = portable human-AI profile protocol for cross-tool context transfer
 - standalone tools such as `git-tweet` stay independent and are integrated by contract
 
 This repo stays intentionally thin even after adding registry, planning, and drift-check layers.
@@ -68,6 +69,7 @@ What v0.1 does:
 - Canonical schema: `schema/repo-config.v1.json`
 - Example config: `examples/repo-config.example.json`
 - Central registry (first home): `registry/repos/*.json`
+- Includes ID protocol repo baseline: `markoblogo/ID`
 - Validate locally: `python3 scripts/validate_registry.py`
 - `agentsgen.repomap_policy` lets each repo set compact budget, ranked-file limits, and optional focused/changed slice defaults without changing the Action contract
 - `agentsgen.proof_loop` lets a repo opt into contract/evidence/verdict artifacts for larger tasks, including evidence status, blocker counts, review readiness, and optional expected-artifact blockers
@@ -98,3 +100,10 @@ Planning-only helper for future PR-based config apply:
 
 - `docs/llmo-capability-map.md`
 - `docs/v0.1-scope.md`
+
+## Ecosystem links
+
+- SET repo: https://github.com/markoblogo/SET
+- Lab catalog: https://github.com/markoblogo/lab.abvx
+- ID protocol repo: https://github.com/markoblogo/ID
+- agentsgen repo: https://github.com/markoblogo/AGENTS.md_generator
