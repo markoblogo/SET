@@ -1,4 +1,12 @@
+<p align="center">
+  <img src="logo_SET.png" alt="SET logo" width="220">
+</p>
+
 # SET
+
+[![Release](https://img.shields.io/github/v/release/markoblogo/SET?label=release)](https://github.com/markoblogo/SET/releases)
+[![Workflow](https://img.shields.io/github/actions/workflow/status/markoblogo/SET/set.yml?label=workflow)](https://github.com/markoblogo/SET/actions/workflows/set.yml)
+[![License](https://img.shields.io/github/license/markoblogo/SET)](https://github.com/markoblogo/SET/blob/main/LICENSE)
 
 Thin orchestration repo for the ABVX development tools ecosystem.
 
@@ -13,10 +21,19 @@ Current working definition:
 
 This repo stays intentionally thin even after adding registry, planning, and drift-check layers.
 
+## Quickstart
+
+```yaml
+- uses: markoblogo/SET@v0.1.0
+  with:
+    workflow_preset: "repo-docs"
+    path: "."
+```
+
 ## Example usage
 
 ```yaml
-- uses: markoblogo/SET@main
+- uses: markoblogo/SET@v0.1.0
   with:
     workflow_preset: "site-ai"
     agentsgen: "true"
