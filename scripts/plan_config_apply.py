@@ -19,6 +19,11 @@ SUPPORTED_AGENTSGEN_FIELDS = {
     'meta_url': 'meta',
 }
 
+SUPPORTED_ID_FIELDS = {
+    'pre_task': 'id_pre_task',
+    'weekly_review': 'id_weekly_review',
+}
+
 DEFAULT_REPOMAP_POLICY = {
     'compact_budget': 4000,
     'top_ranked_files': 5,
@@ -53,6 +58,26 @@ def repomap_policy_label(mode: str) -> str:
 
 
 
+def resolve_id_config(tools: dict[str, object]) -> dict[str, object] | None:
+    id_tool = tools.get('id')
+    if not isinstance(id_tool, dict):
+        return None
+    enabled = id_tool.get('enabled') is True
+    owner_id = str(id_tool.get('owner_id', '') or '').strip() or None
+    target = str(id_tool.get('target', '') or 'set').strip() or 'set'
+    pre_task = id_tool.get('pre_task') is True
+    weekly_review = id_tool.get('weekly_review') is True
+    if not enabled and not owner_id and not pre_task and not weekly_review:
+        return None
+    return {
+        'enabled': enabled,
+        'owner_id': owner_id,
+        'target': target,
+        'pre_task': pre_task,
+        'weekly_review': weekly_review,
+    }
+
+
 def resolve_proof_loop_config(agentsgen: dict[str, object]) -> dict[str, object] | None:
     proof_loop = agentsgen.get('proof_loop')
     if not isinstance(proof_loop, dict):
@@ -76,6 +101,7 @@ def resolve_proof_loop_config(agentsgen: dict[str, object]) -> dict[str, object]
 def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
     tools = data.get('tools', {}) if isinstance(data.get('tools'), dict) else {}
     agentsgen = tools.get('agentsgen', {}) if isinstance(tools.get('agentsgen'), dict) else {}
+    id_config = resolve_id_config(tools)
     capabilities: list[dict[str, object]] = []
     for key, value in agentsgen.items():
         if key == 'proof_loop':
@@ -115,6 +141,18 @@ def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
             'set_input': 'proof_loop',
             'task_id': proof_loop.get('task_id'),
         })
+    if id_config and id_config.get('enabled'):
+        for key, set_input in SUPPORTED_ID_FIELDS.items():
+            if id_config.get(key) is True:
+                capabilities.append({
+                    'tool': 'id',
+                    'key': key,
+                    'requested': True,
+                    'supported_by_set': True,
+                    'set_input': set_input,
+                    'owner_id': id_config.get('owner_id'),
+                    'target': id_config.get('target'),
+                })
     return capabilities
 
 
@@ -232,6 +270,7 @@ def build_review_payload(
     unmapped: list[str],
     repomap_policy: dict[str, object] | None,
     proof_loop: dict[str, object] | None,
+    id_config: dict[str, object] | None,
 ) -> dict[str, object]:
     apply_readiness = 'blocked' if unmapped else 'ready'
     blocked_by = list(unmapped)
@@ -280,6 +319,16 @@ def build_review_payload(
             body_lines.append(
                 f"- `expected_artifacts`: `{', '.join(str(item) for item in proof_loop.get('expected_artifacts', []))}`"
             )
+    if id_config and id_config.get('enabled'):
+        body_lines.extend([
+            '',
+            '## ID integration',
+            '- `enabled`: `true`',
+            f"- `owner_id`: `{id_config.get('owner_id') or 'missing'}`",
+            f"- `target`: `{id_config.get('target') or 'set'}`",
+            f"- `pre_task`: `{str(bool(id_config.get('pre_task'))).lower()}`",
+            f"- `weekly_review`: `{str(bool(id_config.get('weekly_review'))).lower()}`",
+        ])
     body_lines.extend([
         '',
         '## Notes',
@@ -350,6 +399,7 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
     workflow_preset = pick_workflow_preset([p for p in presets if isinstance(p, str)])
     repomap_policy = resolve_repomap_policy(agentsgen)
     proof_loop = resolve_proof_loop_config(agentsgen)
+    id_config = resolve_id_config(tools)
 
     with_block: dict[str, str] = {'agentsgen': 'true', 'autodetect': 'true', 'path': '.'}
     if workflow_preset:
@@ -387,6 +437,16 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
             with_block['proof_expected_artifacts'] = ','.join(
                 str(item) for item in proof_loop.get('expected_artifacts', [])
             )
+    if id_config and id_config.get('enabled'):
+        with_block['id_enabled'] = 'true'
+        if id_config.get('owner_id'):
+            with_block['id_owner_id'] = str(id_config['owner_id'])
+        if id_config.get('target'):
+            with_block['id_target'] = str(id_config['target'])
+        if id_config.get('pre_task') is True:
+            with_block['id_pre_task'] = 'true'
+        if id_config.get('weekly_review') is True:
+            with_block['id_weekly_review'] = 'true'
 
     capabilities = build_capabilities(data)
     unmapped = [
@@ -397,6 +457,11 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
 
     if proof_loop and proof_loop.get('enabled') and not proof_loop.get('task_id'):
         unmapped.append('agentsgen.proof_loop is enabled but proof_task_id is missing')
+    if id_config and id_config.get('enabled'):
+        if not id_config.get('owner_id'):
+            unmapped.append('id integration is enabled but owner_id is missing')
+        if id_config.get('pre_task') is True and not id_config.get('target'):
+            unmapped.append('id integration pre_task is enabled but target is missing')
 
     workflow = {
         'path': '.github/workflows/set.yml',
@@ -410,6 +475,7 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
         unmapped,
         repomap_policy,
         proof_loop,
+        id_config,
     )
     plan = {
         'version': 1,
@@ -419,6 +485,7 @@ def build_plan(config_path: Path, data: dict[str, object], repo_root: Path | Non
         'repomap_policy': repomap_policy,
         'repomap_policy_mode': repomap_policy_mode(repomap_policy),
         'proof_loop': proof_loop,
+        'id_integration': id_config,
         'proposed_changes': [
             {
                 'type': 'workflow',
@@ -543,6 +610,7 @@ def render_text(plan: dict[str, object]) -> str:
         f"workflow_sync_status: {derive_workflow_sync_status(plan)}",
         f"repomap_policy: {json.dumps(plan.get('repomap_policy')) if plan.get('repomap_policy') else 'none'}",
         f"proof_loop: {json.dumps(plan.get('proof_loop')) if plan.get('proof_loop') else 'none'}",
+        f"id_integration: {json.dumps(plan.get('id_integration')) if plan.get('id_integration') else 'none'}",
         'review_bundle:',
         '  - plan.json',
         '  - workflow.set.yml',
@@ -648,6 +716,7 @@ def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]
                 'next_shell_command': derive_next_shell_command(plan),
                 'workflow_sync_status': derive_workflow_sync_status(plan),
                 'repomap_policy': plan.get('repomap_policy'),
+                'id_integration': plan.get('id_integration'),
                 'workflow_check': plan.get('workflow_check'),
                 'unmapped_count': len(plan.get('unmapped', [])),
             }

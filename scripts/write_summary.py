@@ -74,6 +74,10 @@ def main() -> int:
         operations.append('meta')
     if _enabled('SET_RESOLVED_PROOF_LOOP'):
         operations.append('proof-loop')
+    if _enabled('SET_RESOLVED_ID_ENABLED') and _enabled('SET_RESOLVED_ID_PRE_TASK'):
+        operations.append('id pre_task')
+    if _enabled('SET_RESOLVED_ID_ENABLED') and _enabled('SET_RESOLVED_ID_WEEKLY_REVIEW'):
+        operations.append('id weekly_review')
 
     body = []
     body.append('## SET execution summary\n\n')
@@ -90,12 +94,20 @@ def main() -> int:
     repomap_budget = os.environ.get('INPUT_REPOMAP_COMPACT_BUDGET', '').strip() or '4000'
     repomap_focus = os.environ.get('INPUT_REPOMAP_FOCUS', '').strip()
     repomap_changed = os.environ.get('INPUT_REPOMAP_CHANGED', '').strip()
+    id_owner_id = os.environ.get('SET_RESOLVED_ID_OWNER_ID', '').strip() or os.environ.get('INPUT_ID_OWNER_ID', '').strip()
+    id_target = os.environ.get('SET_RESOLVED_ID_TARGET', '').strip() or os.environ.get('INPUT_ID_TARGET', '').strip() or 'set'
     if _enabled('SET_RESOLVED_REPOMAP'):
         repomap_mode = _repomap_mode(repomap_focus, repomap_changed)
         body.append(_line('repomap compact budget', repomap_budget))
         body.append(_line('repomap policy mode', repomap_mode))
         body.append(_line('repomap policy label', _repomap_label(repomap_mode)))
         body.append(_line('repomap slice', repomap_focus if repomap_focus else ('changed' if repomap_changed == 'true' else 'full')))
+    if _enabled('SET_RESOLVED_ID_ENABLED'):
+        body.append(_line('id integration', 'enabled'))
+        body.append(_line('id owner id', id_owner_id or 'missing'))
+        body.append(_line('id target', id_target))
+        body.append(_line('id pre_task', str(_enabled('SET_RESOLVED_ID_PRE_TASK')).lower()))
+        body.append(_line('id weekly_review', str(_enabled('SET_RESOLVED_ID_WEEKLY_REVIEW')).lower()))
     if _enabled('SET_RESOLVED_PROOF_LOOP'):
         body.append(_line('proof loop', 'enabled'))
         proof_task_id = os.environ.get('SET_RESOLVED_PROOF_TASK_ID', '').strip() or 'missing'

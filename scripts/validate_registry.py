@@ -6,7 +6,7 @@ from pathlib import Path
 ALLOWED_PRESETS = {'minimal', 'repo-docs', 'site-ai'}
 ALLOWED_TOP_LEVEL = {'version', 'repo', 'site', 'tools', 'presets'}
 ALLOWED_SITE_KEYS = {'url'}
-ALLOWED_TOOL_BLOCKS = {'agentsgen', 'git_tweet'}
+ALLOWED_TOOL_BLOCKS = {'agentsgen', 'git_tweet', 'id'}
 ALLOWED_AGENTSGEN_KEYS = {
     'init',
     'pack',
@@ -19,6 +19,7 @@ ALLOWED_AGENTSGEN_KEYS = {
     'proof_loop',
 }
 ALLOWED_GIT_TWEET_KEYS = {'enabled'}
+ALLOWED_ID_KEYS = {'enabled', 'owner_id', 'target', 'pre_task', 'weekly_review'}
 
 
 def _fail(message: str) -> SystemExit:
@@ -109,6 +110,20 @@ def validate_config(path: Path) -> dict[str, object]:
         _require(not unknown_git_tweet, f"{path.name}: unknown git_tweet keys: {', '.join(sorted(unknown_git_tweet))}")
         if 'enabled' in git_tweet:
             _validate_bool_or_none(git_tweet['enabled'], f'{path.name}: git_tweet.enabled')
+
+    id_tool = tools.get('id')
+    if id_tool is not None:
+        _require(isinstance(id_tool, dict), f'{path.name}: tools.id must be an object')
+        unknown_id = set(id_tool) - ALLOWED_ID_KEYS
+        _require(not unknown_id, f"{path.name}: unknown id keys: {', '.join(sorted(unknown_id))}")
+        if 'enabled' in id_tool:
+            _validate_bool_or_none(id_tool['enabled'], f'{path.name}: id.enabled')
+        for key in ('pre_task', 'weekly_review'):
+            if key in id_tool:
+                _validate_bool_or_none(id_tool[key], f'{path.name}: id.{key}')
+        for key in ('owner_id', 'target'):
+            if key in id_tool:
+                _require(id_tool[key] is None or isinstance(id_tool[key], str), f'{path.name}: id.{key} must be string or null')
 
     presets = data.get('presets', [])
     _require(isinstance(presets, list), f'{path.name}: presets must be a list')

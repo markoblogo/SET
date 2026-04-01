@@ -27,6 +27,13 @@
     },
     "git_tweet": {
       "enabled": false
+    },
+    "id": {
+      "enabled": false,
+      "owner_id": null,
+      "target": "set",
+      "pre_task": false,
+      "weekly_review": false
     }
   },
   "presets": [

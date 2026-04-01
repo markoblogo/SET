@@ -8,7 +8,7 @@ Current working definition:
 - `agentsgen` = repo intelligence runtime
 - `SET` = orchestration layer / GitHub Action entrypoint
 - `lab.abvx` = public catalog and read-only control plane
-- `ID` = portable human-AI profile protocol for cross-tool context transfer
+- `ID` = portable human-AI profile protocol plus repo-local integration hooks for cross-tool context transfer
 - standalone tools such as `git-tweet` stay independent and are integrated by contract
 
 This repo stays intentionally thin even after adding registry, planning, and drift-check layers.
@@ -35,6 +35,11 @@ This repo stays intentionally thin even after adding registry, planning, and dri
     meta_url: "https://example.com"
     proof_loop: "true"
     proof_task_id: "proof-loop-v0"
+    id_enabled: "true"
+    id_owner_id: "markoblogo"
+    id_target: "set"
+    id_pre_task: "true"
+    id_weekly_review: "true"
     autodetect: "true"
     path: "."
 ```
@@ -55,6 +60,7 @@ What v0.1 does:
 - optionally runs `agentsgen analyze <url>`
 - optionally runs `agentsgen meta <url>`
 - optionally runs `agentsgen task init/evidence/verdict` as a proof-loop hook, including richer evidence/verdict summaries
+- optionally runs repo-local `ID` integration hooks (`pre_task`, `weekly_review`) for ID-compatible repositories
 - supports `workflow_preset` baselines with explicit input override
 - writes a compact GitHub Actions summary for the resolved run plan
 - passes a first-class repomap policy through to `agentsgen understand` (`--compact-budget`, optional `--focus`, optional `--changed`) with explicit policy modes: `full`, `focus`, `changed`, `focus+changed`
@@ -73,6 +79,7 @@ What v0.1 does:
 - Validate locally: `python3 scripts/validate_registry.py`
 - `agentsgen.repomap_policy` lets each repo set compact budget, ranked-file limits, and optional focused/changed slice defaults without changing the Action contract
 - `agentsgen.proof_loop` lets a repo opt into contract/evidence/verdict artifacts for larger tasks, including evidence status, blocker counts, review readiness, and optional expected-artifact blockers
+- `id` lets a repo opt into repo-local ID integration hooks with explicit `owner_id`, `target`, `pre_task`, and `weekly_review` gates
 - Derived policy modes in SET vocabulary: `full` (Full Repo Slice), `focus` (Focused Code Slice), `changed` (Changed Files Slice), `focus+changed` (Hybrid Slice)
 
 ## Config apply planning

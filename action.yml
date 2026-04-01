@@ -74,6 +74,26 @@ inputs:
     description: 'Optional comma-separated list of proof artifacts that must exist before verdict can become review-ready.'
     required: false
     default: ''
+  id_enabled:
+    description: 'Enable repo-local ID integration hooks for ID-compatible repositories.'
+    required: false
+    default: ''
+  id_owner_id:
+    description: 'Owner id passed to the ID integration hook runner.'
+    required: false
+    default: ''
+  id_target:
+    description: 'ID integration target passed to pre_task. Defaults to set.'
+    required: false
+    default: ''
+  id_pre_task:
+    description: 'Run the repo-local ID pre_task hook before orchestration steps.'
+    required: false
+    default: ''
+  id_weekly_review:
+    description: 'Run the repo-local ID weekly_review hook after orchestration steps.'
+    required: false
+    default: ''
   autodetect:
     description: 'Enable agentsgen autodetect where supported.'
     required: false
@@ -119,6 +139,11 @@ runs:
         INPUT_PROOF_LOOP: ${{ inputs.proof_loop }}
         INPUT_PROOF_TASK_ID: ${{ inputs.proof_task_id }}
         INPUT_PROOF_EXPECTED_ARTIFACTS: ${{ inputs.proof_expected_artifacts }}
+        INPUT_ID_ENABLED: ${{ inputs.id_enabled }}
+        INPUT_ID_OWNER_ID: ${{ inputs.id_owner_id }}
+        INPUT_ID_TARGET: ${{ inputs.id_target }}
+        INPUT_ID_PRE_TASK: ${{ inputs.id_pre_task }}
+        INPUT_ID_WEEKLY_REVIEW: ${{ inputs.id_weekly_review }}
         INPUT_AUTODETECT: ${{ inputs.autodetect }}
         INPUT_WORKFLOW_PRESET: ${{ inputs.workflow_preset }}
         INPUT_PRESET: ${{ inputs.preset }}
@@ -131,6 +156,30 @@ runs:
     - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+
+    - name: Run ID pre_task hook
+      if: ${{ env.SET_RESOLVED_ID_ENABLED == 'true' && env.SET_RESOLVED_ID_PRE_TASK == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        hook_path="${{ inputs.path }}/scripts/run_integration_hook.sh"
+        if [ ! -f "${hook_path}" ]; then
+          echo "ERROR: missing repo-local ID hook runner at ${hook_path}" >&2
+          exit 1
+        fi
+        if [ -z "${SET_RESOLVED_ID_OWNER_ID}" ]; then
+          echo "ERROR: id_owner_id is required when id_pre_task=true" >&2
+          exit 1
+        fi
+        if [ -z "${SET_RESOLVED_ID_TARGET}" ]; then
+          echo "ERROR: id_target is required when id_pre_task=true" >&2
+          exit 1
+        fi
+        cmd=(bash "${hook_path}" pre_task --owner-id "${SET_RESOLVED_ID_OWNER_ID}" --target "${SET_RESOLVED_ID_TARGET}")
+        printf 'Running:'
+        printf ' %q' "${cmd[@]}"
+        printf '\n'
+        "${cmd[@]}"
 
     - name: Install agentsgen
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' }}
@@ -343,6 +392,26 @@ runs:
         printf '\n'
         "${verdict_cmd[@]}"
 
+    - name: Run ID weekly_review hook
+      if: ${{ env.SET_RESOLVED_ID_ENABLED == 'true' && env.SET_RESOLVED_ID_WEEKLY_REVIEW == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        hook_path="${{ inputs.path }}/scripts/run_integration_hook.sh"
+        if [ ! -f "${hook_path}" ]; then
+          echo "ERROR: missing repo-local ID hook runner at ${hook_path}" >&2
+          exit 1
+        fi
+        if [ -z "${SET_RESOLVED_ID_OWNER_ID}" ]; then
+          echo "ERROR: id_owner_id is required when id_weekly_review=true" >&2
+          exit 1
+        fi
+        cmd=(bash "${hook_path}" weekly_review --owner-id "${SET_RESOLVED_ID_OWNER_ID}")
+        printf 'Running:'
+        printf ' %q' "${cmd[@]}"
+        printf '\n'
+        "${cmd[@]}"
+
     - name: Write execution summary
       if: ${{ always() }}
       shell: bash
@@ -350,6 +419,8 @@ runs:
         INPUT_REPOMAP_COMPACT_BUDGET: ${{ inputs.repomap_compact_budget }}
         INPUT_REPOMAP_FOCUS: ${{ inputs.repomap_focus }}
         INPUT_REPOMAP_CHANGED: ${{ inputs.repomap_changed }}
+        INPUT_ID_OWNER_ID: ${{ inputs.id_owner_id }}
+        INPUT_ID_TARGET: ${{ inputs.id_target }}
         INPUT_WORKFLOW_PRESET: ${{ inputs.workflow_preset }}
         INPUT_PATH: ${{ inputs.path }}
         INPUT_AUTODETECT: ${{ inputs.autodetect }}
