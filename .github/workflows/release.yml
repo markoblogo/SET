@@ -51,12 +51,21 @@ jobs:
         with:
           name: dist
           path: dist
+      - name: Detect PyPI token availability
+        id: detect_pypi_token
+        shell: bash
+        run: |
+          if [ -n "${{ secrets.PYPI_API_TOKEN }}" ]; then
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Publish to PyPI (OIDC)
         id: publish_oidc
         uses: pypa/gh-action-pypi-publish@release/v1
         continue-on-error: true
       - name: Publish to PyPI (API token fallback)
-        if: steps.publish_oidc.outcome == 'failure' && secrets.PYPI_API_TOKEN != ''
+        if: steps.publish_oidc.outcome == 'failure' && steps.detect_pypi_token.outputs.has_token == 'true'
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
@@ -64,7 +73,7 @@ jobs:
           python -m pip install --upgrade twine
           twine upload --non-interactive dist/*
       - name: Ensure PyPI publish
-        if: steps.publish_oidc.outcome == 'failure' && secrets.PYPI_API_TOKEN == ''
+        if: steps.publish_oidc.outcome == 'failure' && steps.detect_pypi_token.outputs.has_token == 'false'
         run: |
           echo "No trusted publisher and no PYPI_API_TOKEN provided." >&2
           exit 1
