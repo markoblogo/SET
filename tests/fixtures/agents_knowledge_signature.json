@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "repo_path": ".",
+  "file_count": 16,
+  "entrypoint_count": 0,
+  "entrypoint_file_count": 0,
+  "changed_file_count": 2,
+  "slice_changed_only": true,
+  "top_relevance_path": ".github/workflows/set.yml"
+}

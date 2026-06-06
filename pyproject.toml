@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "abvx-set"
+version = "0.2.0"
+description = "SET workflow action helpers and registry tooling"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "ABVX" }]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/markoblogo/SET"
+Issues = "https://github.com/markoblogo/SET/issues"
+
+[tool.setuptools]
+packages = ["scripts"]
+
+[project.scripts]
+set-validate-registry = "scripts.validate_registry:main"
+set-plan-config-apply = "scripts.plan_config_apply:main"

@@ -1,0 +1,38 @@
+name: SET CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install test tooling
+        run: python3 -m pip install --upgrade pytest
+      - name: Run contract tests
+        run: pytest -q
+      - name: Validate registry
+        run: python3 scripts/validate_registry.py
+      - name: Run set planning smoke
+        run: |
+          python3 scripts/plan_config_apply.py markoblogo/SET --format json --repo-root . > /tmp/set-plan.json
+      - name: Enforce planning contract
+        run: |
+          python3 - <<'PY'
+import json
+import sys
+
+plan = json.load(open('/tmp/set-plan.json'))
+if plan.get('dry_run') is not True:
+    raise SystemExit('plan dry_run must be true')
+workflow_check = plan.get('workflow_check', {})
+if workflow_check.get('status') != 'matches':
+    raise SystemExit(
+        f"workflow drift check failed: {workflow_check.get('status', 'missing')}"
+    )
+print('workflow check ok:', workflow_check.get('status'))
+PY

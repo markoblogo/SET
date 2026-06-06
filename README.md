@@ -8,126 +8,105 @@
 [![Workflow](https://img.shields.io/github/actions/workflow/status/markoblogo/SET/set.yml?label=workflow)](https://github.com/markoblogo/SET/actions/workflows/set.yml)
 [![License](https://img.shields.io/github/license/markoblogo/SET)](https://github.com/markoblogo/SET/blob/main/LICENSE)
 
-Thin orchestration repo for the ABVX development tools ecosystem.
+Thin orchestration repo for the ABVX stack to keep AI-facing repo artifacts in sync.
 
-It stays deliberately small: presets define a baseline, and explicit inputs override the preset when you need per-repo control.
+`SET` is not a replacement for Copilot/Cursor/Continue. It is a workflow control plane: it orchestrates existing tools, makes run plans explicit, and keeps outputs predictable for CI and agents.
 
-Current working definition:
-- `agentsgen` = repo intelligence runtime
-- `SET` = orchestration layer / GitHub Action entrypoint
-- `lab.abvx` = public catalog and read-only control plane
-- `ID` = portable human-AI profile protocol plus repo-local integration hooks for cross-tool context transfer
-- standalone tools such as `git-tweet` stay independent and are integrated by contract
+## Quick start (30 seconds)
 
-This repo stays intentionally thin even after adding registry, planning, and drift-check layers.
-
-## Quickstart
+Use this in any repo to baseline `AGENTS.md` and checks via `agentsgen`:
 
 ```yaml
 - uses: markoblogo/SET@v0.1.0
   with:
-    workflow_preset: "repo-docs"
+    workflow_preset: repo-docs
     path: "."
 ```
 
-## Example usage
+If you're not ready to wire `.github/workflows/set.yml` manually, run `plan-config` locally first:
 
-```yaml
-- uses: markoblogo/SET@v0.1.0
-  with:
-    workflow_preset: "site-ai"
-    agentsgen: "true"
-    init: "true"
-    pack: "true"
-    site_pack: "true"
-    site_url: "https://example.com"
-    check: "true"
-    repomap: "true"
-    repomap_compact_budget: "4000"
-    repomap_focus: "cli"
-    repomap_changed: "false"
-    analyze: "true"
-    analyze_url: "https://example.com"
-    meta: "true"
-    meta_url: "https://example.com"
-    proof_loop: "true"
-    proof_task_id: "proof-loop-v0"
-    id_enabled: "true"
-    id_owner_id: "markoblogo"
-    id_target: "set"
-    id_pre_task: "true"
-    id_weekly_review: "true"
-    autodetect: "true"
-    path: "."
+```bash
+python3 scripts/plan_config_apply.py markoblogo/<owner/repo> --format json
 ```
 
-Preset baselines:
-- `minimal` -> repo bootstrap only
-- `repo-docs` -> init + pack + check
-- `site-ai` -> repo-docs + site pack + analyze + meta
+This is a read-only plan showing the exact workflow file that would be generated.
 
-What v0.1 does:
-- installs `agentsgen`
-- runs `agentsgen init`
-- optionally runs `agentsgen pack`
-- optionally runs `agentsgen pack --site <url>`
-- optionally runs `agentsgen check --all --ci`
-- optionally runs `agentsgen understand --compact-budget <tokens>`
-- optionally runs `agentsgen snippets`
-- optionally runs `agentsgen analyze <url>`
-- optionally runs `agentsgen meta <url>`
-- optionally runs `agentsgen task init/evidence/verdict` as a proof-loop hook, including richer evidence/verdict summaries
-- optionally runs repo-local `ID` integration hooks (`pre_task`, `weekly_review`) for ID-compatible repositories
-- supports `workflow_preset` baselines with explicit input override
-- writes a compact GitHub Actions summary for the resolved run plan
-- passes a first-class repomap policy through to `agentsgen understand` (`--compact-budget`, optional `--focus`, optional `--changed`) with explicit policy modes: `full`, `focus`, `changed`, `focus+changed`
-- owns the first central registry baseline for registered repos
-- compares expected registry-derived `set.yml` against local repo workflows in read-only mode
+## Who this is for
+
+- Solo devs: one-command AI-ready repo baseline (`agentsgen`, checks, repomap, optional proofs).
+- Team maintainers: one central registry for many repos with CI-drift visibility.
+- Tool builders: stable registry and planner artifacts for control-plane integrations.
+
+## What SET Does
+
+- `agentsgen` handles repo documentation, map generation, checks, and related contracts.
+- `SET` chooses how and when `agentsgen` and other tools run.
+- `ID` and other optional integrations are executed via explicit, validated repo config.
+- `lab.abvx` is the public catalog and read-only control-plane surface.
+
+```mermaid
+flowchart LR
+  SET["SET Action"]
+  agentsgen["agentsgen"] -->|generates docs| artifacts["AGENTS.md / llms.txt / docs/ai"]
+  SET --> agentsgen
+  ID["ID"]
+  ID -->|hooks / context| SET
+  SET --> lab["lab.abvx"]
+  registry["Registry"] --> SET
+```
+
+### Core roles
+
+- `repo-docs` preset: `init + pack + check`
+- `site-ai` preset: `repo-docs + site pack + analyze + meta`
+- `minimal` preset: bootstrap only
 
 ## Repo config contract
 
-`SET` now owns the first real repo-config contract and central registry baseline.
+`SET` owns the first centralized contract and registry baseline for repo-level orchestration.
 
 - Contract docs: `docs/repo-config.md`
-- Canonical schema: `schema/repo-config.v1.json`
-- Example config: `examples/repo-config.example.json`
-- Central registry (first home): `registry/repos/*.json`
-- Includes ID protocol repo baseline: `markoblogo/ID`
-- Validate locally: `python3 scripts/validate_registry.py`
-- `agentsgen.repomap_policy` lets each repo set compact budget, ranked-file limits, and optional focused/changed slice defaults without changing the Action contract
-- `agentsgen.proof_loop` lets a repo opt into contract/evidence/verdict artifacts for larger tasks, including evidence status, blocker counts, review readiness, and optional expected-artifact blockers
-- `id` lets a repo opt into repo-local ID integration hooks with explicit `owner_id`, `target`, `pre_task`, and `weekly_review` gates
-- Derived policy modes in SET vocabulary: `full` (Full Repo Slice), `focus` (Focused Code Slice), `changed` (Changed Files Slice), `focus+changed` (Hybrid Slice)
+- Schema: `schema/repo-config.v1.json`
+- Registry: `registry/repos/*.json`
+- Validation: `python3 scripts/validate_registry.py`
 
-## Config apply planning
+The contract includes:
+- tooling intent (`tools.agentsgen`, `tools.id`, `tools.git_tweet`)
+- presets and overrides (`workflow_preset` inputs)
+- repomap policy (`compact_budget`, `top_ranked_files`, `focus`, `changed`)
+- proof-loop contract metadata
+- optional `site` baseline for catalog-facing pages
 
-Planning-only helper for future PR-based config apply:
+There is an additional runtime artifact, `agents.knowledge.json`, that is generated by `agentsgen` and consumed by AI tooling. It is intentionally separate from control-plane registry data.
 
-- Docs: `docs/config-apply-planning.md`
-- Command: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx`
-- JSON mode: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --format json`
-- Review bundle export: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --export-dir /tmp/set-plan`
-- gh-ready payload: includes `base`, `head`, `title`, and `body_file` fields for a later `gh pr create` step
-- apply simulation: previews branch name, target file write, commit message, and manual apply commands
-- batch mode: accepts multiple repos or `--all` for a planning-only multi-repo summary with status/priority hints
-- operator hints: planner payload now includes `apply_readiness`, `operator_queue`, `blocked_by`, structured capability `wiring_gaps`, `next_action_label`, `recommended_operator_step`, and `next_shell_command` for UI/operator flows
-- workflow loop closure: `python3 scripts/plan_config_apply.py markoblogo/lab.abvx --repo-root /absolute/path/to/repo` compares expected `set.yml` from registry against the real repo workflow and reports `matches`, `drift`, or `missing`
-- repomap policy now flows through planning output so downstream control-plane views can show compact status and top ranked files per repo
+## Config apply planning (`scripts/plan_config_apply.py`)
 
-## Current checkpoint
+Current behavior is intentionally planning-only:
+- shows one-file proposed workflow diff as structured output
+- exports review artifacts (`plan.json`, `workflow.set.yml`, `pr-body.md`, etc.)
+- performs repo drift check with `--repo-root` (`matches`, `drift`, `missing`)
+- never writes target repos (review-first only)
 
-- Keep the GitHub Action thin
-- Keep registry and planner contracts explicit
-- Use reviewable planning and drift checks before any future apply automation
+Useful commands:
 
-## Docs
+```bash
+python3 scripts/plan_config_apply.py markoblogo/lab.abvx
+python3 scripts/plan_config_apply.py markoblogo/lab.abvx --dry-run --format json
+python3 scripts/plan_config_apply.py markoblogo/lab.abvx --export-dir ./.set-plan
+python3 scripts/plan_config_apply.py markoblogo/lab.abvx --repo-root /path/to/lab
+```
 
+## Getting started docs
+
+- `docs/repo-config.md`
+- `docs/config-apply-planning.md`
 - `docs/llmo-capability-map.md`
 - `docs/v0.1-scope.md`
+- `CONTRIBUTING.md`
 
-## Ecosystem links
+## Links
 
 - SET repo: https://github.com/markoblogo/SET
 - Lab catalog: https://github.com/markoblogo/lab.abvx
-- ID protocol repo: https://github.com/markoblogo/ID
-- agentsgen repo: https://github.com/markoblogo/AGENTS.md_generator
+- ID protocol: https://github.com/markoblogo/ID
+- agentsgen: https://github.com/markoblogo/AGENTS.md_generator

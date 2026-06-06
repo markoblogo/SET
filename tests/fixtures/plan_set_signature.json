@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "mode": "planning-only",
+  "dry_run": true,
+  "repo": "markoblogo/SET",
+  "review_payload_version": 1,
+  "review_payload_dry_run": true,
+  "workflow_path": ".github/workflows/set.yml",
+  "workflow_with_key_count": 13,
+  "workflow_with_keys": [
+    "agentsgen",
+    "autodetect",
+    "check",
+    "init",
+    "pack",
+    "path",
+    "proof_expected_artifacts",
+    "proof_loop",
+    "proof_task_id",
+    "repomap",
+    "repomap_changed",
+    "repomap_compact_budget",
+    "snippets",
+    "workflow_preset"
+  ],
+  "unmapped_count": 0,
+  "capability_count": 5,
+  "repomap_policy_mode": "changed",
+  "would_write": ".github/workflows/set.yml",
+  "apply_readiness": "ready"
+}

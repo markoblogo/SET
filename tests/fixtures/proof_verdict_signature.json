@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "generated_by": "agentsgen",
+  "status": "needs-review",
+  "task_id": "proof-loop-blocked",
+  "decision": "blocked",
+  "review_ready": false,
+  "ready_for_apply": false
+}

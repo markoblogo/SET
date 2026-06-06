@@ -1,48 +1,48 @@
 # Config Apply Planning
 
-`SET` now has a planning-only helper for future PR-based config apply flows.
+`SET` has a planning-only helper for future PR-based config apply flows.
 
-The goal is simple:
+The goal is safe by default:
 
-- read a real repo-config entry from `registry/repos/*.json`
-- convert it into a proposed `SET` workflow shape
-- show the intended change without writing anything to a target repo
-- optionally export a review bundle for a human-reviewed PR later
+- read a registry entry from `registry/repos/*.json`
+- resolve a concrete `SET` workflow shape
+- show the proposed change without writing to any repo
+- export a review bundle for a human-in-the-loop path
 
 ## Why this exists
 
-Before adding any repo mutation or PR automation, we want one safe intermediate layer:
+Before any write automation, the planner:
 
-- review the intended workflow inputs
-- spot unmapped tool fields
-- keep config-apply semantics explicit
-- make the future PR shape easy to inspect before any apply step exists
+- makes generated `with:` inputs visible
+- surfaces unmapped tool fields early (`wiring_gaps`)
+- keeps plan/apply semantics reviewable and serializable
+- gives CI/operability a stable JSON contract for checks
 
 ## Command
 
 ```bash
 python3 scripts/plan_config_apply.py markoblogo/lab.abvx
-python3 scripts/plan_config_apply.py markoblogo/lab.abvx --format json
+python3 scripts/plan_config_apply.py markoblogo/lab.abvx --dry-run --format json
 python3 scripts/plan_config_apply.py markoblogo/lab.abvx --export-dir /tmp/set-plan
+python3 scripts/plan_config_apply.py markoblogo/lab.abvx --repo-root /absolute/path/to/lab.abvx
 python3 scripts/plan_config_apply.py markoblogo/AGENTS.md_generator markoblogo/lab.abvx
 python3 scripts/plan_config_apply.py --all --format json
-python3 scripts/plan_config_apply.py markoblogo/lab.abvx --repo-root /absolute/path/to/lab.abvx
-python3 scripts/plan_config_apply.py markoblogo/AGENTS.md_generator --repo-root /absolute/path/to/AGENTS.md\ Generator
 ```
 
 ## Current output
 
-The planner currently emits:
-
-For a single repo:
+For a single repo, output contains:
 
 - one proposed workflow target: `.github/workflows/set.yml`
 - the `uses: markoblogo/SET@main` block
-- the resolved `with:` inputs derived from registry config
-- an `unmapped` list for registry fields not yet wired into the action
-- a review payload with PR title/body, gh-ready PR fields, apply simulation, and ready-to-review workflow YAML
+- the resolved `with:` inputs from registry config and presets
+- `dry_run` flag (`true` today) for explicit contract clarity
+- an `unmapped` list for capabilities not wired into `action.yml` yet
+- review payload with generated PR text, gh-ready payload, apply simulation, workflow YAML
+- `would_write` field in text mode showing target files for dry-run planning
+- `source_config`, `notes`, and review payload fields for downstream tooling
 
-When `--export-dir` is used, the planner writes:
+With `--export-dir`, it writes:
 
 - `plan.json`
 - `workflow.set.yml`
@@ -50,16 +50,28 @@ When `--export-dir` is used, the planner writes:
 - `gh-pr-create.json`
 - `apply-simulation.json`
 
-These files are local review artifacts only. They are not applied to the target repo.
+These files are local and review-only. They are not applied to the target repo.
 
-The `gh-pr-create.json` payload is meant to be directly reusable by a future manual `gh pr create` step.
-The `apply-simulation.json` payload shows the branch/apply sequence as a reviewable dry run.
+Example dry-run text fragment:
 
-For multiple repos, the planner emits a compact batch summary in text mode and a `plans[]` array in JSON mode. With `--export-dir`, it also writes `batch-summary.json` plus one subdirectory per repo.
+```text
+dry_run: true
+would_write:
+  - .github/workflows/set.yml
+next_shell_command: git checkout -b codex/set-plan-markoblogo-SET
+```
 
-Batch output also includes derived `status_hint`, `priority_hint`, `apply_readiness`, `operator_queue`, `blocked_by`, structured capability-level `wiring_gaps`, `next_action_label`, `recommended_operator_step`, and `next_shell_command` fields to help decide what to review first, what is actually blocked, what is missing in the orchestrator, what to do next, what is ready now, and what command is safe to copy.
+For multiple repos, planner emits:
 
-When `--repo-root` is provided, the planner also compares the expected `.github/workflows/set.yml` against the real file in that local checkout and adds a read-only `workflow_check` result with status `matches`, `drift`, or `missing`.
+- compact text summary in text mode
+- `plans[]` array in JSON mode
+- optional batch export with `batch-summary.json` and per-repo directories
+
+When `--repo-root` is provided, planner adds read-only `workflow_check` with status:
+
+- `matches`
+- `drift`
+- `missing`
 
 ## Current limits
 
@@ -68,5 +80,3 @@ When `--repo-root` is provided, the planner also compares the expected `.github/
 - no branch creation
 - no repo mutation
 - no multi-workflow planning yet
-
-This is intentionally a planning layer only.

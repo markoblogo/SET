@@ -116,6 +116,14 @@ This checks:
 - known preset names
 - simple field types
 
+## agents.knowledge.json
+
+`agents.knowledge.json` is an agent-oriented artifact generated from repository analysis and used by AI tooling at runtime.
+
+- It is not a registry source of truth.
+- It is used by `agentsgen` runtime and tooling that consumes local repo intelligence.
+- This repository-level contract (`repo-config`) remains separate and is versioned in the registry.
+
 ## Initial registry entries
 
 The first registry entries are:
