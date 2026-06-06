@@ -14,6 +14,12 @@ Thin orchestration repo for the ABVX stack to keep AI-facing repo artifacts in s
 
 ## Quick start (30 seconds)
 
+Install the local CLI helpers with Homebrew:
+
+```bash
+brew install markoblogo/tap/abvx-set
+```
+
 Use this in any repo to baseline `AGENTS.md` and checks via `agentsgen`:
 
 ```yaml
