@@ -83,6 +83,26 @@ We can still add a YAML view later if the dashboard or authoring flow benefits f
 - SET derives a first-class label from that policy for UI/planning: `full` (Full Repo Slice), `focus` (Focused Code Slice), `changed` (Changed Files Slice), `focus+changed` (Hybrid Slice)
 - no secrets live in registry config
 
+## Runtime artifacts
+
+`repo-config` is the control-plane contract.
+Some enabled features also produce runtime artifacts inside the target repository.
+
+For `ID` integration, the important distinction is:
+
+- config decides whether the ID hooks should run,
+- runtime artifacts capture what the hooks resolved for a concrete run.
+
+When `tools.id.enabled = true` and `tools.id.pre_task = true`, `SET` may export:
+
+- `docs/ai/id-bootstrap.json`
+- `docs/ai/id-bootstrap.prompt.md`
+
+These are formal runtime outputs, not implementation leftovers.
+They are intended for downstream agents and orchestration layers that need a stable, explicit human bootstrap packet.
+
+See `docs/id-bootstrap.md` for the current shape and consumption rules.
+
 ## Central registry decision
 
 Central registry first lives in `SET`.

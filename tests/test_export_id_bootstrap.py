@@ -48,10 +48,16 @@ class ExportIdBootstrapTests(unittest.TestCase):
             self.assertTrue(prompt_path.exists())
 
             payload = json.loads(json_path.read_text(encoding="utf-8"))
+            self.assertEqual(payload["version"], 1)
+            self.assertEqual(payload["generated_by"], "set")
             self.assertEqual(payload["id"]["primary_human_bootstrap"], "profiles/markoblogo/soul.md")
             self.assertEqual(
                 payload["id"]["preferred_human_bootstrap"][0],
                 "profiles/markoblogo/soul.md",
+            )
+            self.assertEqual(
+                payload["usage"]["instructions"][0],
+                "Start with primary_human_bootstrap.",
             )
             prompt = prompt_path.read_text(encoding="utf-8")
             self.assertIn("`profiles/markoblogo/soul.md`", prompt)

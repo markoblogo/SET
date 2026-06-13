@@ -23,16 +23,16 @@ jobs:
       - name: Enforce planning contract
         run: |
           python3 - <<'PY'
-import json
-import sys
+          import json
+          import sys
 
-plan = json.load(open('/tmp/set-plan.json'))
-if plan.get('dry_run') is not True:
-    raise SystemExit('plan dry_run must be true')
-workflow_check = plan.get('workflow_check', {})
-if workflow_check.get('status') != 'matches':
-    raise SystemExit(
-        f"workflow drift check failed: {workflow_check.get('status', 'missing')}"
-    )
-print('workflow check ok:', workflow_check.get('status'))
-PY
+          plan = json.load(open('/tmp/set-plan.json'))
+          if plan.get('dry_run') is not True:
+              raise SystemExit('plan dry_run must be true')
+          workflow_check = plan.get('workflow_check', {})
+          if workflow_check.get('status') != 'matches':
+              raise SystemExit(
+                  f"workflow drift check failed: {workflow_check.get('status', 'missing')}"
+              )
+          print('workflow check ok:', workflow_check.get('status'))
+          PY

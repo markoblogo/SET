@@ -53,6 +53,8 @@ It captures the resolved human bootstrap order and exports two runtime artifacts
 
 These packets are built from the resolved `ID` hook output and are meant for downstream agent runs.
 
+The JSON packet is now treated as a formal runtime interface, documented in `docs/id-bootstrap.md`, rather than as an action-only implementation detail.
+
 Expected bootstrap order:
 
 1. `soul.md`
@@ -67,6 +69,7 @@ Expected bootstrap order:
 
 - schema: `schema/repo-config.v1.json`
 - docs: `docs/repo-config.md`
+- runtime artifact docs: `docs/id-bootstrap.md`
 - examples: `examples/repo-config.example.json`
 - registry entries: `registry/repos/*.json`
 
@@ -115,6 +118,7 @@ Depending on preset/config, `SET` can drive production of:
 ## Key Docs
 
 - `docs/repo-config.md`
+- `docs/id-bootstrap.md`
 - `docs/config-apply-planning.md`
 - `docs/llmo-capability-map.md`
 - `docs/v0.1-scope.md`
