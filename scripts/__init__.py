@@ -1,2 +1,1 @@
-"""SET script package."""
-
+"""Helper package for SET test imports."""
