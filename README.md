@@ -48,6 +48,7 @@ This is a read-only plan showing the exact workflow file that would be generated
 - `agentsgen` handles repo documentation, map generation, checks, and related contracts.
 - `SET` chooses how and when `agentsgen` and other tools run.
 - `ID` and other optional integrations are executed via explicit, validated repo config.
+- when `ID pre_task` is enabled, SET now captures the resolved human bootstrap order from the repo-local hook and starts from `soul.md` when available.
 - `lab.abvx` is the public catalog and read-only control-plane surface.
 
 ```mermaid

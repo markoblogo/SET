@@ -179,7 +179,30 @@ runs:
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
         printf '\n'
-        "${cmd[@]}"
+        hook_output="$("${cmd[@]}")"
+        printf '%s\n' "${hook_output}"
+        while IFS= read -r line; do
+          case "${line}" in
+            soul=*)
+              echo "SET_ID_SOUL_PATH=${line#soul=}" >> "${GITHUB_ENV}"
+              ;;
+            profile_core=*)
+              echo "SET_ID_PROFILE_CORE=${line#profile_core=}" >> "${GITHUB_ENV}"
+              ;;
+            handshake=*)
+              echo "SET_ID_HANDSHAKE=${line#handshake=}" >> "${GITHUB_ENV}"
+              ;;
+            primary_human_bootstrap=*)
+              echo "SET_ID_PRIMARY_BOOTSTRAP=${line#primary_human_bootstrap=}" >> "${GITHUB_ENV}"
+              ;;
+            preferred_human_bootstrap=*)
+              echo "SET_ID_PREFERRED_BOOTSTRAP=${line#preferred_human_bootstrap=}" >> "${GITHUB_ENV}"
+              ;;
+            integration_guide=*)
+              echo "SET_ID_INTEGRATION_GUIDE=${line#integration_guide=}" >> "${GITHUB_ENV}"
+              ;;
+          esac
+        done <<< "${hook_output}"
 
     - name: Install agentsgen
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' }}

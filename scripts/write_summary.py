@@ -96,6 +96,8 @@ def main() -> int:
     repomap_changed = os.environ.get('INPUT_REPOMAP_CHANGED', '').strip()
     id_owner_id = os.environ.get('SET_RESOLVED_ID_OWNER_ID', '').strip() or os.environ.get('INPUT_ID_OWNER_ID', '').strip()
     id_target = os.environ.get('SET_RESOLVED_ID_TARGET', '').strip() or os.environ.get('INPUT_ID_TARGET', '').strip() or 'set'
+    id_primary_bootstrap = os.environ.get('SET_ID_PRIMARY_BOOTSTRAP', '').strip()
+    id_preferred_bootstrap = os.environ.get('SET_ID_PREFERRED_BOOTSTRAP', '').strip()
     if _enabled('SET_RESOLVED_REPOMAP'):
         repomap_mode = _repomap_mode(repomap_focus, repomap_changed)
         body.append(_line('repomap compact budget', repomap_budget))
@@ -108,6 +110,11 @@ def main() -> int:
         body.append(_line('id target', id_target))
         body.append(_line('id pre_task', str(_enabled('SET_RESOLVED_ID_PRE_TASK')).lower()))
         body.append(_line('id weekly_review', str(_enabled('SET_RESOLVED_ID_WEEKLY_REVIEW')).lower()))
+        if id_primary_bootstrap:
+            body.append(_line('id primary bootstrap', f'`{id_primary_bootstrap}`'))
+        if id_preferred_bootstrap:
+            formatted = ', '.join(f'`{item}`' for item in id_preferred_bootstrap.split('|') if item)
+            body.append(_line('id preferred bootstrap', formatted))
     if _enabled('SET_RESOLVED_PROOF_LOOP'):
         body.append(_line('proof loop', 'enabled'))
         proof_task_id = os.environ.get('SET_RESOLVED_PROOF_TASK_ID', '').strip() or 'missing'
