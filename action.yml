@@ -204,6 +204,24 @@ runs:
           esac
         done <<< "${hook_output}"
 
+    - name: Export ID bootstrap packet
+      if: ${{ env.SET_RESOLVED_ID_ENABLED == 'true' && env.SET_RESOLVED_ID_PRE_TASK == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        packet_output="$(python "${GITHUB_ACTION_PATH}/scripts/export_id_bootstrap.py")"
+        printf '%s\n' "${packet_output}"
+        while IFS= read -r line; do
+          case "${line}" in
+            id_bootstrap_json=*)
+              echo "SET_ID_BOOTSTRAP_JSON=${line#id_bootstrap_json=}" >> "${GITHUB_ENV}"
+              ;;
+            id_bootstrap_prompt=*)
+              echo "SET_ID_BOOTSTRAP_PROMPT=${line#id_bootstrap_prompt=}" >> "${GITHUB_ENV}"
+              ;;
+          esac
+        done <<< "${packet_output}"
+
     - name: Install agentsgen
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' }}
       shell: bash

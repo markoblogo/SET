@@ -30,6 +30,8 @@ class WriteSummaryTests(unittest.TestCase):
                     "SET_RESOLVED_ID_TARGET": "set",
                     "SET_ID_PRIMARY_BOOTSTRAP": "profiles/markoblogo/soul.md",
                     "SET_ID_PREFERRED_BOOTSTRAP": "profiles/markoblogo/soul.md|profiles/markoblogo/profile.core.md|profiles/markoblogo/handshake.md",
+                    "SET_ID_BOOTSTRAP_JSON": "docs/ai/id-bootstrap.json",
+                    "SET_ID_BOOTSTRAP_PROMPT": "docs/ai/id-bootstrap.prompt.md",
                 }
             )
 
@@ -46,6 +48,8 @@ class WriteSummaryTests(unittest.TestCase):
             self.assertIn("**id primary bootstrap:** `profiles/markoblogo/soul.md`", body)
             self.assertIn("`profiles/markoblogo/profile.core.md`", body)
             self.assertIn("`profiles/markoblogo/handshake.md`", body)
+            self.assertIn("**id bootstrap json:** `docs/ai/id-bootstrap.json`", body)
+            self.assertIn("**id bootstrap prompt:** `docs/ai/id-bootstrap.prompt.md`", body)
 
 
 if __name__ == "__main__":

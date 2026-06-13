@@ -98,6 +98,8 @@ def main() -> int:
     id_target = os.environ.get('SET_RESOLVED_ID_TARGET', '').strip() or os.environ.get('INPUT_ID_TARGET', '').strip() or 'set'
     id_primary_bootstrap = os.environ.get('SET_ID_PRIMARY_BOOTSTRAP', '').strip()
     id_preferred_bootstrap = os.environ.get('SET_ID_PREFERRED_BOOTSTRAP', '').strip()
+    id_bootstrap_json = os.environ.get('SET_ID_BOOTSTRAP_JSON', '').strip()
+    id_bootstrap_prompt = os.environ.get('SET_ID_BOOTSTRAP_PROMPT', '').strip()
     if _enabled('SET_RESOLVED_REPOMAP'):
         repomap_mode = _repomap_mode(repomap_focus, repomap_changed)
         body.append(_line('repomap compact budget', repomap_budget))
@@ -115,6 +117,10 @@ def main() -> int:
         if id_preferred_bootstrap:
             formatted = ', '.join(f'`{item}`' for item in id_preferred_bootstrap.split('|') if item)
             body.append(_line('id preferred bootstrap', formatted))
+        if id_bootstrap_json:
+            body.append(_line('id bootstrap json', f'`{id_bootstrap_json}`'))
+        if id_bootstrap_prompt:
+            body.append(_line('id bootstrap prompt', f'`{id_bootstrap_prompt}`'))
     if _enabled('SET_RESOLVED_PROOF_LOOP'):
         body.append(_line('proof loop', 'enabled'))
         proof_task_id = os.environ.get('SET_RESOLVED_PROOF_TASK_ID', '').strip() or 'missing'
