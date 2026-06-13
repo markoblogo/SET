@@ -1,7 +1,6 @@
 {
   "version": 2,
   "generated_by": "agentsgen",
-  "status": "needs-review",
   "task_id": "proof-loop-blocked",
   "evidence_status": "complete",
   "check_summary_total": 1,

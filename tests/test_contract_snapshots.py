@@ -48,7 +48,6 @@ def _evidence_signature(payload: dict[str, object]) -> dict[str, object]:
     return {
         'version': payload['version'],
         'generated_by': payload['generated_by'],
-        'status': payload['status'],
         'task_id': payload['task_id'],
         'evidence_status': payload['evidence_status'],
         'check_summary_total': payload['check_summary']['total'],
