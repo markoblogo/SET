@@ -393,6 +393,87 @@ def build_review_payload(
     }
 
 
+def build_orchestrator_bundle(
+    repo: str,
+    config_path: Path,
+    workflow: dict[str, object],
+    capabilities: list[dict[str, object]],
+    unmapped: list[str],
+    repomap_policy: dict[str, object] | None,
+    proof_loop: dict[str, object] | None,
+    id_config: dict[str, object] | None,
+    dry_run: bool = True,
+) -> dict[str, object]:
+    workflow_with = workflow['with']
+    expected_artifacts = []
+    if proof_loop and proof_loop.get('expected_artifacts'):
+        expected_artifacts = list(proof_loop.get('expected_artifacts', []))
+    if id_config and id_config.get('enabled') and id_config.get('pre_task'):
+        expected_artifacts.extend([
+            'docs/ai/id-bootstrap.json',
+            'docs/ai/id-bootstrap.prompt.md',
+        ])
+    return {
+        'version': 1,
+        'kind': 'set-orchestrator-bundle',
+        'repo': repo,
+        'mode': 'planning-only',
+        'dry_run': dry_run,
+        'source_config': str(config_path),
+        'compatible_with': [
+            'issue-to-agent-runners',
+            'parallel-agent-runners',
+            'proof-of-work-review-loops',
+            'agent-coordination-protocols',
+        ],
+        'target_workflow': {
+            'path': workflow['path'],
+            'uses': workflow['uses'],
+            'preset': workflow_with.get('workflow_preset'),
+            'with': workflow_with,
+        },
+        'context_package': {
+            'repomap_policy': repomap_policy,
+            'repomap_policy_mode': repomap_policy_mode(repomap_policy),
+            'repomap_policy_label': repomap_policy_label(repomap_policy_mode(repomap_policy)),
+            'id_bootstrap': {
+                'enabled': bool(id_config and id_config.get('enabled') and id_config.get('pre_task')),
+                'owner_id': id_config.get('owner_id') if id_config else None,
+                'target': id_config.get('target') if id_config else None,
+                'artifacts': [
+                    'docs/ai/id-bootstrap.json',
+                    'docs/ai/id-bootstrap.prompt.md',
+                ] if id_config and id_config.get('enabled') and id_config.get('pre_task') else [],
+            },
+        },
+        'task_contract': {
+            'proof_loop': proof_loop,
+            'expected_artifacts': expected_artifacts,
+            'review_ready_when': [
+                'SET workflow plan is reviewed',
+                'unmapped is empty',
+                'expected artifacts are present or explicitly waived',
+            ],
+            'blocked_by': list(unmapped),
+        },
+        'capabilities': capabilities,
+        'handoff': {
+            'recommended_runner_role': 'consume this bundle before spawning coding agents',
+            'stable_inputs': [
+                'repo',
+                'target_workflow',
+                'context_package',
+                'task_contract',
+            ],
+            'non_goals': [
+                'SET does not spawn coding agents',
+                'SET does not own external runner state',
+                'SET does not create branches or PRs in planning mode',
+            ],
+        },
+    }
+
+
 def build_plan(
     config_path: Path,
     data: dict[str, object],
@@ -484,6 +565,17 @@ def build_plan(
         id_config,
         dry_run=dry_run,
     )
+    orchestrator_bundle = build_orchestrator_bundle(
+        data['repo'],
+        config_path,
+        workflow,
+        capabilities,
+        unmapped,
+        repomap_policy,
+        proof_loop,
+        id_config,
+        dry_run=dry_run,
+    )
     plan = {
         'version': 1,
         'dry_run': dry_run,
@@ -502,6 +594,7 @@ def build_plan(
         ],
         'capabilities': capabilities,
         'review_payload': review_payload,
+        'orchestrator_bundle': orchestrator_bundle,
         'unmapped': unmapped,
         'notes': [
             'This planner does not open a PR or write files to the target repo.',
@@ -628,6 +721,7 @@ def render_text(plan: dict[str, object]) -> str:
         '  - pr-body.md',
         '  - gh-pr-create.json',
         '  - apply-simulation.json',
+        '  - orchestrator-bundle.json',
         'gh_pr_create:',
         f"  repo: {gh_pr['repo']}",
         f"  base: {gh_pr['base']}",
@@ -694,6 +788,7 @@ def export_plan(plan: dict[str, object], export_dir: Path) -> list[Path]:
         'pr-body.md': review_payload['body'],
         'gh-pr-create.json': json.dumps(review_payload['gh_pr_create'], indent=2) + '\n',
         'apply-simulation.json': json.dumps(review_payload['apply_simulation'], indent=2) + '\n',
+        'orchestrator-bundle.json': json.dumps(plan['orchestrator_bundle'], indent=2) + '\n',
     }
     written = []
     for name, content in outputs.items():
@@ -729,6 +824,7 @@ def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]
                 'repomap_policy': plan.get('repomap_policy'),
                 'id_integration': plan.get('id_integration'),
                 'workflow_check': plan.get('workflow_check'),
+                'orchestrator_bundle': plan.get('orchestrator_bundle'),
                 'unmapped_count': len(plan.get('unmapped', [])),
             }
             for plan in plans

@@ -103,6 +103,8 @@ They are intended for downstream agents and orchestration layers that need a sta
 
 See `docs/id-bootstrap.md` for the current shape and consumption rules.
 
+The planner can also export `orchestrator-bundle.json` for external agent runners. That bundle is derived from registry config plus resolved planning state; it is not a registry source of truth. See `docs/orchestrator-compatibility.md`.
+
 ## Central registry decision
 
 Central registry first lives in `SET`.

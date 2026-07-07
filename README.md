@@ -84,9 +84,11 @@ python3 scripts/validate_registry.py
 `scripts/plan_config_apply.py` is intentionally review-first:
 
 - shows the proposed workflow as structured output
-- exports planning artifacts such as `plan.json`, `workflow.set.yml`, and `pr-body.md`
+- exports planning artifacts such as `plan.json`, `workflow.set.yml`, `pr-body.md`, and `orchestrator-bundle.json`
 - can compare against a local repo root for drift
 - does not write target repositories directly
+
+`orchestrator-bundle.json` is the upstream handoff contract for Sortie/Symphony-like runners: it carries repo identity, proposed workflow inputs, repomap policy, optional `ID` bootstrap hints, proof-loop expectations, and blockers without making `SET` an agent runner.
 
 Useful commands:
 
@@ -120,6 +122,7 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/repo-config.md`
 - `docs/id-bootstrap.md`
 - `docs/config-apply-planning.md`
+- `docs/orchestrator-compatibility.md`
 - `docs/llmo-capability-map.md`
 - `docs/v0.1-scope.md`
 - `CONTRIBUTING.md`
