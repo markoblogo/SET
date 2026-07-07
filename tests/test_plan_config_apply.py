@@ -25,6 +25,7 @@ def test_orchestrator_bundle_carries_proof_loop_contract() -> None:
     assert bundle['context_package']['rabbithole_seed']['artifact'] == 'rabbithole.seed.md'
     assert bundle['task_contract']['proof_loop']['task_id'] == 'proof-loop-blocked'
     assert bundle['task_contract']['expected_artifacts'] == ['docs/ai/proof/manual-review.md']
+    assert bundle['task_contract']['recommended_review_lenses'][0]['name'] == 'assumption-excavation'
 
 
 def test_export_plan_writes_orchestrator_bundle(tmp_path: Path) -> None:

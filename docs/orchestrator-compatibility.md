@@ -37,6 +37,8 @@ Useful fields:
 - `capabilities`: resolved SET/agentsgen/ID capabilities
 - `handoff`: runner-facing guidance and non-goals
 
+`task_contract.recommended_review_lenses` lists optional review gates for external runners and humans. The current default lens set is `assumption-excavation`, `pipeline-readiness-gate`, and `confidence-fragility-review`. These are hints, not runtime dependencies.
+
 When `--export-dir` is used, the planner also writes `rabbithole.seed.md`. This is an optional local review seed for Rabbithole-style human-in-the-loop exploration of the plan. It is not required by SET and should not be treated as source of truth.
 
 ## Patterns to adapt

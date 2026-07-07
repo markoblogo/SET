@@ -31,6 +31,24 @@ DEFAULT_REPOMAP_POLICY = {
     'changed': False,
 }
 
+DEFAULT_REVIEW_LENSES = [
+    {
+        'name': 'assumption-excavation',
+        'phase': 'pre-implementation',
+        'purpose': 'surface hidden assumptions before implementation or runner handoff',
+    },
+    {
+        'name': 'pipeline-readiness-gate',
+        'phase': 'pre/post/ship',
+        'purpose': 'choose the smallest useful review gate for the current phase',
+    },
+    {
+        'name': 'confidence-fragility-review',
+        'phase': 'ship',
+        'purpose': 'check whether confident claims are backed by evidence',
+    },
+]
+
 
 def repomap_policy_mode(policy: dict[str, object] | None) -> str:
     if not isinstance(policy, dict):
@@ -460,6 +478,7 @@ def build_orchestrator_bundle(
         'task_contract': {
             'proof_loop': proof_loop,
             'expected_artifacts': expected_artifacts,
+            'recommended_review_lenses': DEFAULT_REVIEW_LENSES,
             'review_ready_when': [
                 'SET workflow plan is reviewed',
                 'unmapped is empty',
@@ -512,12 +531,19 @@ def render_rabbithole_seed(plan: dict[str, object]) -> str:
         '- Do expected proof-loop artifacts match the task?',
         '- Should this plan be handed to an external runner or reviewed manually first?',
         '',
+        '## Recommended Review Lenses',
+        '',
+    ]
+    for lens in bundle['task_contract']['recommended_review_lenses']:
+        lines.append(f"- `{lens['name']}` ({lens['phase']}): {lens['purpose']}")
+    lines.extend([
+        '',
         '## Bundle Excerpt',
         '',
         '```json',
         json.dumps(bundle, indent=2),
         '```',
-    ]
+    ])
     return '\n'.join(lines) + '\n'
 
 
