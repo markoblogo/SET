@@ -88,7 +88,7 @@ python3 scripts/validate_registry.py
 - can compare against a local repo root for drift
 - does not write target repositories directly
 
-`orchestrator-bundle.json` is the upstream handoff contract for Sortie/Symphony-like runners: it carries repo identity, proposed workflow inputs, repomap policy, optional `ID` bootstrap hints, proof-loop expectations, and blockers without making `SET` an agent runner.
+`orchestrator-bundle.json` is the upstream handoff contract for Sortie/Symphony-like runners: it carries repo identity, proposed workflow inputs, repomap policy, optional `ID` bootstrap hints, proof-loop expectations, and blockers without making `SET` an agent runner. `rabbithole.seed.md` is also exported as an optional local review seed for human-in-the-loop plan exploration.
 
 Useful commands:
 

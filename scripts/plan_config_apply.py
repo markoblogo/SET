@@ -445,6 +445,17 @@ def build_orchestrator_bundle(
                     'docs/ai/id-bootstrap.prompt.md',
                 ] if id_config and id_config.get('enabled') and id_config.get('pre_task') else [],
             },
+            'rabbithole_seed': {
+                'enabled': True,
+                'artifact': 'rabbithole.seed.md',
+                'purpose': 'optional local human-in-the-loop review seed for SET planner exports',
+                'suggested_sources': [
+                    'plan.json',
+                    'orchestrator-bundle.json',
+                    'workflow.set.yml',
+                    'pr-body.md',
+                ],
+            },
         },
         'task_contract': {
             'proof_loop': proof_loop,
@@ -472,6 +483,42 @@ def build_orchestrator_bundle(
             ],
         },
     }
+
+
+def render_rabbithole_seed(plan: dict[str, object]) -> str:
+    workflow = plan['proposed_changes'][0]['workflow']
+    bundle = plan['orchestrator_bundle']
+    lines = [
+        '# SET Rabbithole Seed',
+        '',
+        'Use this optional local seed to inspect a SET plan in Rabbithole before applying it or handing it to an external agent runner.',
+        '',
+        'Rabbithole is not required for SET. This file is a review aid, not source of truth.',
+        '',
+        '## Plan Summary',
+        '',
+        f"- Repo: `{plan['repo']}`",
+        f"- Mode: `{plan['mode']}`",
+        f"- Dry run: `{str(bool(plan.get('dry_run'))).lower()}`",
+        f"- Target workflow: `{workflow['path']}`",
+        f"- Action: `{workflow['uses']}`",
+        f"- Preset: `{workflow['with'].get('workflow_preset', 'none')}`",
+        f"- Apply readiness: `{derive_apply_readiness(plan)}`",
+        '',
+        '## Review Questions',
+        '',
+        '- Are the proposed workflow inputs correct for this repo?',
+        '- Is `unmapped` empty or intentionally blocked?',
+        '- Do expected proof-loop artifacts match the task?',
+        '- Should this plan be handed to an external runner or reviewed manually first?',
+        '',
+        '## Bundle Excerpt',
+        '',
+        '```json',
+        json.dumps(bundle, indent=2),
+        '```',
+    ]
+    return '\n'.join(lines) + '\n'
 
 
 def build_plan(
@@ -722,6 +769,7 @@ def render_text(plan: dict[str, object]) -> str:
         '  - gh-pr-create.json',
         '  - apply-simulation.json',
         '  - orchestrator-bundle.json',
+        '  - rabbithole.seed.md',
         'gh_pr_create:',
         f"  repo: {gh_pr['repo']}",
         f"  base: {gh_pr['base']}",
@@ -789,6 +837,7 @@ def export_plan(plan: dict[str, object], export_dir: Path) -> list[Path]:
         'gh-pr-create.json': json.dumps(review_payload['gh_pr_create'], indent=2) + '\n',
         'apply-simulation.json': json.dumps(review_payload['apply_simulation'], indent=2) + '\n',
         'orchestrator-bundle.json': json.dumps(plan['orchestrator_bundle'], indent=2) + '\n',
+        'rabbithole.seed.md': render_rabbithole_seed(plan),
     }
     written = []
     for name, content in outputs.items():

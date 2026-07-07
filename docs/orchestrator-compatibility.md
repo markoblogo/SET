@@ -37,6 +37,8 @@ Useful fields:
 - `capabilities`: resolved SET/agentsgen/ID capabilities
 - `handoff`: runner-facing guidance and non-goals
 
+When `--export-dir` is used, the planner also writes `rabbithole.seed.md`. This is an optional local review seed for Rabbithole-style human-in-the-loop exploration of the plan. It is not required by SET and should not be treated as source of truth.
+
 ## Patterns to adapt
 
 From issue-to-agent runners:

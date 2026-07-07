@@ -22,6 +22,7 @@ def test_orchestrator_bundle_carries_proof_loop_contract() -> None:
     plan = planner.build_plan(config_path, data)
     bundle = plan['orchestrator_bundle']
     assert bundle['context_package']['repomap_policy_mode'] == 'changed'
+    assert bundle['context_package']['rabbithole_seed']['artifact'] == 'rabbithole.seed.md'
     assert bundle['task_contract']['proof_loop']['task_id'] == 'proof-loop-blocked'
     assert bundle['task_contract']['expected_artifacts'] == ['docs/ai/proof/manual-review.md']
 
@@ -32,6 +33,7 @@ def test_export_plan_writes_orchestrator_bundle(tmp_path: Path) -> None:
     written = planner.export_plan(plan, tmp_path)
     names = {path.name for path in written}
     assert 'orchestrator-bundle.json' in names
+    assert 'rabbithole.seed.md' in names
 
 
 def test_plan_dry_run_flag_is_parsed_explicitly() -> None:

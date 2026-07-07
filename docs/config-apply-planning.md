@@ -50,10 +50,13 @@ With `--export-dir`, it writes:
 - `gh-pr-create.json`
 - `apply-simulation.json`
 - `orchestrator-bundle.json`
+- `rabbithole.seed.md`
 
 These files are local and review-only. They are not applied to the target repo.
 
 `orchestrator-bundle.json` is the runner-facing handoff contract for external agent orchestrators. It includes the target repo, proposed workflow inputs, repomap policy, optional ID bootstrap hints, proof-loop expectations, blockers, and non-goals. See `docs/orchestrator-compatibility.md`.
+
+`rabbithole.seed.md` is optional local review material for opening the plan in a Rabbithole MCP canvas.
 
 Example dry-run text fragment:
 
