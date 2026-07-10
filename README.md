@@ -84,11 +84,11 @@ python3 scripts/validate_registry.py
 `scripts/plan_config_apply.py` is intentionally review-first:
 
 - shows the proposed workflow as structured output
-- exports planning artifacts such as `plan.json`, `workflow.set.yml`, `pr-body.md`, and `orchestrator-bundle.json`
+- exports planning artifacts such as `plan.json`, `workflow.set.yml`, `pr-body.md`, `orchestrator-bundle.json`, and `proposal-lifecycle.json`
 - can compare against a local repo root for drift
 - does not write target repositories directly
 
-`orchestrator-bundle.json` is the upstream handoff contract for Sortie/Symphony-like runners: it carries repo identity, proposed workflow inputs, repomap policy, optional `ID` bootstrap hints, proof-loop expectations, recommended review lenses, and blockers without making `SET` an agent runner. `rabbithole.seed.md` is also exported as an optional local review seed for human-in-the-loop plan exploration.
+`orchestrator-bundle.json` is the upstream handoff contract for Sortie/Symphony-like runners: it carries repo identity, proposed workflow inputs, repomap policy, optional `ID` bootstrap hints, proof-loop expectations, recommended review lenses, proposal lifecycle guidance, and blockers without making `SET` an agent runner. `proposal-lifecycle.json` spells out the proposal-first flow (`run -> retained_output -> inspect -> select/apply/discard`). `rabbithole.seed.md` is also exported as an optional local review seed for human-in-the-loop plan exploration.
 
 Useful commands:
 
