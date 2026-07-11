@@ -23,9 +23,33 @@ def test_orchestrator_bundle_carries_proof_loop_contract() -> None:
     bundle = plan['orchestrator_bundle']
     assert bundle['context_package']['repomap_policy_mode'] == 'changed'
     assert bundle['context_package']['rabbithole_seed']['artifact'] == 'rabbithole.seed.md'
+    memory = bundle['context_package']['memory_capability']
+    assert memory['enabled'] is False
+    assert memory['scope']['model'] == 'per-project'
+    assert memory['retrieval']['modes'] == ['full_text', 'semantic']
+    assert memory['operations']['write']['policy'] == 'audit-gated-proposal-first'
+    diversity = bundle['context_package']['research_diversity_hint']
+    assert diversity['kind'] == 'review-hint'
+    assert diversity['recommended_skill'] == 'hypothesis-diversification'
+    assert 'SET does not run a diversity runtime' in diversity['non_goals']
+    context_budget = bundle['context_package']['context_budget_hint']
+    assert context_budget['kind'] == 'review-hint'
+    assert context_budget['recommended_skill'] == 'context-degradation-review'
+    degradation = bundle['context_package']['context_degradation_review']
+    assert 'context-poisoning' in degradation['failure_modes']
+    assert 'SET does not run context repair automatically' in degradation['non_goals']
+    loop = bundle['context_package']['loop_readiness_hint']
+    assert loop['kind'] == 'review-hint'
+    assert loop['recommended_skill'] == 'loop-readiness-review'
+    assert loop['readiness_levels']['L1'] == 'report-only'
+    assert 'SET does not schedule loops' in loop['non_goals']
     assert bundle['task_contract']['proof_loop']['task_id'] == 'proof-loop-blocked'
     assert bundle['task_contract']['expected_artifacts'] == ['docs/ai/proof/manual-review.md']
     assert bundle['task_contract']['recommended_review_lenses'][0]['name'] == 'assumption-excavation'
+    lens_names = [lens['name'] for lens in bundle['task_contract']['recommended_review_lenses']]
+    assert 'context-degradation-review' in lens_names
+    assert 'agent-tool-contract-review' in lens_names
+    assert lens_names[-1] == 'loop-readiness-review'
     assert bundle['task_contract']['proposal_lifecycle']['default_policy'] == 'proposal-first'
     assert bundle['task_contract']['proposal_lifecycle']['states'] == [
         'run',

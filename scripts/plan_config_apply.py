@@ -31,6 +31,42 @@ DEFAULT_REPOMAP_POLICY = {
     'changed': False,
 }
 
+DEFAULT_MEMORY_CAPABILITY = {
+    'enabled': False,
+    'kind': 'optional-memory-capability',
+    'scope': {
+        'model': 'per-project',
+        'key': 'repo',
+        'cross_project_reads': False,
+    },
+    'retrieval': {
+        'modes': ['full_text', 'semantic'],
+        'policy': 'hybrid-when-available',
+        'fallback': 'full_text',
+    },
+    'operations': {
+        'search': {
+            'purpose': 'find relevant project memory before planning or changing code',
+            'required_before_mutation': True,
+        },
+        'read': {
+            'purpose': 'inspect the full source document after a relevant search hit',
+            'requires_search_reference': True,
+        },
+        'write': {
+            'purpose': 'retain a reviewed decision, constraint, or durable lesson',
+            'policy': 'audit-gated-proposal-first',
+            'raw_sources_read_only': True,
+            'backup_or_snapshot_required': True,
+        },
+    },
+    'non_goals': [
+        'SET does not store memory',
+        'SET does not provide an MCP server',
+        'memory writes are not implicit completion evidence',
+    ],
+}
+
 DEFAULT_REVIEW_LENSES = [
     {
         'name': 'assumption-excavation',
@@ -47,7 +83,131 @@ DEFAULT_REVIEW_LENSES = [
         'phase': 'ship',
         'purpose': 'check whether confident claims are backed by evidence',
     },
+    {
+        'name': 'hypothesis-diversification',
+        'phase': 'research/adversarial-review',
+        'purpose': 'generate distinct alternatives before evidence review when first-answer mode collapse is risky',
+    },
+    {
+        'name': 'context-degradation-review',
+        'phase': 'handoff/context-review',
+        'purpose': 'check for context poisoning, lost-in-the-middle failures, distraction, context clash, and stale carryover',
+    },
+    {
+        'name': 'agent-tool-contract-review',
+        'phase': 'contract-design',
+        'purpose': 'review SET inputs, CLI/MCP tools, and generated agent instructions as explicit tool contracts',
+    },
+    {
+        'name': 'loop-readiness-review',
+        'phase': 'pre-schedule/pre-runner',
+        'purpose': 'check recurring agent loops for cadence, state, isolation, verifier, budget, run log, rollback, and human gate',
+    },
 ]
+
+DEFAULT_RESEARCH_DIVERSITY_HINT = {
+    'enabled': True,
+    'kind': 'review-hint',
+    'recommended_skill': 'hypothesis-diversification',
+    'pattern': 'diversity-first-research',
+    'use_when': [
+        'a plan or explanation may collapse onto the first plausible story',
+        'market, incident, product, or architecture analysis needs adversarial alternatives',
+        'SkillOpt-style proposal generation needs multiple bounded candidates before validation',
+    ],
+    'workflow': [
+        'generate distinct hypotheses or bounded proposals',
+        'record evidence needed and disconfirming signals',
+        'rank by evidence readiness rather than model confidence',
+        'handoff to validation, proof loop, or human review',
+    ],
+    'non_goals': [
+        'SET does not run a diversity runtime',
+        'SET does not treat model-stated probabilities as calibrated probabilities',
+        'SET does not make financial, trading, legal, medical, or safety decisions',
+    ],
+}
+
+DEFAULT_CONTEXT_BUDGET_HINT = {
+    'enabled': True,
+    'kind': 'review-hint',
+    'recommended_skill': 'context-degradation-review',
+    'pattern': 'context-budget-review',
+    'budget_surfaces': [
+        'system and developer instructions',
+        'user request',
+        'repo-local durable docs',
+        'memory or handoff summaries',
+        'retrieved files and tool output',
+        'orchestrator bundle fields',
+    ],
+    'workflow': [
+        'identify authoritative sources',
+        'demote stale or supporting-only context',
+        'keep decisive constraints close to the active plan',
+        'move bulky evidence into files or artifacts',
+        'preserve only source-backed durable lessons',
+    ],
+    'non_goals': [
+        'SET does not manage model context windows',
+        'SET does not choose or rewrite runner prompts',
+        'SET does not persist memory',
+    ],
+}
+
+DEFAULT_CONTEXT_DEGRADATION_REVIEW = {
+    'enabled': True,
+    'kind': 'review-hint',
+    'recommended_skill': 'context-degradation-review',
+    'failure_modes': [
+        'context-poisoning',
+        'lost-in-the-middle',
+        'distraction',
+        'context-clash',
+        'stale-carryover',
+    ],
+    'review_before': [
+        'external runner handoff',
+        'proposal apply',
+        'memory write',
+        'large generated documentation update',
+    ],
+    'non_goals': [
+        'SET does not run context repair automatically',
+        'SET does not override the current user message with memory or prior task history',
+    ],
+}
+
+DEFAULT_LOOP_READINESS_HINT = {
+    'enabled': True,
+    'kind': 'review-hint',
+    'recommended_skill': 'loop-readiness-review',
+    'pattern': 'abvx-loop-readiness',
+    'readiness_levels': {
+        'L0': 'not loop-ready',
+        'L1': 'report-only',
+        'L2': 'proposal-first',
+        'L3': 'governed loop',
+    },
+    'checks': [
+        'cadence and stop rule',
+        'durable state outside the model',
+        'scope and denied targets',
+        'worktree, branch, sandbox, or retained-output isolation',
+        'verifier or maker-checker gate',
+        'token, time, retry, and spend budget',
+        'run log and failure record',
+        'rollback or discard path',
+        'human gate for writes, merges, releases, destructive actions, and external side effects',
+    ],
+    'safe_default': 'L1 report-only until state, verifier, budget, run log, rollback, and human gate are explicit',
+    'non_goals': [
+        'SET does not schedule loops',
+        'SET does not spawn recurring agents',
+        'SET does not manage worktrees',
+        'SET does not auto-fix, auto-merge, deploy, or release',
+    ],
+}
 
 DEFAULT_PROPOSAL_LIFECYCLE = {
     'states': [
@@ -491,6 +651,11 @@ def build_orchestrator_bundle(
             'repomap_policy': repomap_policy,
             'repomap_policy_mode': repomap_policy_mode(repomap_policy),
             'repomap_policy_label': repomap_policy_label(repomap_policy_mode(repomap_policy)),
+            'memory_capability': DEFAULT_MEMORY_CAPABILITY,
+            'research_diversity_hint': DEFAULT_RESEARCH_DIVERSITY_HINT,
+            'context_budget_hint': DEFAULT_CONTEXT_BUDGET_HINT,
+            'context_degradation_review': DEFAULT_CONTEXT_DEGRADATION_REVIEW,
+            'loop_readiness_hint': DEFAULT_LOOP_READINESS_HINT,
             'id_bootstrap': {
                 'enabled': bool(id_config and id_config.get('enabled') and id_config.get('pre_task')),
                 'owner_id': id_config.get('owner_id') if id_config else None,

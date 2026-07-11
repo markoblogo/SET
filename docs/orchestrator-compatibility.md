@@ -32,14 +32,22 @@ Useful fields:
 
 - `repo`: target repository identity
 - `target_workflow`: proposed SET workflow path, action ref, preset, and inputs
-- `context_package`: repomap policy and optional ID bootstrap artifact hints
+- `context_package`: repomap policy, optional ID bootstrap artifact hints, memory/context/research hints, and optional capability contracts
 - `task_contract`: proof-loop settings, expected artifacts, proposal lifecycle, and blockers
 - `capabilities`: resolved SET/agentsgen/ID capabilities
 - `handoff`: runner-facing guidance and non-goals
 
-`task_contract.recommended_review_lenses` lists optional review gates for external runners and humans. The current default lens set is `assumption-excavation`, `pipeline-readiness-gate`, and `confidence-fragility-review`. These are hints, not runtime dependencies.
+`task_contract.recommended_review_lenses` lists optional review gates for external runners and humans. The current default lens set is `assumption-excavation`, `pipeline-readiness-gate`, `confidence-fragility-review`, `hypothesis-diversification`, `context-degradation-review`, `agent-tool-contract-review`, and `loop-readiness-review`. These are hints, not runtime dependencies.
+
+`context_package.research_diversity_hint` asks runners to generate distinct hypotheses or bounded proposals before validation when first-answer mode collapse is risky. It is deliberately a review hint, not a SET runtime. See `docs/research-diversity-hint.md`.
+
+`context_package.context_budget_hint` and `context_package.context_degradation_review` ask runners to review context poisoning, lost-in-the-middle failures, distraction, context clash, and stale carryover before handoff or apply. See `docs/context-budget-hint.md`.
+
+`context_package.loop_readiness_hint` asks runners to keep recurring work report-only until cadence, state, isolation, verifier, budget, run log, rollback, and human gate are explicit. See `docs/loop-readiness-hint.md`.
 
 `task_contract.proposal_lifecycle` defines a proposal-first settlement model: `run`, `retained_output`, `inspect`, then `select`, `apply`, or `discard`. External runners should keep generated files outside the target workspace until inspection passes and an explicit apply step settles the proposal.
+
+`context_package.memory_capability` is provider-neutral and disabled by default. If a runner implements it, it must provide per-project isolation, hybrid/full-text retrieval, and audit-gated proposal-first writes. See `docs/memory-capability-contract.md`.
 
 When `--export-dir` is used, the planner also writes `proposal-lifecycle.json` and `rabbithole.seed.md`. The lifecycle file is a compact machine-readable settlement contract. The Rabbithole seed is optional local review material for human-in-the-loop exploration of the plan. Neither is required by SET as a runtime dependency.
 
@@ -64,6 +72,27 @@ From coordination protocols:
 - use `repo`, `target_workflow`, and expected artifacts as stable handoff inputs
 - keep runtime claims, locks, heartbeats, and runner state in the external system
 
+From diversity-first research:
+
+- generate alternatives before arguing for the strongest one
+- record evidence needs and disconfirming signals
+- rank by evidence readiness, not model-stated probability
+- hand off to validation, proof-loop artifacts, or human review
+
+From context engineering:
+
+- keep authoritative constraints close to the active plan
+- demote stale summaries and supporting-only context
+- move bulky evidence into artifacts instead of prompt payloads
+- review context degradation before runner handoff, memory write, or proposal apply
+
+From loop engineering:
+
+- keep new loops report-only before promotion
+- require durable state, verifier, budget, run log, rollback, and human gate
+- use worktree, branch, sandbox, or retained-output isolation for proposal-first loops
+- keep scheduling, recurrence, and runner state outside SET
+
 ## Non-goals
 
-`SET` should not grow a kanban board, agent scheduler, worktree manager, or autonomous loop runtime. Those are product/runtime layers. `SET` stays useful by keeping the contract small, explicit, and reviewable.
+`SET` should not grow a kanban board, agent scheduler, worktree manager, diversity sampling runtime, or autonomous loop runtime. Those are product/runtime layers. `SET` stays useful by keeping the contract small, explicit, and reviewable.

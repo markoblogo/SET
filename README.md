@@ -88,7 +88,7 @@ python3 scripts/validate_registry.py
 - can compare against a local repo root for drift
 - does not write target repositories directly
 
-`orchestrator-bundle.json` is the upstream handoff contract for Sortie/Symphony-like runners: it carries repo identity, proposed workflow inputs, repomap policy, optional `ID` bootstrap hints, proof-loop expectations, recommended review lenses, proposal lifecycle guidance, and blockers without making `SET` an agent runner. `proposal-lifecycle.json` spells out the proposal-first flow (`run -> retained_output -> inspect -> select/apply/discard`). `rabbithole.seed.md` is also exported as an optional local review seed for human-in-the-loop plan exploration.
+`orchestrator-bundle.json` is the upstream handoff contract for Sortie/Symphony-like runners: it carries repo identity, proposed workflow inputs, repomap policy, optional `ID` bootstrap hints, proof-loop expectations, recommended review lenses, proposal lifecycle guidance, research diversity hints, context budget hints, loop readiness hints, and blockers without making `SET` an agent runner. `proposal-lifecycle.json` spells out the proposal-first flow (`run -> retained_output -> inspect -> select/apply/discard`). `rabbithole.seed.md` is also exported as an optional local review seed for human-in-the-loop plan exploration.
 
 Useful commands:
 
@@ -123,6 +123,12 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/id-bootstrap.md`
 - `docs/config-apply-planning.md`
 - `docs/orchestrator-compatibility.md`
+- `docs/context-budget-hint.md`
+- `docs/loop-readiness-hint.md`
+- `docs/research-diversity-hint.md`
+- `docs/references/open-notebook.md`
+- `docs/references/agent-orchestrators.md`
+- `docs/memory-capability-contract.md`
 - `docs/llmo-capability-map.md`
 - `docs/v0.1-scope.md`
 - `CONTRIBUTING.md`
