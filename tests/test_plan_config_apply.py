@@ -28,6 +28,12 @@ def test_orchestrator_bundle_carries_proof_loop_contract() -> None:
     assert memory['scope']['model'] == 'per-project'
     assert memory['retrieval']['modes'] == ['full_text', 'semantic']
     assert memory['operations']['write']['policy'] == 'audit-gated-proposal-first'
+    governance = bundle['context_package']['agent_governance_capability']
+    assert governance['enabled'] is False
+    assert governance['mode'] == 'shadow-first'
+    assert governance['decision']['outcomes'] == ['allow', 'deny', 'require_approval']
+    assert governance['telemetry']['fields'] == ['tool_calls', 'tokens', 'estimated_cost', 'latency_ms']
+    assert 'SET does not execute or proxy tool calls' in governance['non_goals']
     diversity = bundle['context_package']['research_diversity_hint']
     assert diversity['kind'] == 'review-hint'
     assert diversity['recommended_skill'] == 'hypothesis-diversification'

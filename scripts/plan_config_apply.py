@@ -67,6 +67,54 @@ DEFAULT_MEMORY_CAPABILITY = {
     ],
 }
 
+DEFAULT_AGENT_GOVERNANCE_CAPABILITY = {
+    'enabled': False,
+    'kind': 'optional-agent-governance-capability',
+    'mode': 'shadow-first',
+    'decision': {
+        'when': 'before a significant tool call or external side effect',
+        'outcomes': ['allow', 'deny', 'require_approval'],
+        'required_record': [
+            'task_id',
+            'correlation_id',
+            'action_kind',
+            'action_fingerprint',
+            'short_operational_reason',
+            'decision',
+        ],
+    },
+    'policy': {
+        'recommended_controls': [
+            'allowlist or denylist for action classes',
+            'path and protected-data boundaries',
+            'per-intent rate and spend limits',
+            'one-shot human approval for the exact deferred action',
+            'circuit breaker for repeated denials or failures',
+        ],
+        'protected_evidence_rule': 'protected evidence and secrets stay outside public outputs and public ledgers',
+    },
+    'telemetry': {
+        'fields': ['tool_calls', 'tokens', 'estimated_cost', 'latency_ms'],
+        'evaluation_dimensions': [
+            'factual_safety',
+            'unnecessary_tool_calls',
+            'cost',
+            'latency',
+            'stopping_correctness',
+            'abstention_quality',
+        ],
+    },
+    'audit': {
+        'storage': 'append-only provider-owned ledger',
+        'reasoning_policy': 'retain short operational reasons, never hidden chain-of-thought',
+    },
+    'non_goals': [
+        'SET does not execute or proxy tool calls',
+        'SET does not store secrets, protected evidence, or hidden chain-of-thought',
+        'SET does not enable enforcement or promotion without measured shadow results',
+    ],
+}
+
 DEFAULT_REVIEW_LENSES = [
     {
         'name': 'assumption-excavation',
@@ -652,6 +700,7 @@ def build_orchestrator_bundle(
             'repomap_policy_mode': repomap_policy_mode(repomap_policy),
             'repomap_policy_label': repomap_policy_label(repomap_policy_mode(repomap_policy)),
             'memory_capability': DEFAULT_MEMORY_CAPABILITY,
+            'agent_governance_capability': DEFAULT_AGENT_GOVERNANCE_CAPABILITY,
             'research_diversity_hint': DEFAULT_RESEARCH_DIVERSITY_HINT,
             'context_budget_hint': DEFAULT_CONTEXT_BUDGET_HINT,
             'context_degradation_review': DEFAULT_CONTEXT_DEGRADATION_REVIEW,

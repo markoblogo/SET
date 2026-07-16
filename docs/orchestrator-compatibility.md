@@ -49,6 +49,8 @@ Useful fields:
 
 `context_package.memory_capability` is provider-neutral and disabled by default. If a runner implements it, it must provide per-project isolation, hybrid/full-text retrieval, and audit-gated proposal-first writes. See `docs/memory-capability-contract.md`.
 
+`context_package.agent_governance_capability` is also provider-neutral and disabled by default. It defines a shadow-first policy decision before significant tool calls, three outcomes (`allow`, `deny`, `require_approval`), append-only provider-owned audit records, and telemetry for tool calls, tokens, estimated cost, and latency. It records a short operational reason, never hidden chain-of-thought. A runner must keep protected evidence and secrets out of public outputs. See `docs/agent-governance-capability-contract.md`.
+
 When `--export-dir` is used, the planner also writes `proposal-lifecycle.json` and `rabbithole.seed.md`. The lifecycle file is a compact machine-readable settlement contract. The Rabbithole seed is optional local review material for human-in-the-loop exploration of the plan. Neither is required by SET as a runtime dependency.
 
 ## Patterns to adapt
@@ -95,4 +97,4 @@ From loop engineering:
 
 ## Non-goals
 
-`SET` should not grow a kanban board, agent scheduler, worktree manager, diversity sampling runtime, or autonomous loop runtime. Those are product/runtime layers. `SET` stays useful by keeping the contract small, explicit, and reviewable.
+`SET` should not grow a kanban board, agent scheduler, worktree manager, diversity sampling runtime, tool-call proxy, policy-enforcement service, or autonomous loop runtime. Those are product/runtime layers. `SET` stays useful by keeping the contract small, explicit, and reviewable.
