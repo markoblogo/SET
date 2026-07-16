@@ -1,6 +1,7 @@
 {
   "version": 1,
   "repo": "markoblogo/example-repo",
+  "capability_profile": "baseline",
   "site": {
     "url": "https://example.com"
   },

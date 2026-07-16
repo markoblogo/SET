@@ -52,6 +52,14 @@ def test_validate_config_rejects_unsupported_preset(tmp_path: Path) -> None:
         validate_config(path)
 
 
+def test_validate_config_rejects_unknown_capability_profile(tmp_path: Path) -> None:
+    invalid = valid_config()
+    invalid['capability_profile'] = 'installer'
+    path = write_json(tmp_path / 'repo.json', invalid)
+    with pytest.raises(SystemExit):
+        validate_config(path)
+
+
 def test_validate_config_rejects_bad_repomap_policy(tmp_path: Path) -> None:
     invalid = valid_config()
     invalid['tools']['agentsgen'] = {

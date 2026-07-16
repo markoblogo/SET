@@ -1,6 +1,7 @@
 {
   "version": 1,
   "repo": "markoblogo/SET",
+  "capability_profile": "governed-runner",
   "tools": {
     "agentsgen": {
       "init": true,

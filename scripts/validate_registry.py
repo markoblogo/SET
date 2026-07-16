@@ -4,7 +4,8 @@ import json
 from pathlib import Path
 
 ALLOWED_PRESETS = {'minimal', 'repo-docs', 'site-ai'}
-ALLOWED_TOP_LEVEL = {'version', 'repo', 'site', 'tools', 'presets'}
+ALLOWED_TOP_LEVEL = {'version', 'repo', 'site', 'tools', 'presets', 'capability_profile'}
+ALLOWED_CAPABILITY_PROFILES = {'baseline', 'research', 'governed-runner'}
 ALLOWED_SITE_KEYS = {'url'}
 ALLOWED_TOOL_BLOCKS = {'agentsgen', 'git_tweet', 'id'}
 ALLOWED_AGENTSGEN_KEYS = {
@@ -51,6 +52,12 @@ def validate_config(path: Path) -> dict[str, object]:
     _require(data.get('version') == 1, f'{path.name}: version must be 1')
     repo = data.get('repo')
     _require(isinstance(repo, str) and '/' in repo, f'{path.name}: repo must be owner/name')
+    capability_profile = data.get('capability_profile')
+    if capability_profile is not None:
+        _require(
+            isinstance(capability_profile, str) and capability_profile in ALLOWED_CAPABILITY_PROFILES,
+            f'{path.name}: capability_profile must be one of {", ".join(sorted(ALLOWED_CAPABILITY_PROFILES))}',
+        )
 
     site = data.get('site')
     if site is not None:

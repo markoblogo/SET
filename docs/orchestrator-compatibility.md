@@ -32,14 +32,16 @@ Useful fields:
 
 - `repo`: target repository identity
 - `target_workflow`: proposed SET workflow path, action ref, preset, and inputs
-- `context_package`: repomap policy, optional ID bootstrap artifact hints, memory/context/research hints, and optional capability contracts
+- `context_package`: repomap policy, optional ID bootstrap artifact hints, and one selected capability-profile export
 - `task_contract`: proof-loop settings, expected artifacts, proposal lifecycle, and blockers
 - `capabilities`: resolved SET/agentsgen/ID capabilities
 - `handoff`: runner-facing guidance and non-goals
 
 `task_contract.recommended_review_lenses` lists optional review gates for external runners and humans. The current default lens set is `assumption-excavation`, `pipeline-readiness-gate`, `confidence-fragility-review`, `hypothesis-diversification`, `context-degradation-review`, `agent-tool-contract-review`, and `loop-readiness-review`. These are hints, not runtime dependencies.
 
-`context_package.research_diversity_hint` asks runners to generate distinct hypotheses or bounded proposals before validation when first-answer mode collapse is risky. It is deliberately a review hint, not a SET runtime. See `docs/research-diversity-hint.md`.
+`context_package.capability_profile` records the selected profile and its exact exports. Profiles are registry-selected, planning-only, and do not install dependencies, grant tool authority, or enable a runtime. `baseline` exports context and loop review hints; `research` adds diversity and optional project-memory guidance; `governed-runner` adds optional memory and shadow-first governance contracts. See `docs/capability-profiles.md`.
+
+When selected by the `research` profile, `context_package.research_diversity_hint` asks runners to generate distinct hypotheses or bounded proposals before validation when first-answer mode collapse is risky. It is deliberately a review hint, not a SET runtime. See `docs/research-diversity-hint.md`.
 
 `context_package.context_budget_hint` and `context_package.context_degradation_review` ask runners to review context poisoning, lost-in-the-middle failures, distraction, context clash, and stale carryover before handoff or apply. See `docs/context-budget-hint.md`.
 
@@ -47,9 +49,9 @@ Useful fields:
 
 `task_contract.proposal_lifecycle` defines a proposal-first settlement model: `run`, `retained_output`, `inspect`, then `select`, `apply`, or `discard`. External runners should keep generated files outside the target workspace until inspection passes and an explicit apply step settles the proposal.
 
-`context_package.memory_capability` is provider-neutral and disabled by default. If a runner implements it, it must provide per-project isolation, hybrid/full-text retrieval, and audit-gated proposal-first writes. See `docs/memory-capability-contract.md`.
+When selected by `research` or `governed-runner`, `context_package.memory_capability` is provider-neutral and disabled by default. If a runner implements it, it must provide per-project isolation, hybrid/full-text retrieval, and audit-gated proposal-first writes. See `docs/memory-capability-contract.md`.
 
-`context_package.agent_governance_capability` is also provider-neutral and disabled by default. It defines a shadow-first policy decision before significant tool calls, three outcomes (`allow`, `deny`, `require_approval`), append-only provider-owned audit records, and telemetry for tool calls, tokens, estimated cost, and latency. It records a short operational reason, never hidden chain-of-thought. A runner must keep protected evidence and secrets out of public outputs. See `docs/agent-governance-capability-contract.md`.
+When selected by `governed-runner`, `context_package.agent_governance_capability` is provider-neutral and disabled by default. It defines a shadow-first policy decision before significant tool calls, three outcomes (`allow`, `deny`, `require_approval`), append-only provider-owned audit records, and telemetry for tool calls, tokens, estimated cost, and latency. It records a short operational reason, never hidden chain-of-thought. A runner must keep protected evidence and secrets out of public outputs. See `docs/agent-governance-capability-contract.md`.
 
 When `--export-dir` is used, the planner also writes `proposal-lifecycle.json` and `rabbithole.seed.md`. The lifecycle file is a compact machine-readable settlement contract. The Rabbithole seed is optional local review material for human-in-the-loop exploration of the plan. Neither is required by SET as a runtime dependency.
 

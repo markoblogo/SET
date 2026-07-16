@@ -23,6 +23,16 @@ def test_orchestrator_bundle_carries_proof_loop_contract() -> None:
     bundle = plan['orchestrator_bundle']
     assert bundle['context_package']['repomap_policy_mode'] == 'changed'
     assert bundle['context_package']['rabbithole_seed']['artifact'] == 'rabbithole.seed.md'
+    profile = bundle['context_package']['capability_profile']
+    assert profile['selected'] == 'governed-runner'
+    assert profile['exports'] == [
+        'context_budget_hint',
+        'context_degradation_review',
+        'loop_readiness_hint',
+        'memory_capability',
+        'agent_governance_capability',
+    ]
+    assert profile['selection_scope'] == 'planning-only context package'
     memory = bundle['context_package']['memory_capability']
     assert memory['enabled'] is False
     assert memory['scope']['model'] == 'per-project'
@@ -34,10 +44,7 @@ def test_orchestrator_bundle_carries_proof_loop_contract() -> None:
     assert governance['decision']['outcomes'] == ['allow', 'deny', 'require_approval']
     assert governance['telemetry']['fields'] == ['tool_calls', 'tokens', 'estimated_cost', 'latency_ms']
     assert 'SET does not execute or proxy tool calls' in governance['non_goals']
-    diversity = bundle['context_package']['research_diversity_hint']
-    assert diversity['kind'] == 'review-hint'
-    assert diversity['recommended_skill'] == 'hypothesis-diversification'
-    assert 'SET does not run a diversity runtime' in diversity['non_goals']
+    assert 'research_diversity_hint' not in bundle['context_package']
     context_budget = bundle['context_package']['context_budget_hint']
     assert context_budget['kind'] == 'review-hint'
     assert context_budget['recommended_skill'] == 'context-degradation-review'
@@ -65,6 +72,35 @@ def test_orchestrator_bundle_carries_proof_loop_contract() -> None:
         'apply',
         'discard',
     ]
+
+
+def test_capability_profile_exports_are_snapshot_stable() -> None:
+    expected_exports = {
+        'baseline': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'loop_readiness_hint',
+        ],
+        'research': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'loop_readiness_hint',
+            'research_diversity_hint',
+            'memory_capability',
+        ],
+        'governed-runner': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'loop_readiness_hint',
+            'memory_capability',
+            'agent_governance_capability',
+        ],
+    }
+    for name, exports in expected_exports.items():
+        package = planner.build_profile_context_package({'capability_profile': name})
+        assert package['capability_profile']['selected'] == name
+        assert package['capability_profile']['exports'] == exports
+        assert [key for key in package if key != 'capability_profile'] == exports
 
 
 def test_export_plan_writes_orchestrator_bundle(tmp_path: Path) -> None:

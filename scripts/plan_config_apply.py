@@ -257,6 +257,37 @@ DEFAULT_LOOP_READINESS_HINT = {
     ],
 }
 
+CAPABILITY_PROFILE_EXPORTS = {
+    'baseline': {
+        'description': 'Planning and review hints suitable for every SET handoff.',
+        'exports': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'loop_readiness_hint',
+        ],
+    },
+    'research': {
+        'description': 'Baseline plus bounded research and optional project memory guidance.',
+        'exports': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'loop_readiness_hint',
+            'research_diversity_hint',
+            'memory_capability',
+        ],
+    },
+    'governed-runner': {
+        'description': 'Baseline plus optional memory and shadow-first governance contracts.',
+        'exports': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'loop_readiness_hint',
+            'memory_capability',
+            'agent_governance_capability',
+        ],
+    },
+}
+
 DEFAULT_PROPOSAL_LIFECYCLE = {
     'states': [
         'run',
@@ -430,6 +461,41 @@ def resolve_repomap_policy(agentsgen: dict[str, object]) -> dict[str, object] | 
         if isinstance(changed, bool):
             resolved['changed'] = changed
     return resolved
+
+
+def resolve_capability_profile(data: dict[str, object]) -> str:
+    profile = data.get('capability_profile')
+    if isinstance(profile, str) and profile in CAPABILITY_PROFILE_EXPORTS:
+        return profile
+    return 'baseline'
+
+
+def build_profile_context_package(data: dict[str, object]) -> dict[str, object]:
+    profile = resolve_capability_profile(data)
+    capability_values: dict[str, object] = {
+        'memory_capability': DEFAULT_MEMORY_CAPABILITY,
+        'agent_governance_capability': DEFAULT_AGENT_GOVERNANCE_CAPABILITY,
+        'research_diversity_hint': DEFAULT_RESEARCH_DIVERSITY_HINT,
+        'context_budget_hint': DEFAULT_CONTEXT_BUDGET_HINT,
+        'context_degradation_review': DEFAULT_CONTEXT_DEGRADATION_REVIEW,
+        'loop_readiness_hint': DEFAULT_LOOP_READINESS_HINT,
+    }
+    exports = CAPABILITY_PROFILE_EXPORTS[profile]['exports']
+    return {
+        'capability_profile': {
+            'kind': 'set-capability-profile',
+            'selected': profile,
+            'description': CAPABILITY_PROFILE_EXPORTS[profile]['description'],
+            'exports': list(exports),
+            'selection_scope': 'planning-only context package',
+            'non_goals': [
+                'profiles do not install dependencies or enable a runtime',
+                'profiles do not grant tool, mutation, or enforcement authority',
+                'profiles only select exported contracts and review hints',
+            ],
+        },
+        **{name: capability_values[name] for name in exports},
+    }
 
 
 def list_repo_configs() -> list[tuple[Path, dict[str, object]]]:
@@ -659,6 +725,7 @@ def build_review_payload(
 def build_orchestrator_bundle(
     repo: str,
     config_path: Path,
+    config: dict[str, object],
     workflow: dict[str, object],
     capabilities: list[dict[str, object]],
     unmapped: list[str],
@@ -699,12 +766,7 @@ def build_orchestrator_bundle(
             'repomap_policy': repomap_policy,
             'repomap_policy_mode': repomap_policy_mode(repomap_policy),
             'repomap_policy_label': repomap_policy_label(repomap_policy_mode(repomap_policy)),
-            'memory_capability': DEFAULT_MEMORY_CAPABILITY,
-            'agent_governance_capability': DEFAULT_AGENT_GOVERNANCE_CAPABILITY,
-            'research_diversity_hint': DEFAULT_RESEARCH_DIVERSITY_HINT,
-            'context_budget_hint': DEFAULT_CONTEXT_BUDGET_HINT,
-            'context_degradation_review': DEFAULT_CONTEXT_DEGRADATION_REVIEW,
-            'loop_readiness_hint': DEFAULT_LOOP_READINESS_HINT,
+            **build_profile_context_package(config),
             'id_bootstrap': {
                 'enabled': bool(id_config and id_config.get('enabled') and id_config.get('pre_task')),
                 'owner_id': id_config.get('owner_id') if id_config else None,
@@ -905,6 +967,7 @@ def build_plan(
     orchestrator_bundle = build_orchestrator_bundle(
         data['repo'],
         config_path,
+        data,
         workflow,
         capabilities,
         unmapped,
