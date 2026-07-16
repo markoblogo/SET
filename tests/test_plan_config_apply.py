@@ -95,12 +95,29 @@ def test_capability_profile_exports_are_snapshot_stable() -> None:
             'memory_capability',
             'agent_governance_capability',
         ],
+        'loop-readiness': [
+            'context_budget_hint',
+            'loop_readiness_hint',
+            'loop_readiness_contract',
+        ],
     }
     for name, exports in expected_exports.items():
         package = planner.build_profile_context_package({'capability_profile': name})
         assert package['capability_profile']['selected'] == name
         assert package['capability_profile']['exports'] == exports
         assert [key for key in package if key != 'capability_profile'] == exports
+
+
+def test_loop_readiness_profile_exports_l1_l2_contract() -> None:
+    package = planner.build_profile_context_package({'capability_profile': 'loop-readiness'})
+    contract = package['loop_readiness_contract']
+    assert contract['enabled'] is False
+    assert contract['kind'] == 'optional-loop-readiness-contract'
+    assert contract['default_level'] == 'L1'
+    assert contract['levels']['L1']['authority'] == 'report-only'
+    assert contract['levels']['L2']['authority'] == 'proposal-first-assisted'
+    assert 'maker-checker verification' in contract['levels']['L2']['required_controls']
+    assert 'SET does not schedule or execute loops' in contract['non_goals']
 
 
 def test_export_plan_writes_orchestrator_bundle(tmp_path: Path) -> None:

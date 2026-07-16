@@ -17,6 +17,7 @@ Omit it for `baseline`. `context_package.capability_profile` records the selecte
 | `baseline` | context-budget, context-degradation, and loop-readiness hints | a normal planning handoff needs review discipline only |
 | `research` | baseline plus research-diversity and optional memory contracts | evaluation or research needs bounded alternatives and project-scoped retrieval guidance |
 | `governed-runner` | baseline plus optional memory and governance contracts | a runner is separately implementing measured shadow-first policy decisions |
+| `loop-readiness` | context budget, readiness hint, and disabled L1/L2 loop contract | a runner or reviewer needs an explicit report-first recurring-work packet without enabling a runtime |
 
 ## Boundary
 
@@ -24,3 +25,5 @@ Omit it for `baseline`. `context_package.capability_profile` records the selecte
 - Every optional contract stays disabled until an external runner implements it.
 - Profiles never install dependencies, register hooks, execute tools, store memory, or grant mutation/enforcement authority.
 - Use snapshot tests whenever an export list changes so a profile cannot silently widen a downstream contract.
+
+See `docs/loop-readiness-contract.md` for the L1/L2 controls and authority boundary.

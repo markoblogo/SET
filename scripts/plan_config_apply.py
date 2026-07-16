@@ -257,6 +257,51 @@ DEFAULT_LOOP_READINESS_HINT = {
     ],
 }
 
+DEFAULT_LOOP_READINESS_CONTRACT = {
+    'enabled': False,
+    'kind': 'optional-loop-readiness-contract',
+    'default_level': 'L1',
+    'mode': 'report-first',
+    'levels': {
+        'L1': {
+            'authority': 'report-only',
+            'required_controls': [
+                'single goal, explicit non-goals, and watched scope',
+                'durable state and append-only run log outside the model',
+                'token, time, and retry budget with early exit and stop conditions',
+                'human escalation for ambiguity or any proposed external side effect',
+            ],
+        },
+        'L2': {
+            'authority': 'proposal-first-assisted',
+            'required_controls': [
+                'all L1 controls',
+                'retained-output, branch, worktree, or sandbox isolation',
+                'maker-checker verification',
+                'named evidence for verification and explicit discard or rollback notes',
+                'human approval before writes, merges, releases, destructive actions, or external side effects',
+            ],
+        },
+    },
+    'record_fields': [
+        'run_id',
+        'goal',
+        'scope',
+        'level',
+        'items_found',
+        'actions_proposed',
+        'verification',
+        'escalations',
+        'budget_consumed',
+        'outcome',
+    ],
+    'non_goals': [
+        'SET does not schedule or execute loops',
+        'SET does not spawn agents, manage worktrees, or proxy tool calls',
+        'SET does not grant mutation, merge, release, or external-action authority',
+    ],
+}
+
 CAPABILITY_PROFILE_EXPORTS = {
     'baseline': {
         'description': 'Planning and review hints suitable for every SET handoff.',
@@ -284,6 +329,14 @@ CAPABILITY_PROFILE_EXPORTS = {
             'loop_readiness_hint',
             'memory_capability',
             'agent_governance_capability',
+        ],
+    },
+    'loop-readiness': {
+        'description': 'Explicit L1/L2 report-first loop contract for an external runner or reviewer.',
+        'exports': [
+            'context_budget_hint',
+            'loop_readiness_hint',
+            'loop_readiness_contract',
         ],
     },
 }
@@ -479,6 +532,7 @@ def build_profile_context_package(data: dict[str, object]) -> dict[str, object]:
         'context_budget_hint': DEFAULT_CONTEXT_BUDGET_HINT,
         'context_degradation_review': DEFAULT_CONTEXT_DEGRADATION_REVIEW,
         'loop_readiness_hint': DEFAULT_LOOP_READINESS_HINT,
+        'loop_readiness_contract': DEFAULT_LOOP_READINESS_CONTRACT,
     }
     exports = CAPABILITY_PROFILE_EXPORTS[profile]['exports']
     return {

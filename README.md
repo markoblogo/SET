@@ -88,7 +88,7 @@ python3 scripts/validate_registry.py
 - can compare against a local repo root for drift
 - does not write target repositories directly
 
-`orchestrator-bundle.json` is the upstream handoff contract for Sortie/Symphony-like runners: it carries repo identity, proposed workflow inputs, repomap policy, optional `ID` bootstrap hints, proof-loop expectations, recommended review lenses, proposal lifecycle guidance, and one registry-selected capability profile without making `SET` an agent runner. `baseline` exports only context/loop review hints; `research` adds diversity and optional memory guidance; `governed-runner` adds optional memory plus shadow-first governance. `proposal-lifecycle.json` spells out the proposal-first flow (`run -> retained_output -> inspect -> select/apply/discard`). `rabbithole.seed.md` is also exported as an optional local review seed for human-in-the-loop plan exploration.
+`orchestrator-bundle.json` is the upstream handoff contract for Sortie/Symphony-like runners: it carries repo identity, proposed workflow inputs, repomap policy, optional `ID` bootstrap hints, proof-loop expectations, recommended review lenses, proposal lifecycle guidance, and one registry-selected capability profile without making `SET` an agent runner. `baseline` exports only context/loop review hints; `research` adds diversity and optional memory guidance; `governed-runner` adds optional memory plus shadow-first governance; `loop-readiness` exports a disabled L1/L2 report-first contract. `proposal-lifecycle.json` spells out the proposal-first flow (`run -> retained_output -> inspect -> select/apply/discard`). `rabbithole.seed.md` is also exported as an optional local review seed for human-in-the-loop plan exploration.
 
 The bundle also exports an optional `agent_governance_capability`: a shadow-first contract for a runner-owned policy decision before significant tool calls, append-only audit records, and per-run tool/cost/latency telemetry. It has no runtime dependency and is disabled by default. See `docs/agent-governance-capability-contract.md`.
 
@@ -127,6 +127,7 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/orchestrator-compatibility.md`
 - `docs/context-budget-hint.md`
 - `docs/loop-readiness-hint.md`
+- `docs/loop-readiness-contract.md`
 - `docs/research-diversity-hint.md`
 - `docs/references/open-notebook.md`
 - `docs/references/agent-orchestrators.md`

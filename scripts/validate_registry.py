@@ -5,7 +5,7 @@ from pathlib import Path
 
 ALLOWED_PRESETS = {'minimal', 'repo-docs', 'site-ai'}
 ALLOWED_TOP_LEVEL = {'version', 'repo', 'site', 'tools', 'presets', 'capability_profile'}
-ALLOWED_CAPABILITY_PROFILES = {'baseline', 'research', 'governed-runner'}
+ALLOWED_CAPABILITY_PROFILES = {'baseline', 'research', 'governed-runner', 'loop-readiness'}
 ALLOWED_SITE_KEYS = {'url'}
 ALLOWED_TOOL_BLOCKS = {'agentsgen', 'git_tweet', 'id'}
 ALLOWED_AGENTSGEN_KEYS = {
