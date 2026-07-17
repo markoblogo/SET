@@ -134,6 +134,26 @@ def test_bounded_orchestration_profile_exports_fail_closed_contract() -> None:
     assert 'SET does not spawn, schedule, or route agents' in contract['non_goals']
 
 
+def test_git_native_context_profile_exports_minimal_human_gated_contract() -> None:
+    package = planner.build_profile_context_package({'capability_profile': 'git-native-context'})
+    contract = package['git_native_context_contract']
+    assert contract['enabled'] is False
+    assert contract['document_types']['allowed'] == ['adr', 'rfc', 'rule', 'spec', 'plan', 'rnd', 'cpat']
+    assert contract['lifecycle']['statuses'] == ['draft', 'accepted', 'rejected']
+    assert contract['lifecycle']['acceptance_gate']['human_approval_required'] is True
+    assert contract['relations']['types'] == ['implements', 'depends_on', 'extends', 'related']
+    assert contract['cpat']['required_sections'] == [
+        'symptom',
+        'root_cause',
+        'change',
+        'scope',
+        'verification',
+        'prevention',
+    ]
+    assert contract['storage']['write_policy'] == 'proposal -> inspect -> apply'
+    assert 'SET does not install Archcore, hooks, MCP servers, or session-start injection' in contract['non_goals']
+
+
 def test_export_plan_writes_orchestrator_bundle(tmp_path: Path) -> None:
     config_path, data = planner.load_config('markoblogo/SET')
     plan = planner.build_plan(config_path, data)

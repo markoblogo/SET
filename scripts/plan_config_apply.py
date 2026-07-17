@@ -356,6 +356,56 @@ DEFAULT_BOUNDED_ORCHESTRATION_CONTRACT = {
     ],
 }
 
+DEFAULT_GIT_NATIVE_CONTEXT_CONTRACT = {
+    'enabled': False,
+    'kind': 'optional-git-native-context-contract',
+    'recommended_skill': 'git-native-context-contract',
+    'authority': 'proposal-first-documentation',
+    'document_types': {
+        'allowed': ['adr', 'rfc', 'rule', 'spec', 'plan', 'rnd', 'cpat'],
+        'extension_rule': 'additional types require an explicit project-level contract change',
+    },
+    'lifecycle': {
+        'statuses': ['draft', 'accepted', 'rejected'],
+        'initial_status': 'draft',
+        'transitions': {
+            'draft': ['accepted', 'rejected'],
+            'accepted': ['rejected'],
+            'rejected': [],
+        },
+        'acceptance_gate': {
+            'human_approval_required': True,
+            'required_record': ['approved_by', 'approved_at', 'approval_reference'],
+            'rule': 'agents may propose acceptance but must not set accepted without explicit human approval',
+        },
+    },
+    'relations': {
+        'types': ['implements', 'depends_on', 'extends', 'related'],
+        'required_fields': ['source', 'type', 'target'],
+        'rules': [
+            'source and target must exist before a relation is recorded',
+            'relations are directed except related, which is semantically symmetric',
+            'duplicate and self-referential relations are invalid',
+        ],
+    },
+    'cpat': {
+        'name': 'code-change-pattern',
+        'required_sections': ['symptom', 'root_cause', 'change', 'scope', 'verification', 'prevention'],
+        'completion_rule': 'verification must name observed evidence; prevention must identify the durable guard',
+    },
+    'storage': {
+        'format': 'typed Markdown with YAML frontmatter in a repo-owned directory',
+        'source_of_truth': 'Git-reviewed project files',
+        'write_policy': 'proposal -> inspect -> apply',
+    },
+    'non_goals': [
+        'SET does not install Archcore, hooks, MCP servers, or session-start injection',
+        'SET does not store or mutate project context',
+        'SET does not auto-accept documents or infer human approval',
+        'SET does not replace AGENTS.md, docs/ai, product truth, protected evidence stores, or runtime ledgers',
+    ],
+}
+
 CAPABILITY_PROFILE_EXPORTS = {
     'baseline': {
         'description': 'Planning and review hints suitable for every SET handoff.',
@@ -399,6 +449,14 @@ CAPABILITY_PROFILE_EXPORTS = {
             'context_budget_hint',
             'context_degradation_review',
             'bounded_orchestration_contract',
+        ],
+    },
+    'git-native-context': {
+        'description': 'Disabled minimal typed-document lifecycle and relation contract for Git-reviewed project context.',
+        'exports': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'git_native_context_contract',
         ],
     },
 }
@@ -596,6 +654,7 @@ def build_profile_context_package(data: dict[str, object]) -> dict[str, object]:
         'loop_readiness_hint': DEFAULT_LOOP_READINESS_HINT,
         'loop_readiness_contract': DEFAULT_LOOP_READINESS_CONTRACT,
         'bounded_orchestration_contract': DEFAULT_BOUNDED_ORCHESTRATION_CONTRACT,
+        'git_native_context_contract': DEFAULT_GIT_NATIVE_CONTEXT_CONTRACT,
     }
     exports = CAPABILITY_PROFILE_EXPORTS[profile]['exports']
     return {

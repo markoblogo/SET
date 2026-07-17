@@ -11,6 +11,7 @@ ALLOWED_CAPABILITY_PROFILES = {
     'governed-runner',
     'loop-readiness',
     'bounded-orchestration',
+    'git-native-context',
 }
 ALLOWED_SITE_KEYS = {'url'}
 ALLOWED_TOOL_BLOCKS = {'agentsgen', 'git_tweet', 'id'}

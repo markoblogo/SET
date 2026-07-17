@@ -19,6 +19,7 @@ Omit it for `baseline`. `context_package.capability_profile` records the selecte
 | `governed-runner` | baseline plus optional memory and governance contracts | a runner is separately implementing measured shadow-first policy decisions |
 | `loop-readiness` | context budget, readiness hint, and disabled L1/L2 loop contract | a runner or reviewer needs an explicit report-first recurring-work packet without enabling a runtime |
 | `bounded-orchestration` | context budget, context-degradation review, and disabled planner-review-executor contract | a runner needs bounded plan review, disjoint executor ownership, explicit route evidence, and root-owned verification |
+| `git-native-context` | context budget, context-degradation review, and disabled typed-document lifecycle contract | a project needs minimal Git-reviewed ADR/RFC/rule/spec/plan/research/incident context without installing a memory runtime |
 
 ## Boundary
 
@@ -29,3 +30,4 @@ Omit it for `baseline`. `context_package.capability_profile` records the selecte
 
 See `docs/loop-readiness-contract.md` for the L1/L2 controls and authority boundary.
 See `docs/bounded-orchestration-contract.md` for the planner, findings, executor-packet, route-state, and root-verification protocol.
+See `docs/git-native-context-contract.md` for the minimal document taxonomy, human-gated lifecycle, directed relations, and code-change pattern.
