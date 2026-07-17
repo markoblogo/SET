@@ -302,6 +302,60 @@ DEFAULT_LOOP_READINESS_CONTRACT = {
     ],
 }
 
+DEFAULT_BOUNDED_ORCHESTRATION_CONTRACT = {
+    'enabled': False,
+    'kind': 'optional-bounded-orchestration-contract',
+    'recommended_skill': 'bounded-orchestration-contract',
+    'authority': 'planning-and-handoff-only',
+    'plan_protocol': {
+        'states': ['PLAN_DRAFT', 'PLAN_REVISE', 'PLAN_APPROVED'],
+        'maximum_review_rounds': 5,
+        'approval_rule': 'only the exact reviewed plan version may become PLAN_APPROVED',
+        'exhaustion_rule': 'halt before executor release when round five still requires revision',
+    },
+    'finding_protocol': {
+        'id_pattern': 'F-[0-9]{3}',
+        'required_fields': ['id', 'status', 'summary', 'reason'],
+        'statuses': ['OPEN', 'INCORPORATED', 'REJECTED'],
+        'disposition_rule': 'INCORPORATED and REJECTED require a concrete reason; unresolved OPEN findings block approval',
+    },
+    'executor_packet': {
+        'required_fields': [
+            'packet_id',
+            'objective',
+            'boundaries',
+            'context',
+            'owned_files',
+            'dependencies',
+            'stop_conditions',
+            'acceptance_criteria',
+            'verification',
+            'handoff_format',
+        ],
+        'ownership_rule': 'parallel executors must have non-overlapping owned_files and write scopes',
+        'collision_rule': 'overlap or unclear ownership blocks parallel release',
+    },
+    'route_states': {
+        'allowed': ['route accepted', 'used and confirmed', 'unavailable'],
+        'rules': {
+            'route accepted': 'the host accepted the requested route controls; runtime identity is not proven',
+            'used and confirmed': 'the host exposed effective runtime model or route metadata',
+            'unavailable': 'the requested route cannot run or cannot satisfy its required controls',
+        },
+    },
+    'root_verification': {
+        'required': True,
+        'rule': 'executor completion is evidence, not acceptance; root must inspect integration and run the smallest sufficient checks',
+        'required_record': ['integrated_outputs', 'checks_run', 'result', 'remaining_risks'],
+    },
+    'non_goals': [
+        'SET does not spawn, schedule, or route agents',
+        'SET does not select models or providers',
+        'SET does not grant write, merge, release, or external-action authority',
+        'SET does not treat child prose as runtime identity evidence',
+    ],
+}
+
 CAPABILITY_PROFILE_EXPORTS = {
     'baseline': {
         'description': 'Planning and review hints suitable for every SET handoff.',
@@ -337,6 +391,14 @@ CAPABILITY_PROFILE_EXPORTS = {
             'context_budget_hint',
             'loop_readiness_hint',
             'loop_readiness_contract',
+        ],
+    },
+    'bounded-orchestration': {
+        'description': 'Disabled planner-review-executor handoff contract with root-owned verification.',
+        'exports': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'bounded_orchestration_contract',
         ],
     },
 }
@@ -533,6 +595,7 @@ def build_profile_context_package(data: dict[str, object]) -> dict[str, object]:
         'context_degradation_review': DEFAULT_CONTEXT_DEGRADATION_REVIEW,
         'loop_readiness_hint': DEFAULT_LOOP_READINESS_HINT,
         'loop_readiness_contract': DEFAULT_LOOP_READINESS_CONTRACT,
+        'bounded_orchestration_contract': DEFAULT_BOUNDED_ORCHESTRATION_CONTRACT,
     }
     exports = CAPABILITY_PROFILE_EXPORTS[profile]['exports']
     return {

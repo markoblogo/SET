@@ -120,6 +120,20 @@ def test_loop_readiness_profile_exports_l1_l2_contract() -> None:
     assert 'SET does not schedule or execute loops' in contract['non_goals']
 
 
+def test_bounded_orchestration_profile_exports_fail_closed_contract() -> None:
+    package = planner.build_profile_context_package({'capability_profile': 'bounded-orchestration'})
+    contract = package['bounded_orchestration_contract']
+    assert contract['enabled'] is False
+    assert contract['plan_protocol']['states'] == ['PLAN_DRAFT', 'PLAN_REVISE', 'PLAN_APPROVED']
+    assert contract['plan_protocol']['maximum_review_rounds'] == 5
+    assert contract['finding_protocol']['id_pattern'] == 'F-[0-9]{3}'
+    assert contract['finding_protocol']['statuses'] == ['OPEN', 'INCORPORATED', 'REJECTED']
+    assert contract['executor_packet']['ownership_rule'].startswith('parallel executors must have non-overlapping')
+    assert list(contract['route_states']['rules']) == ['route accepted', 'used and confirmed', 'unavailable']
+    assert contract['root_verification']['required'] is True
+    assert 'SET does not spawn, schedule, or route agents' in contract['non_goals']
+
+
 def test_export_plan_writes_orchestrator_bundle(tmp_path: Path) -> None:
     config_path, data = planner.load_config('markoblogo/SET')
     plan = planner.build_plan(config_path, data)

@@ -18,6 +18,7 @@ Omit it for `baseline`. `context_package.capability_profile` records the selecte
 | `research` | baseline plus research-diversity and optional memory contracts | evaluation or research needs bounded alternatives and project-scoped retrieval guidance |
 | `governed-runner` | baseline plus optional memory and governance contracts | a runner is separately implementing measured shadow-first policy decisions |
 | `loop-readiness` | context budget, readiness hint, and disabled L1/L2 loop contract | a runner or reviewer needs an explicit report-first recurring-work packet without enabling a runtime |
+| `bounded-orchestration` | context budget, context-degradation review, and disabled planner-review-executor contract | a runner needs bounded plan review, disjoint executor ownership, explicit route evidence, and root-owned verification |
 
 ## Boundary
 
@@ -27,3 +28,4 @@ Omit it for `baseline`. `context_package.capability_profile` records the selecte
 - Use snapshot tests whenever an export list changes so a profile cannot silently widen a downstream contract.
 
 See `docs/loop-readiness-contract.md` for the L1/L2 controls and authority boundary.
+See `docs/bounded-orchestration-contract.md` for the planner, findings, executor-packet, route-state, and root-verification protocol.
