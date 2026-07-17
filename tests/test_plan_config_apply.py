@@ -154,6 +154,26 @@ def test_git_native_context_profile_exports_minimal_human_gated_contract() -> No
     assert 'SET does not install Archcore, hooks, MCP servers, or session-start injection' in contract['non_goals']
 
 
+def test_bug_evidence_profile_exports_captured_red_to_green_contract() -> None:
+    package = planner.build_profile_context_package({'capability_profile': 'bug-evidence'})
+    contract = package['bug_evidence_contract']
+    assert contract['enabled'] is False
+    assert contract['ownership']['diagnosis'] == 'diagnose'
+    assert contract['ownership']['implementation_loop'] == 'test-driven-execution'
+    assert contract['statuses'][-3:] == ['FIX_UNVERIFIED', 'FIX_REGRESSION', 'FIX_PROVEN']
+    assert contract['evidence_packet']['route_states'] == [
+        'route accepted',
+        'used and confirmed',
+        'unavailable',
+    ]
+    assert 'command_sha256' in contract['evidence_packet']['command_record_fields']
+    assert contract['evidence_packet']['optional_relation'] == 'cpat_id'
+    assert contract['classification_rules']['FIX_PROVEN'].startswith('same command hash')
+    assert contract['classification_rules']['manual_flag_rule'].startswith('manual claims')
+    assert 'production or device writes' in contract['approval_policy']['explicit_approval_required_for']
+    assert 'SET does not scan repositories for bugs or execute tests' in contract['non_goals']
+
+
 def test_export_plan_writes_orchestrator_bundle(tmp_path: Path) -> None:
     config_path, data = planner.load_config('markoblogo/SET')
     plan = planner.build_plan(config_path, data)

@@ -406,6 +406,90 @@ DEFAULT_GIT_NATIVE_CONTEXT_CONTRACT = {
     ],
 }
 
+DEFAULT_BUG_EVIDENCE_CONTRACT = {
+    'enabled': False,
+    'kind': 'optional-bug-evidence-contract',
+    'recommended_skill': 'bug-evidence-protocol',
+    'authority': 'evidence-capture-and-classification',
+    'ownership': {
+        'diagnosis': 'diagnose',
+        'implementation_loop': 'test-driven-execution',
+        'durable_pattern': 'git-native-context-contract cpat',
+        'rule': 'this contract records proof and does not create a parallel bug-hunting workflow',
+    },
+    'statuses': [
+        'REPRODUCED',
+        'NOT_REPRODUCED',
+        'NO_BUG_PROVEN',
+        'INCONCLUSIVE',
+        'STILL_FAILING',
+        'FIX_UNVERIFIED',
+        'FIX_REGRESSION',
+        'FIX_PROVEN',
+    ],
+    'approval_policy': {
+        'default': 'existing task authorization covers reversible local tests and scoped fixes',
+        'explicit_approval_required_for': [
+            'production or device writes',
+            'destructive migrations or data mutation',
+            'dependency or configuration changes outside the approved scope',
+            'security, privacy, financial, or protected-evidence boundaries',
+            'scope expansion or an explicit audit-only or reproduce-only request',
+        ],
+    },
+    'evidence_packet': {
+        'required_fields': [
+            'schema_version',
+            'evidence_id',
+            'repository',
+            'git_before',
+            'git_after',
+            'targeted_before',
+            'targeted_after',
+            'broader_checks',
+            'symptom_match',
+            'route_evidence',
+            'classification',
+            'limitations',
+        ],
+        'command_record_fields': [
+            'argv',
+            'command_sha256',
+            'cwd',
+            'runtime',
+            'environment_ids',
+            'captured_at',
+            'duration_ms',
+            'exit_code',
+            'timed_out',
+            'stdout',
+            'stderr',
+            'truncated',
+            'secrets_redacted',
+        ],
+        'route_states': ['route accepted', 'used and confirmed', 'unavailable'],
+        'optional_relation': 'cpat_id',
+    },
+    'classification_rules': {
+        'REPRODUCED': 'targeted before record fails for the predicted symptom on a reachable path',
+        'FIX_PROVEN': 'same command hash; confirmed symptom match; before fails; after passes; captured relevant broader checks pass',
+        'FIX_REGRESSION': 'targeted after passes but a captured relevant broader check fails',
+        'FIX_UNVERIFIED': 'targeted after passes without sufficient captured broader evidence',
+        'route_claim_rule': 'route accepted never proves runtime use; used and confirmed requires host runtime metadata',
+        'manual_flag_rule': 'manual claims such as full_suite=passed cannot substitute for captured check records',
+    },
+    'data_boundary': {
+        'rule': 'capture the minimum useful output and redact before persistence',
+        'excluded': ['credentials', 'tokens', 'personal data', 'protected evidence', 'full environment dumps'],
+    },
+    'non_goals': [
+        'SET does not scan repositories for bugs or execute tests',
+        'SET does not grant production, device, destructive, or external-action authority',
+        'SET does not treat source inspection alone as reproduction evidence',
+        'SET does not install the upstream npm package or overwrite local skills',
+    ],
+}
+
 CAPABILITY_PROFILE_EXPORTS = {
     'baseline': {
         'description': 'Planning and review hints suitable for every SET handoff.',
@@ -457,6 +541,14 @@ CAPABILITY_PROFILE_EXPORTS = {
             'context_budget_hint',
             'context_degradation_review',
             'git_native_context_contract',
+        ],
+    },
+    'bug-evidence': {
+        'description': 'Disabled red-to-green evidence packet and honest fix-classification contract.',
+        'exports': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'bug_evidence_contract',
         ],
     },
 }
@@ -655,6 +747,7 @@ def build_profile_context_package(data: dict[str, object]) -> dict[str, object]:
         'loop_readiness_contract': DEFAULT_LOOP_READINESS_CONTRACT,
         'bounded_orchestration_contract': DEFAULT_BOUNDED_ORCHESTRATION_CONTRACT,
         'git_native_context_contract': DEFAULT_GIT_NATIVE_CONTEXT_CONTRACT,
+        'bug_evidence_contract': DEFAULT_BUG_EVIDENCE_CONTRACT,
     }
     exports = CAPABILITY_PROFILE_EXPORTS[profile]['exports']
     return {

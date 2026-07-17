@@ -12,6 +12,7 @@ ALLOWED_CAPABILITY_PROFILES = {
     'loop-readiness',
     'bounded-orchestration',
     'git-native-context',
+    'bug-evidence',
 }
 ALLOWED_SITE_KEYS = {'url'}
 ALLOWED_TOOL_BLOCKS = {'agentsgen', 'git_tweet', 'id'}
