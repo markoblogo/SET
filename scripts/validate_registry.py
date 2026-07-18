@@ -10,6 +10,7 @@ ALLOWED_CAPABILITY_PROFILES = {
     'research',
     'governed-runner',
     'loop-readiness',
+    'loop-hardening',
     'bounded-orchestration',
     'git-native-context',
     'bug-evidence',

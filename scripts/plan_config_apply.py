@@ -302,6 +302,50 @@ DEFAULT_LOOP_READINESS_CONTRACT = {
     ],
 }
 
+DEFAULT_LOOP_HARDENING_CONTRACT = {
+    'enabled': False,
+    'kind': 'optional-loop-hardening-contract',
+    'recommended_skill': 'loop-hardening-contract',
+    'authority': 'review-and-proposal-only',
+    'harness_stripping': {
+        'workflow': [
+            'record the component, failure mode, and operating cost',
+            'capture a representative baseline',
+            'disable exactly one non-safety component in an isolated evaluation',
+            'compare completion, verification, cost, and failure evidence',
+        ],
+        'outcomes': ['REMOVE', 'RESTORE', 'HARMFUL', 'INCONCLUSIVE'],
+        'protected_controls': ['sandbox', 'budget', 'stop conditions', 'human gates', 'root verification'],
+        'rule': 'never strip safety or settlement controls and never change a live run in place',
+    },
+    'runtime_path_sprint': {
+        'required_fields': [
+            'sprint_id', 'deliverable', 'acceptance_predicates', 'runtime_path', 'out_of_scope',
+            'owned_files', 'stop_conditions', 'verification',
+        ],
+        'predicate_rule': 'use 3-7 observable, scriptable, or browser/device-decidable predicates',
+        'immutability_rule': 'freeze the accepted packet during execution; revisions create a new version with reason and human confirmation',
+        'acceptance_rule': 'the executor cannot self-accept; verification must exercise the named runtime path',
+    },
+    'broken_window_revalidation': {
+        'when': 'before starting a new sprint in a repeated delivery loop',
+        'statuses': ['STILL_GREEN', 'REOPENED', 'INCONCLUSIVE'],
+        'rule': 're-run the latest accepted result through its real runtime path; source inspection or build-only evidence is insufficient when behavior is claimed',
+        'failure_action': 'stop new work, mark the result REOPENED, retain evidence, and propose a bounded repair',
+        'auto_revert': False,
+    },
+    'root_verification': {
+        'required': True,
+        'rule': 'root verifies integration and the runtime-path predicates before settlement',
+    },
+    'non_goals': [
+        'SET does not install or run Loopkit',
+        'SET does not schedule sprints or spawn agents',
+        'SET does not auto-revert, auto-commit, auto-merge, deploy, or release',
+        'SET does not treat compilation as device or production behavior proof',
+    ],
+}
+
 DEFAULT_BOUNDED_ORCHESTRATION_CONTRACT = {
     'enabled': False,
     'kind': 'optional-bounded-orchestration-contract',
@@ -527,6 +571,14 @@ CAPABILITY_PROFILE_EXPORTS = {
             'loop_readiness_contract',
         ],
     },
+    'loop-hardening': {
+        'description': 'Disabled harness-stripping, runtime-path sprint, and broken-window revalidation contract.',
+        'exports': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'loop_hardening_contract',
+        ],
+    },
     'bounded-orchestration': {
         'description': 'Disabled planner-review-executor handoff contract with root-owned verification.',
         'exports': [
@@ -745,6 +797,7 @@ def build_profile_context_package(data: dict[str, object]) -> dict[str, object]:
         'context_degradation_review': DEFAULT_CONTEXT_DEGRADATION_REVIEW,
         'loop_readiness_hint': DEFAULT_LOOP_READINESS_HINT,
         'loop_readiness_contract': DEFAULT_LOOP_READINESS_CONTRACT,
+        'loop_hardening_contract': DEFAULT_LOOP_HARDENING_CONTRACT,
         'bounded_orchestration_contract': DEFAULT_BOUNDED_ORCHESTRATION_CONTRACT,
         'git_native_context_contract': DEFAULT_GIT_NATIVE_CONTEXT_CONTRACT,
         'bug_evidence_contract': DEFAULT_BUG_EVIDENCE_CONTRACT,

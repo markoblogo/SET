@@ -100,6 +100,11 @@ def test_capability_profile_exports_are_snapshot_stable() -> None:
             'loop_readiness_hint',
             'loop_readiness_contract',
         ],
+        'loop-hardening': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'loop_hardening_contract',
+        ],
     }
     for name, exports in expected_exports.items():
         package = planner.build_profile_context_package({'capability_profile': name})
@@ -118,6 +123,19 @@ def test_loop_readiness_profile_exports_l1_l2_contract() -> None:
     assert contract['levels']['L2']['authority'] == 'proposal-first-assisted'
     assert 'maker-checker verification' in contract['levels']['L2']['required_controls']
     assert 'SET does not schedule or execute loops' in contract['non_goals']
+
+
+def test_loop_hardening_profile_exports_bounded_contract() -> None:
+    package = planner.build_profile_context_package({'capability_profile': 'loop-hardening'})
+    contract = package['loop_hardening_contract']
+    assert contract['enabled'] is False
+    assert contract['harness_stripping']['outcomes'] == ['REMOVE', 'RESTORE', 'HARMFUL', 'INCONCLUSIVE']
+    assert 'human gates' in contract['harness_stripping']['protected_controls']
+    assert contract['runtime_path_sprint']['required_fields'][0] == 'sprint_id'
+    assert contract['runtime_path_sprint']['acceptance_rule'].startswith('the executor cannot self-accept')
+    assert contract['broken_window_revalidation']['statuses'] == ['STILL_GREEN', 'REOPENED', 'INCONCLUSIVE']
+    assert contract['broken_window_revalidation']['auto_revert'] is False
+    assert contract['root_verification']['required'] is True
 
 
 def test_bounded_orchestration_profile_exports_fail_closed_contract() -> None:
