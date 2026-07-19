@@ -596,14 +596,44 @@ DEFAULT_AGENT_OPERATIONS_CONTRACT = {
         'approval_rule': 'NEEDS_APPROVAL freezes one exact proposed action; approval is one-shot and does not widen the agent card',
         'content_rule': 'record operational facts only; exclude hidden reasoning, secrets, private source material, and unrestricted logs',
     },
+    'decision_receipt': {
+        'required_fields': [
+            'decision_id', 'project_id', 'owner', 'decided_at', 'stakes', 'reversibility',
+            'deadline', 'decision', 'rationale', 'expected_outcome', 'evidence', 'revisit_at',
+            'observable_criterion', 'revalidation',
+        ],
+        'stakes': ['low', 'medium', 'high'],
+        'reversibility': ['reversible', 'costly', 'one_way'],
+        'revalidation_states': ['CONFIRMED', 'REVISED', 'REVERSED', 'INCONCLUSIVE'],
+        'rule': 'owner review is required; a receipt records and revalidates a decision but grants no implementation or external-action authority',
+    },
+    'adaptation_delta': {
+        'dispositions': ['KEEP', 'ADAPT', 'ADD', 'REJECT'],
+        'required_fields': ['id', 'disposition', 'source_fragment', 'summary', 'reason'],
+        'owner_review_states': ['APPROVED', 'REVISE', 'REJECTED'],
+        'rule': 'present a complete source-linked delta before writing; silence is not approval and REJECT requires a reason',
+    },
     'memory_scopes': {
         'allowed': ['personal', 'project', 'agent', 'run'],
-        'required_fields': ['scope', 'provenance', 'owner', 'editability', 'retention'],
+        'required_fields': [
+            'scope', 'provenance', 'owner', 'editability', 'retention', 'sensitivity', 'trust',
+        ],
+        'trust_states': ['UNREVIEWED', 'VERIFIED', 'DEPRECATED', 'SUPERSEDED'],
         'rules': [
             'every record has exactly one scope',
             'cross-project reads and automatic scope promotion are disabled by default',
             'run memory expires or is explicitly promoted through review',
+            'deprecated and superseded records never supply active context; superseded requires superseded_by',
+            'derived records inherit the highest source sensitivity',
         ],
+    },
+    'data_boundary': {
+        'public': ['workflow logic', 'schemas', 'redacted examples'],
+        'private': [
+            'personal preferences', 'client or contract material', 'private archives', 'credentials',
+            'protected evidence', 'secret values',
+        ],
+        'rule': 'public workflow and private operator state remain separately owned; no sync, publication, or cross-project transfer is implied',
     },
     'provider_tool_registry': {
         'required_fields': [
@@ -620,6 +650,7 @@ DEFAULT_AGENT_OPERATIONS_CONTRACT = {
         'SET does not install or run LobeHub or another agent runtime',
         'SET does not create agents, schedule operations, store memory, probe providers, or install MCP tools',
         'SET does not infer authority from a card, schedule, model, tool, or marketplace entry',
+        'SET does not approve adaptations, implement decisions, or revalidate outcomes',
         'SET does not authorize messages, transactions, production writes, or protected-data access',
     ],
 }

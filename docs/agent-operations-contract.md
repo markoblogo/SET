@@ -1,6 +1,6 @@
 # Agent Operations Contract
 
-`SET` can export a disabled, provider-neutral contract for describing concrete agents, long-running operations, scoped memory, and provider/tool capabilities. It does not install LobeHub or create an agent runtime.
+`SET` can export a disabled, provider-neutral contract for describing concrete agents, long-running operations, revalidated decisions, scoped memory, external-skill adaptation deltas, and provider/tool capabilities. It does not install an upstream runtime.
 
 Select the profile with:
 
@@ -45,6 +45,28 @@ QUEUED -> RUNNING -> NEEDS_APPROVAL -> SUCCEEDED | FAILED | CANCELLED
 
 `RUNNING` may settle directly as `SUCCEEDED`, `FAILED`, or `CANCELLED` when no approval is required. `NEEDS_APPROVAL` freezes the exact proposed external action; approval is one-shot, action-bound, and does not widen the agent card. A receipt records operational facts, never hidden reasoning, credentials, private source material, or unrestricted logs.
 
+## Decision receipt and revalidation
+
+Material architecture, product, operational, and hardware decisions retain a stable receipt with stakes, reversibility, deadline, decision, rationale, expected outcome, evidence, revisit date, and an observable success criterion.
+
+At revisit, an owner or authorized reviewer records exactly one result:
+
+```text
+CONFIRMED | REVISED | REVERSED | INCONCLUSIVE
+```
+
+`REVISED` and `REVERSED` keep the original receipt and link a replacement. A receipt records decision quality over time; it never grants implementation or external-action authority.
+
+## Adaptation delta
+
+Before adapting an external skill or contract, classify every material source fragment:
+
+```text
+KEEP | ADAPT | ADD | REJECT
+```
+
+Each stable entry records its source fragment, summary, reason, and target reference when applicable. `REJECT` always requires a reason. The complete delta must receive explicit `APPROVED`, `REVISE`, or `REJECTED` owner review before writing; silence is not approval. License and attribution checks remain independent hard gates.
+
 ## Memory scopes
 
 Every memory record declares exactly one scope:
@@ -54,7 +76,17 @@ Every memory record declares exactly one scope:
 - `agent`: reviewed professional knowledge for one agent;
 - `run`: temporary operation state.
 
-Each record retains `provenance`, `owner`, `editability`, and `retention`. Cross-project reads and automatic scope promotion are disabled by default. `run` memory expires or is explicitly promoted through review; no successful operation silently becomes durable memory.
+Each record retains `provenance`, `owner`, `editability`, `retention`, `sensitivity`, and trust:
+
+```text
+UNREVIEWED -> VERIFIED | DEPRECATED | SUPERSEDED
+```
+
+New records start `UNREVIEWED`. `DEPRECATED` and `SUPERSEDED` records never supply active context; `SUPERSEDED` requires `superseded_by`. Derived records inherit the highest source sensitivity. Cross-project reads and automatic scope promotion are disabled by default. `run` memory expires or is explicitly promoted through review; no successful operation silently becomes durable memory.
+
+## Public workflow and private state
+
+Reusable workflow logic, schemas, and redacted examples may live in the public repository. Personal preferences, client or contract material, private archives, credentials, protected evidence, and secret values remain in explicitly owned private storage. The contract implies no sync, publication, or cross-project transfer.
 
 ## Provider and tool registry
 
@@ -80,4 +112,4 @@ Agents may route only through capabilities sufficient for the task. `declared` i
 
 ## Reference
 
-Adapted at the contract level from LobeHub's agent-as-unit, scheduled operation, structured memory, and multi-provider ideas. SET does not copy or depend on the LobeHub runtime, marketplace, or codebase.
+Adapted at the contract level from LobeHub's agent-as-unit, scheduled operation, structured memory, and multi-provider ideas, plus MakerSkills' decision revisit, explicit adaptation delta, trust lifecycle, and public-workflow/private-state separation. SET does not copy or depend on either upstream runtime.

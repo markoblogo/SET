@@ -171,7 +171,16 @@ def test_agent_operations_profile_exports_fail_closed_contract() -> None:
     assert contract['operation_receipt']['states'] == [
         'QUEUED', 'RUNNING', 'NEEDS_APPROVAL', 'SUCCEEDED', 'FAILED', 'CANCELLED'
     ]
+    assert contract['decision_receipt']['revalidation_states'] == [
+        'CONFIRMED', 'REVISED', 'REVERSED', 'INCONCLUSIVE'
+    ]
+    assert contract['adaptation_delta']['dispositions'] == ['KEEP', 'ADAPT', 'ADD', 'REJECT']
+    assert contract['adaptation_delta']['owner_review_states'] == ['APPROVED', 'REVISE', 'REJECTED']
     assert contract['memory_scopes']['allowed'] == ['personal', 'project', 'agent', 'run']
+    assert contract['memory_scopes']['trust_states'] == [
+        'UNREVIEWED', 'VERIFIED', 'DEPRECATED', 'SUPERSEDED'
+    ]
+    assert contract['data_boundary']['public'] == ['workflow logic', 'schemas', 'redacted examples']
     assert contract['provider_tool_registry']['availability_states'] == [
         'declared', 'probed', 'confirmed', 'unavailable'
     ]
