@@ -346,6 +346,45 @@ DEFAULT_LOOP_HARDENING_CONTRACT = {
     ],
 }
 
+DEFAULT_DESIGN_TASTE_REVIEW_CONTRACT = {
+    'enabled': False,
+    'kind': 'optional-design-taste-review-contract',
+    'recommended_skill': 'frontend-taste-layer',
+    'authority': 'review-and-proposal-only',
+    'routing': {
+        'marketing_editorial': 'frontend-taste-layer',
+        'product_ui': 'Lazyweb plus user-experience or design-critique-polish',
+        'rule': 'taste guidance must not override product tasks, accessibility, approved brand assets, or an existing design system',
+    },
+    'design_read': {
+        'format': 'Reading this as: <surface> for <audience>, with a <visual language> direction.',
+        'required': True,
+    },
+    'relative_axes': ['composition_variance', 'motion', 'density'],
+    'redesign_audit': {
+        'required_before_changes': True,
+        'preserve_fields': ['content', 'brand_assets', 'design_tokens', 'working_interactions', 'approved_constraints'],
+        'rule': 'list preserved elements and proposed changes separately before editing',
+    },
+    'review_checks': [
+        'repeated layout families and section rhythm',
+        'every motion communicates hierarchy, feedback, state, or narrative',
+        'desktop and mobile behavior',
+        'prefers-reduced-motion behavior',
+        'all visible copy including labels, states, captions, and alt text',
+    ],
+    'verification': {
+        'required': True,
+        'rule': 'review real browser evidence at desktop and mobile widths; do not infer visual acceptance from source or build output',
+    },
+    'non_goals': [
+        'SET does not install design libraries, Lazyweb, image generators, or animation runtimes',
+        'SET does not generate or redesign interfaces',
+        'SET does not grant asset, dependency, copy, deploy, or release authority',
+        'the contract defines no universal aesthetic bans or fixed dial values',
+    ],
+}
+
 DEFAULT_BOUNDED_ORCHESTRATION_CONTRACT = {
     'enabled': False,
     'kind': 'optional-bounded-orchestration-contract',
@@ -603,6 +642,14 @@ CAPABILITY_PROFILE_EXPORTS = {
             'bug_evidence_contract',
         ],
     },
+    'design-taste-review': {
+        'description': 'Disabled review-only routing and verification contract for marketing/editorial taste work.',
+        'exports': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'design_taste_review_contract',
+        ],
+    },
 }
 
 DEFAULT_PROPOSAL_LIFECYCLE = {
@@ -801,6 +848,7 @@ def build_profile_context_package(data: dict[str, object]) -> dict[str, object]:
         'bounded_orchestration_contract': DEFAULT_BOUNDED_ORCHESTRATION_CONTRACT,
         'git_native_context_contract': DEFAULT_GIT_NATIVE_CONTEXT_CONTRACT,
         'bug_evidence_contract': DEFAULT_BUG_EVIDENCE_CONTRACT,
+        'design_taste_review_contract': DEFAULT_DESIGN_TASTE_REVIEW_CONTRACT,
     }
     exports = CAPABILITY_PROFILE_EXPORTS[profile]['exports']
     return {

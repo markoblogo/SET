@@ -105,6 +105,11 @@ def test_capability_profile_exports_are_snapshot_stable() -> None:
             'context_degradation_review',
             'loop_hardening_contract',
         ],
+        'design-taste-review': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'design_taste_review_contract',
+        ],
     }
     for name, exports in expected_exports.items():
         package = planner.build_profile_context_package({'capability_profile': name})
@@ -136,6 +141,19 @@ def test_loop_hardening_profile_exports_bounded_contract() -> None:
     assert contract['broken_window_revalidation']['statuses'] == ['STILL_GREEN', 'REOPENED', 'INCONCLUSIVE']
     assert contract['broken_window_revalidation']['auto_revert'] is False
     assert contract['root_verification']['required'] is True
+
+
+def test_design_taste_review_profile_exports_review_only_contract() -> None:
+    package = planner.build_profile_context_package({'capability_profile': 'design-taste-review'})
+    contract = package['design_taste_review_contract']
+    assert contract['enabled'] is False
+    assert contract['authority'] == 'review-and-proposal-only'
+    assert contract['routing']['marketing_editorial'] == 'frontend-taste-layer'
+    assert contract['routing']['product_ui'].startswith('Lazyweb')
+    assert contract['relative_axes'] == ['composition_variance', 'motion', 'density']
+    assert contract['redesign_audit']['required_before_changes'] is True
+    assert contract['verification']['required'] is True
+    assert contract['non_goals'][-1].startswith('the contract defines no universal aesthetic bans')
 
 
 def test_bounded_orchestration_profile_exports_fail_closed_contract() -> None:
