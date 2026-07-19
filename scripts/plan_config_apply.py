@@ -573,6 +573,57 @@ DEFAULT_BUG_EVIDENCE_CONTRACT = {
     ],
 }
 
+DEFAULT_AGENT_OPERATIONS_CONTRACT = {
+    'enabled': False,
+    'kind': 'optional-agent-operations-contract',
+    'recommended_skill': 'agent-operations-contract',
+    'authority': 'description-receipt-and-routing-only',
+    'agent_capability_card': {
+        'required_fields': [
+            'agent_id', 'purpose', 'responsibilities', 'owner', 'authority', 'models', 'tools',
+            'knowledge_bases', 'allowed_schedules', 'approval_boundary', 'last_confirmed_capabilities',
+        ],
+        'authority_levels': ['read', 'proposal', 'write', 'external_action'],
+        'confirmation_fields': ['capability', 'status', 'checked_at', 'evidence'],
+        'rule': 'declared capabilities do not grant authority; missing owner, approval boundary, or current confirmation fails closed',
+    },
+    'operation_receipt': {
+        'required_fields': [
+            'operation_id', 'agent_id', 'project_id', 'requested_by', 'authority', 'queued_at',
+            'status', 'result_summary', 'evidence', 'approval_required',
+        ],
+        'states': ['QUEUED', 'RUNNING', 'NEEDS_APPROVAL', 'SUCCEEDED', 'FAILED', 'CANCELLED'],
+        'approval_rule': 'NEEDS_APPROVAL freezes one exact proposed action; approval is one-shot and does not widen the agent card',
+        'content_rule': 'record operational facts only; exclude hidden reasoning, secrets, private source material, and unrestricted logs',
+    },
+    'memory_scopes': {
+        'allowed': ['personal', 'project', 'agent', 'run'],
+        'required_fields': ['scope', 'provenance', 'owner', 'editability', 'retention'],
+        'rules': [
+            'every record has exactly one scope',
+            'cross-project reads and automatic scope promotion are disabled by default',
+            'run memory expires or is explicitly promoted through review',
+        ],
+    },
+    'provider_tool_registry': {
+        'required_fields': [
+            'id', 'modalities', 'tool_calling', 'structured_output', 'streaming', 'async_operations',
+            'location', 'required_secret_names', 'data_egress', 'availability', 'cost_observation',
+            'rate_limit_observation', 'authority', 'side_effects',
+        ],
+        'availability_states': ['declared', 'probed', 'confirmed', 'unavailable'],
+        'locations': ['local', 'cloud'],
+        'routing_rule': 'route only through sufficient capabilities; unavailable blocks and declared alone never proves runtime use',
+        'observation_rule': 'cost, limits, models, and availability require dated evidence and may expire',
+    },
+    'non_goals': [
+        'SET does not install or run LobeHub or another agent runtime',
+        'SET does not create agents, schedule operations, store memory, probe providers, or install MCP tools',
+        'SET does not infer authority from a card, schedule, model, tool, or marketplace entry',
+        'SET does not authorize messages, transactions, production writes, or protected-data access',
+    ],
+}
+
 CAPABILITY_PROFILE_EXPORTS = {
     'baseline': {
         'description': 'Planning and review hints suitable for every SET handoff.',
@@ -648,6 +699,14 @@ CAPABILITY_PROFILE_EXPORTS = {
             'context_budget_hint',
             'context_degradation_review',
             'design_taste_review_contract',
+        ],
+    },
+    'agent-operations': {
+        'description': 'Disabled agent identity, async receipt, scoped memory, and provider/tool capability contract.',
+        'exports': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'agent_operations_contract',
         ],
     },
 }
@@ -849,6 +908,7 @@ def build_profile_context_package(data: dict[str, object]) -> dict[str, object]:
         'git_native_context_contract': DEFAULT_GIT_NATIVE_CONTEXT_CONTRACT,
         'bug_evidence_contract': DEFAULT_BUG_EVIDENCE_CONTRACT,
         'design_taste_review_contract': DEFAULT_DESIGN_TASTE_REVIEW_CONTRACT,
+        'agent_operations_contract': DEFAULT_AGENT_OPERATIONS_CONTRACT,
     }
     exports = CAPABILITY_PROFILE_EXPORTS[profile]['exports']
     return {

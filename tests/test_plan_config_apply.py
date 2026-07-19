@@ -110,6 +110,11 @@ def test_capability_profile_exports_are_snapshot_stable() -> None:
             'context_degradation_review',
             'design_taste_review_contract',
         ],
+        'agent-operations': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'agent_operations_contract',
+        ],
     }
     for name, exports in expected_exports.items():
         package = planner.build_profile_context_package({'capability_profile': name})
@@ -154,6 +159,24 @@ def test_design_taste_review_profile_exports_review_only_contract() -> None:
     assert contract['redesign_audit']['required_before_changes'] is True
     assert contract['verification']['required'] is True
     assert contract['non_goals'][-1].startswith('the contract defines no universal aesthetic bans')
+
+
+def test_agent_operations_profile_exports_fail_closed_contract() -> None:
+    package = planner.build_profile_context_package({'capability_profile': 'agent-operations'})
+    contract = package['agent_operations_contract']
+    assert contract['enabled'] is False
+    assert contract['agent_capability_card']['authority_levels'] == [
+        'read', 'proposal', 'write', 'external_action'
+    ]
+    assert contract['operation_receipt']['states'] == [
+        'QUEUED', 'RUNNING', 'NEEDS_APPROVAL', 'SUCCEEDED', 'FAILED', 'CANCELLED'
+    ]
+    assert contract['memory_scopes']['allowed'] == ['personal', 'project', 'agent', 'run']
+    assert contract['provider_tool_registry']['availability_states'] == [
+        'declared', 'probed', 'confirmed', 'unavailable'
+    ]
+    assert contract['provider_tool_registry']['routing_rule'].startswith('route only through sufficient capabilities')
+    assert 'SET does not install or run LobeHub or another agent runtime' in contract['non_goals']
 
 
 def test_bounded_orchestration_profile_exports_fail_closed_contract() -> None:

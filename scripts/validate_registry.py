@@ -15,6 +15,7 @@ ALLOWED_CAPABILITY_PROFILES = {
     'git-native-context',
     'bug-evidence',
     'design-taste-review',
+    'agent-operations',
 }
 ALLOWED_SITE_KEYS = {'url'}
 ALLOWED_TOOL_BLOCKS = {'agentsgen', 'git_tweet', 'id'}
