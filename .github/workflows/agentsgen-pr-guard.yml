@@ -1,0 +1,15 @@
+name: agentsgen-pr-guard
+
+on:
+  pull_request:
+
+jobs:
+  agentsgen-pr-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: markoblogo/AGENTS.md_generator/.github/actions/agentsgen-guard@main
+        with:
+          files: AGENTS.md,RUNBOOK.md,docs/ai/task-contract.json
+          pack_check: "true"
+          comment: "false"

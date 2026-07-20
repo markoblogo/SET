@@ -1,0 +1,16 @@
+{
+  "contract_version": "1",
+  "name": "SET local pilot contract",
+  "route_states": ["accepted", "used", "confirmed"],
+  "proof_required": true,
+  "required_artifacts": [
+    "docs/ai/id-bootstrap.md",
+    "docs/repo-config.md",
+    "AGENTS.md"
+  ],
+  "evidence": {
+    "operator": "repo-maintainer",
+    "approval_boundary": "human-approved",
+    "risk_class": "low"
+  }
+}

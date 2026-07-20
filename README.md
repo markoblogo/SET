@@ -143,3 +143,6 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/llmo-capability-map.md`
 - `docs/v0.1-scope.md`
 - `CONTRIBUTING.md`
+
+
+- Added compact local `AGENTS.md_generator`-style pilot contract for `SET` with `accepted/used/confirmed` route states, pack/check validation markers, and PR-guard workflow.
