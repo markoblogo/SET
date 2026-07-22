@@ -94,6 +94,8 @@ The bundle also exports an optional `agent_governance_capability`: a shadow-firs
 
 Terminal agent multiplexers such as `herdr` are treated as optional runner UI references only. SET may define the state and evidence a runner should display, but it does not vendor, install, spawn, detach, reattach, or approve agent sessions. See `docs/terminal-agent-multiplexer-reference.md`.
 
+Post-task closeout is proposal-first: check docs drift, used/skipped agent rules, memory or handoff need, leftovers, green/yellow/red cleanup risk, and a short changed/verified/skipped/follow-up receipt. It is not automatic cleanup. See `docs/task-closeout-audit-contract.md`.
+
 Useful commands:
 
 ```bash
@@ -143,6 +145,7 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/memory-capability-contract.md`
 - `docs/agent-governance-capability-contract.md`
 - `docs/terminal-agent-multiplexer-reference.md`
+- `docs/task-closeout-audit-contract.md`
 - `docs/capability-profiles.md`
 - `docs/llmo-capability-map.md`
 - `docs/v0.1-scope.md`
