@@ -88,9 +88,11 @@ python3 scripts/validate_registry.py
 - can compare against a local repo root for drift
 - does not write target repositories directly
 
-`orchestrator-bundle.json` is the upstream handoff contract for Sortie/Symphony-like runners: it carries repo identity, proposed workflow inputs, repomap policy, optional `ID` bootstrap hints, proof-loop expectations, recommended review lenses, proposal lifecycle guidance, and one registry-selected capability profile without making `SET` an agent runner. `baseline` exports only context/loop review hints; `research` adds diversity and optional memory guidance; `governed-runner` adds optional memory plus shadow-first governance; `loop-readiness` exports a disabled L1/L2 report-first contract; `loop-hardening` exports disabled harness-stripping, runtime-path sprint, and broken-window revalidation rules; `bounded-orchestration` exports a disabled Planner/Reviewer/Executor contract; `git-native-context` exports a disabled minimal ADR/RFC/rule/spec/plan/research/incident taxonomy; `bug-evidence` exports a disabled captured red-to-green evidence contract; `design-taste-review` exports disabled marketing/editorial taste routing and browser-verification rules; `agent-operations` exports disabled agent capability cards, async operation and decision receipts, source-linked adaptation deltas, trust-graded scoped memory, public/private state boundaries, and provider/tool capability routing. `proposal-lifecycle.json` spells out the proposal-first flow (`run -> retained_output -> inspect -> select/apply/discard`). `rabbithole.seed.md` is also exported as an optional local review seed for human-in-the-loop plan exploration.
+`orchestrator-bundle.json` is the upstream handoff contract for Sortie/Symphony-like runners: it carries repo identity, proposed workflow inputs, repomap policy, optional `ID` bootstrap hints, proof-loop expectations, recommended review lenses, proposal lifecycle guidance, and one registry-selected capability profile without making `SET` an agent runner. `baseline` exports only context/loop review hints; `research` adds diversity and optional memory guidance; `governed-runner` adds optional memory plus shadow-first governance; `loop-readiness` exports a disabled L1/L2 report-first contract; `loop-hardening` exports disabled harness-stripping, runtime-path sprint, and broken-window revalidation rules; `bounded-orchestration` exports a disabled Planner/Reviewer/Executor contract; `git-native-context` exports a disabled minimal ADR/RFC/rule/spec/plan/research/incident taxonomy; `bug-evidence` exports a disabled captured red-to-green evidence contract; `design-taste-review` exports disabled marketing/editorial taste routing and browser-verification rules; `agent-operations` exports disabled agent capability cards, async operation and decision receipts, source-linked adaptation deltas, trust-graded scoped memory, public/private state boundaries, and provider/tool capability routing; `skill-quality-pipeline` exports a disabled SkillOpt-style staged review contract for rollout evidence, bounded edits, held-out validation, rejected-edit memory, and `best_skill.md` export without self-editing. `proposal-lifecycle.json` spells out the proposal-first flow (`run -> retained_output -> inspect -> select/apply/discard`). `rabbithole.seed.md` is also exported as an optional local review seed for human-in-the-loop plan exploration.
 
 The bundle also exports an optional `agent_governance_capability`: a shadow-first contract for a runner-owned policy decision before significant tool calls, append-only audit records, and per-run tool/cost/latency telemetry. It has no runtime dependency and is disabled by default. See `docs/agent-governance-capability-contract.md`.
+
+Terminal agent multiplexers such as `herdr` are treated as optional runner UI references only. SET may define the state and evidence a runner should display, but it does not vendor, install, spawn, detach, reattach, or approve agent sessions. See `docs/terminal-agent-multiplexer-reference.md`.
 
 Useful commands:
 
@@ -134,11 +136,13 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/bug-evidence-contract.md`
 - `docs/design-taste-review-contract.md`
 - `docs/agent-operations-contract.md`
+- `docs/skill-quality-pipeline-contract.md`
 - `docs/research-diversity-hint.md`
 - `docs/references/open-notebook.md`
 - `docs/references/agent-orchestrators.md`
 - `docs/memory-capability-contract.md`
 - `docs/agent-governance-capability-contract.md`
+- `docs/terminal-agent-multiplexer-reference.md`
 - `docs/capability-profiles.md`
 - `docs/llmo-capability-map.md`
 - `docs/v0.1-scope.md`

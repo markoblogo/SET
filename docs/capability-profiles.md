@@ -24,6 +24,7 @@ Omit it for `baseline`. `context_package.capability_profile` records the selecte
 | `bug-evidence` | context budget, context-degradation review, and disabled red-to-green evidence contract | a runner needs captured reproduction and fix evidence without adding an autonomous bug scanner |
 | `design-taste-review` | context budget, context-degradation review, and disabled taste-review contract | marketing/editorial work needs an explicit design read, bounded redesign audit, and browser verification while product UI remains evidence-routed |
 | `agent-operations` | context budget, context-degradation review, and disabled agent-operations contract | a project needs explicit agent cards, operation and decision receipts, adaptation deltas, trust-graded scoped memory, and evidence-backed provider/tool routing without installing an agent runtime |
+| `skill-quality-pipeline` | context budget, context-degradation review, and disabled skill-quality pipeline contract | a project wants bounded, validation-gated skill improvement with rollout evidence, rejected-edit memory, and `best_skill.md` export without self-editing or auto-adoption |
 
 ## Boundary
 
@@ -39,3 +40,4 @@ See `docs/git-native-context-contract.md` for the minimal document taxonomy, hum
 See `docs/bug-evidence-contract.md` for risk-based approval, captured checks, honest status classification, and optional `cpat` linkage.
 See `docs/design-taste-review-contract.md` for routing, relative design axes, preservation-first redesign review, and visual verification.
 See `docs/agent-operations-contract.md` for agent identity, operation and decision receipts, adaptation deltas, trust-graded memory scopes, public/private state boundaries, provider/tool availability, and authority boundaries.
+See `docs/skill-quality-pipeline-contract.md` for staged, validation-gated skill improvement and the no-auto-adoption boundary.

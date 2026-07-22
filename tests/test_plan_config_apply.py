@@ -115,6 +115,11 @@ def test_capability_profile_exports_are_snapshot_stable() -> None:
             'context_degradation_review',
             'agent_operations_contract',
         ],
+        'skill-quality-pipeline': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'skill_quality_pipeline_contract',
+        ],
     }
     for name, exports in expected_exports.items():
         package = planner.build_profile_context_package({'capability_profile': name})
@@ -186,6 +191,30 @@ def test_agent_operations_profile_exports_fail_closed_contract() -> None:
     ]
     assert contract['provider_tool_registry']['routing_rule'].startswith('route only through sufficient capabilities')
     assert 'SET does not install or run LobeHub or another agent runtime' in contract['non_goals']
+
+
+def test_skill_quality_pipeline_profile_exports_staged_review_contract() -> None:
+    package = planner.build_profile_context_package({'capability_profile': 'skill-quality-pipeline'})
+    contract = package['skill_quality_pipeline_contract']
+    assert contract['enabled'] is False
+    assert contract['authority'] == 'staged-review-only'
+    assert contract['artifact_model']['best_skill'] == 'best_skill.md exported only after validation and human acceptance'
+    assert contract['rollout_evidence']['required_fields'] == [
+        'task_id',
+        'input',
+        'skill_id',
+        'skill_version',
+        'trajectory_ref',
+        'verifier',
+        'score',
+        'failure_class',
+    ]
+    assert contract['bounded_edits']['allowed_operations'] == ['add', 'delete', 'replace']
+    assert contract['validation_gate']['required'] is True
+    assert contract['validation_gate']['human_acceptance_required'] is True
+    assert contract['rejected_edit_buffer']['required'] is True
+    assert contract['sleep_mode']['auto_adoption'] is False
+    assert 'SET does not install, run, or vendor SkillOpt' in contract['non_goals']
 
 
 def test_bounded_orchestration_profile_exports_fail_closed_contract() -> None:

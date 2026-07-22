@@ -655,6 +655,61 @@ DEFAULT_AGENT_OPERATIONS_CONTRACT = {
     ],
 }
 
+DEFAULT_SKILL_QUALITY_PIPELINE_CONTRACT = {
+    'enabled': False,
+    'kind': 'optional-skill-quality-pipeline-contract',
+    'authority': 'staged-review-only',
+    'inspired_by': 'SkillOpt-style bounded skill optimization without installing or running SkillOpt',
+    'artifact_model': {
+        'seed_skill': 'current reviewed skill version',
+        'candidate_skill': 'bounded proposal generated from rollout evidence',
+        'best_skill': 'best_skill.md exported only after validation and human acceptance',
+        'version_rule': 'treat skill files as versioned procedural artifacts with measured quality, not permanent instructions',
+    },
+    'rollout_evidence': {
+        'required_fields': [
+            'task_id',
+            'input',
+            'skill_id',
+            'skill_version',
+            'trajectory_ref',
+            'verifier',
+            'score',
+            'failure_class',
+        ],
+        'storage_rule': 'store enough evidence to replay or review the scoring decision without exposing secrets or protected data',
+    },
+    'bounded_edits': {
+        'allowed_operations': ['add', 'delete', 'replace'],
+        'rule': 'small edits only; no full skill rewrites, no hidden prompt drift, no authority expansion',
+    },
+    'validation_gate': {
+        'required': True,
+        'acceptance_rule': 'candidate must improve a held-out or independently selected validation set without regressing protected controls',
+        'human_acceptance_required': True,
+    },
+    'rejected_edit_buffer': {
+        'required': True,
+        'purpose': 'retain negative evidence so duplicate, overfit, or guardrail-weakening proposals are not repeated',
+    },
+    'sleep_mode': {
+        'allowed': 'staged review only',
+        'auto_adoption': False,
+        'rule': 'SkillOpt-Sleep style proposals may be inspected, but cannot update published skills automatically',
+    },
+    'project_fit': {
+        'set_agent_skills_lab': 'seed skill -> benchmark tasks -> candidate skill -> validation -> public/README update after acceptance',
+        'index_cortex': 'eval packets, find-partners, fallback-provider checks, editorial and corpus routing adapters',
+        'coqpi': 'synthetic or recorded mock transcripts for call-assist, translation, and future partner-finder prompts only',
+    },
+    'non_goals': [
+        'SET does not install, run, or vendor SkillOpt',
+        'SET does not harvest local transcripts or protected data',
+        'SET does not auto-adopt candidate skills or publish updates',
+        'SET does not connect this contract to live calls, outbound messages, transactions, or production routes',
+    ],
+}
+
 CAPABILITY_PROFILE_EXPORTS = {
     'baseline': {
         'description': 'Planning and review hints suitable for every SET handoff.',
@@ -738,6 +793,14 @@ CAPABILITY_PROFILE_EXPORTS = {
             'context_budget_hint',
             'context_degradation_review',
             'agent_operations_contract',
+        ],
+    },
+    'skill-quality-pipeline': {
+        'description': 'Disabled staged-review contract for bounded, validation-gated skill improvement.',
+        'exports': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'skill_quality_pipeline_contract',
         ],
     },
 }
@@ -940,6 +1003,7 @@ def build_profile_context_package(data: dict[str, object]) -> dict[str, object]:
         'bug_evidence_contract': DEFAULT_BUG_EVIDENCE_CONTRACT,
         'design_taste_review_contract': DEFAULT_DESIGN_TASTE_REVIEW_CONTRACT,
         'agent_operations_contract': DEFAULT_AGENT_OPERATIONS_CONTRACT,
+        'skill_quality_pipeline_contract': DEFAULT_SKILL_QUALITY_PIPELINE_CONTRACT,
     }
     exports = CAPABILITY_PROFILE_EXPORTS[profile]['exports']
     return {

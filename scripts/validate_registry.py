@@ -16,6 +16,7 @@ ALLOWED_CAPABILITY_PROFILES = {
     'bug-evidence',
     'design-taste-review',
     'agent-operations',
+    'skill-quality-pipeline',
 }
 ALLOWED_SITE_KEYS = {'url'}
 ALLOWED_TOOL_BLOCKS = {'agentsgen', 'git_tweet', 'id'}
