@@ -96,6 +96,8 @@ Terminal agent multiplexers such as `herdr` are treated as optional runner UI re
 
 Post-task closeout is proposal-first: check docs drift, used/skipped agent rules, memory or handoff need, leftovers, green/yellow/red cleanup risk, and a short changed/verified/skipped/follow-up receipt. It is not automatic cleanup. See `docs/task-closeout-audit-contract.md`.
 
+External AI engineering repositories are implementation references, not ABVX dependencies. Catalog them with category, source path, adaptation needs, data-egress risk, allowed pilots, and status before any local adoption. See `docs/external-ai-engineering-references.md`.
+
 Useful commands:
 
 ```bash
@@ -146,6 +148,7 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/agent-governance-capability-contract.md`
 - `docs/terminal-agent-multiplexer-reference.md`
 - `docs/task-closeout-audit-contract.md`
+- `docs/external-ai-engineering-references.md`
 - `docs/capability-profiles.md`
 - `docs/llmo-capability-map.md`
 - `docs/v0.1-scope.md`
