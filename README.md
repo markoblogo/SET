@@ -110,6 +110,8 @@ Public-facing repository homepages can also use a compact README-surface audit c
 
 Dependency-heavy repositories can also use a compact dependency-risk-check contract: check package additions, upgrades, typo-squat and license/security signals at the right moments, not as an always-on workflow. See `docs/dependency-risk-check-contract.md` and `docs/dependency-risk-check-shortlist.md`.
 
+Design-heavy repositories can also use a compact design-blueprint contract: allow `DESIGN.md` only where durable visual intent is reused often enough to justify a maintained blueprint, and keep it separate from product specs and transient critique notes. See `docs/design-blueprint-contract.md` and `docs/design-blueprint-shortlist.md`.
+
 Selected `12-factor-agents` principles are adapted as local doctrine only: owned context, structured outputs, unified state, pause/resume with explicit control flow, compact error packets, small focused agents, and stateless-reducer tests. `SET` does not become a framework runtime. See `docs/twelve-factor-agent-adaptation.md`.
 
 Useful commands:
@@ -165,6 +167,8 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/readme-surface-audit-shortlist.md`
 - `docs/dependency-risk-check-contract.md`
 - `docs/dependency-risk-check-shortlist.md`
+- `docs/design-blueprint-contract.md`
+- `docs/design-blueprint-shortlist.md`
 - `docs/agent-governance-capability-contract.md`
 - `docs/terminal-agent-multiplexer-reference.md`
 - `docs/task-closeout-audit-contract.md`
