@@ -98,6 +98,8 @@ Post-task closeout is proposal-first: check docs drift, used/skipped agent rules
 
 External AI engineering repositories are implementation references, not ABVX dependencies. Catalog them with category, source path, adaptation needs, data-egress risk, allowed pilots, and status before any local adoption. See `docs/external-ai-engineering-references.md`.
 
+AI visibility can also be tracked as a repeated local audit loop for public surfaces such as personal sites, project pages, books, and AzurMenton. `SET` treats this as artifact-first analytics, not a GEO runtime. Use `docs/ai-visibility-audit-contract.md`, `docs/ai-visibility-personal-site-template.md`, `docs/ai-visibility-azur-menton-template.md`, and `docs/ai-visibility-weekly-artifact-template.md`.
+
 Selected `12-factor-agents` principles are adapted as local doctrine only: owned context, structured outputs, unified state, pause/resume with explicit control flow, compact error packets, small focused agents, and stateless-reducer tests. `SET` does not become a framework runtime. See `docs/twelve-factor-agent-adaptation.md`.
 
 Useful commands:
@@ -151,6 +153,10 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/terminal-agent-multiplexer-reference.md`
 - `docs/task-closeout-audit-contract.md`
 - `docs/external-ai-engineering-references.md`
+- `docs/ai-visibility-audit-contract.md`
+- `docs/ai-visibility-personal-site-template.md`
+- `docs/ai-visibility-azur-menton-template.md`
+- `docs/ai-visibility-weekly-artifact-template.md`
 - `docs/twelve-factor-agent-adaptation.md`
 - `docs/capability-profiles.md`
 - `docs/llmo-capability-map.md`
