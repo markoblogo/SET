@@ -169,6 +169,7 @@ Operational references and analytics:
 - [docs/ai-visibility-audit-contract.md](docs/ai-visibility-audit-contract.md)
 - [docs/donor-adaptation-target-matrix.md](docs/donor-adaptation-target-matrix.md)
 - [docs/project-portfolio-adaptation-matrix.md](docs/project-portfolio-adaptation-matrix.md)
+- [docs/agents-marketplace-owner-routing.md](docs/agents-marketplace-owner-routing.md)
 
 For profile selection and export behavior, see
 [docs/capability-profiles.md](docs/capability-profiles.md).
@@ -195,7 +196,8 @@ Then read by need:
   [docs/references/open-notebook.md](docs/references/open-notebook.md),
   [docs/references/agent-orchestrators.md](docs/references/agent-orchestrators.md),
   [docs/donor-adaptation-target-matrix.md](docs/donor-adaptation-target-matrix.md),
-  [docs/project-portfolio-adaptation-matrix.md](docs/project-portfolio-adaptation-matrix.md)
+  [docs/project-portfolio-adaptation-matrix.md](docs/project-portfolio-adaptation-matrix.md),
+  [docs/agents-marketplace-owner-routing.md](docs/agents-marketplace-owner-routing.md)
 
 ## Why the README is compact
 
