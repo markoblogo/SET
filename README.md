@@ -108,6 +108,8 @@ Chat-bot or IM-facing assistant architecture is also treated as an explicit boun
 
 Public-facing repository homepages can also use a compact README-surface audit contract: audit clarity, hierarchy, trust, and maintenance cost first; only then decide whether any rewrite or asset work is warranted. See `docs/readme-surface-audit-contract.md` and `docs/readme-surface-audit-shortlist.md`.
 
+Dependency-heavy repositories can also use a compact dependency-risk-check contract: check package additions, upgrades, typo-squat and license/security signals at the right moments, not as an always-on workflow. See `docs/dependency-risk-check-contract.md` and `docs/dependency-risk-check-shortlist.md`.
+
 Selected `12-factor-agents` principles are adapted as local doctrine only: owned context, structured outputs, unified state, pause/resume with explicit control flow, compact error packets, small focused agents, and stateless-reducer tests. `SET` does not become a framework runtime. See `docs/twelve-factor-agent-adaptation.md`.
 
 Useful commands:
@@ -161,6 +163,8 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/chat-surface-boundary-contract.md`
 - `docs/readme-surface-audit-contract.md`
 - `docs/readme-surface-audit-shortlist.md`
+- `docs/dependency-risk-check-contract.md`
+- `docs/dependency-risk-check-shortlist.md`
 - `docs/agent-governance-capability-contract.md`
 - `docs/terminal-agent-multiplexer-reference.md`
 - `docs/task-closeout-audit-contract.md`
