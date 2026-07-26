@@ -12,6 +12,7 @@ ALLOWED_CAPABILITY_PROFILES = {
     'loop-readiness',
     'loop-hardening',
     'bounded-orchestration',
+    'ship-router',
     'git-native-context',
     'bug-evidence',
     'design-taste-review',

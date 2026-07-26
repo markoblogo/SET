@@ -105,6 +105,11 @@ def test_capability_profile_exports_are_snapshot_stable() -> None:
             'context_degradation_review',
             'loop_hardening_contract',
         ],
+        'ship-router': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'ship_router_contract',
+        ],
         'design-taste-review': [
             'context_budget_hint',
             'context_degradation_review',
@@ -164,6 +169,30 @@ def test_design_taste_review_profile_exports_review_only_contract() -> None:
     assert contract['redesign_audit']['required_before_changes'] is True
     assert contract['verification']['required'] is True
     assert contract['non_goals'][-1].startswith('the contract defines no universal aesthetic bans')
+
+
+def test_ship_router_profile_exports_delivery_lane_contract() -> None:
+    package = planner.build_profile_context_package({'capability_profile': 'ship-router'})
+    contract = package['ship_router_contract']
+    assert contract['enabled'] is False
+    assert contract['route_packet']['required_fields'] == [
+        'route_id',
+        'objective',
+        'target_surface',
+        'recommended_lane',
+        'why_this_lane',
+        'authority',
+        'required_evidence',
+        'approval_boundary',
+        'can_ship',
+        'next_check',
+    ]
+    assert contract['lanes'] == ['direct', 'review_first', 'bounded_loop', 'human_gate', 'blocked']
+    assert contract['route_states'] == [
+        'route proposed', 'route approved', 'route active', 'ship review required', 'shipped within reviewed scope', 'blocked'
+    ]
+    assert contract['evidence_rules'][1].startswith('review_first must name')
+    assert 'SET does not auto-execute the chosen lane' in contract['non_goals']
 
 
 def test_agent_operations_profile_exports_fail_closed_contract() -> None:

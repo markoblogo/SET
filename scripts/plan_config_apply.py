@@ -573,6 +573,50 @@ DEFAULT_BUG_EVIDENCE_CONTRACT = {
     ],
 }
 
+DEFAULT_SHIP_ROUTER_CONTRACT = {
+    'enabled': False,
+    'kind': 'optional-ship-router-contract',
+    'recommended_skill': 'ship-router-contract',
+    'authority': 'routing-and-approval-description-only',
+    'goal': 'choose the smallest correct delivery lane before execution widens or a ship claim is made',
+    'route_packet': {
+        'required_fields': [
+            'route_id',
+            'objective',
+            'target_surface',
+            'recommended_lane',
+            'why_this_lane',
+            'authority',
+            'required_evidence',
+            'approval_boundary',
+            'can_ship',
+            'next_check',
+        ],
+        'rule': 'the route packet is a recommendation and does not grant execution or release authority',
+    },
+    'lanes': ['direct', 'review_first', 'bounded_loop', 'human_gate', 'blocked'],
+    'lane_rules': {
+        'direct': 'scoped work may proceed with normal repo rules and smallest-sufficient verification',
+        'review_first': 'an audit, proof, critique, or verification skill should run before implementation or ship claims',
+        'bounded_loop': 'repeated work requires cadence, stop conditions, and owner review',
+        'human_gate': 'external action, release, migration, secret use, or broad mutation pauses for explicit approval',
+        'blocked': 'missing authority, prerequisites, or evidence prevents the route from activating',
+    },
+    'route_states': ['route proposed', 'route approved', 'route active', 'ship review required', 'shipped within reviewed scope', 'blocked'],
+    'evidence_rules': [
+        'direct still requires the smallest sufficient verification',
+        'review_first must name the review contract or artifact that gates the next step',
+        'bounded_loop must record cadence, stop condition, and owner',
+        'human_gate must state the exact approval that unlocks the next step',
+    ],
+    'non_goals': [
+        'SET does not auto-execute the chosen lane',
+        'SET does not replace repo-local proof, review, or release gates',
+        'SET does not widen authority through routing',
+        'SET does not become a runtime, scheduler, or agent platform',
+    ],
+}
+
 DEFAULT_AGENT_OPERATIONS_CONTRACT = {
     'enabled': False,
     'kind': 'optional-agent-operations-contract',
@@ -761,6 +805,14 @@ CAPABILITY_PROFILE_EXPORTS = {
             'context_budget_hint',
             'context_degradation_review',
             'bounded_orchestration_contract',
+        ],
+    },
+    'ship-router': {
+        'description': 'Disabled delivery-lane routing contract for direct, review-first, looped, or human-gated work.',
+        'exports': [
+            'context_budget_hint',
+            'context_degradation_review',
+            'ship_router_contract',
         ],
     },
     'git-native-context': {
@@ -999,6 +1051,7 @@ def build_profile_context_package(data: dict[str, object]) -> dict[str, object]:
         'loop_readiness_contract': DEFAULT_LOOP_READINESS_CONTRACT,
         'loop_hardening_contract': DEFAULT_LOOP_HARDENING_CONTRACT,
         'bounded_orchestration_contract': DEFAULT_BOUNDED_ORCHESTRATION_CONTRACT,
+        'ship_router_contract': DEFAULT_SHIP_ROUTER_CONTRACT,
         'git_native_context_contract': DEFAULT_GIT_NATIVE_CONTEXT_CONTRACT,
         'bug_evidence_contract': DEFAULT_BUG_EVIDENCE_CONTRACT,
         'design_taste_review_contract': DEFAULT_DESIGN_TASTE_REVIEW_CONTRACT,
