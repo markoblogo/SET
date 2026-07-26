@@ -143,6 +143,7 @@ Core orchestration and proof:
 - [docs/loop-readiness-contract.md](docs/loop-readiness-contract.md)
 - [docs/loop-hardening-contract.md](docs/loop-hardening-contract.md)
 - [docs/bounded-orchestration-contract.md](docs/bounded-orchestration-contract.md)
+- [docs/ship-router-contract.md](docs/ship-router-contract.md)
 - [docs/bug-evidence-contract.md](docs/bug-evidence-contract.md)
 - [docs/agent-governance-capability-contract.md](docs/agent-governance-capability-contract.md)
 - [docs/task-closeout-audit-contract.md](docs/task-closeout-audit-contract.md)
