@@ -167,6 +167,7 @@ Operational references and analytics:
 - [docs/terminal-agent-multiplexer-reference.md](docs/terminal-agent-multiplexer-reference.md)
 - [docs/external-ai-engineering-references.md](docs/external-ai-engineering-references.md)
 - [docs/ai-visibility-audit-contract.md](docs/ai-visibility-audit-contract.md)
+- [docs/donor-adaptation-target-matrix.md](docs/donor-adaptation-target-matrix.md)
 
 For profile selection and export behavior, see
 [docs/capability-profiles.md](docs/capability-profiles.md).
@@ -191,7 +192,8 @@ Then read by need:
   [docs/llmo-capability-map.md](docs/llmo-capability-map.md)
 - reference material:
   [docs/references/open-notebook.md](docs/references/open-notebook.md),
-  [docs/references/agent-orchestrators.md](docs/references/agent-orchestrators.md)
+  [docs/references/agent-orchestrators.md](docs/references/agent-orchestrators.md),
+  [docs/donor-adaptation-target-matrix.md](docs/donor-adaptation-target-matrix.md)
 
 ## Why the README is compact
 
