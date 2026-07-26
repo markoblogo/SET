@@ -100,6 +100,8 @@ External AI engineering repositories are implementation references, not ABVX dep
 
 AI visibility can also be tracked as a repeated local audit loop for public surfaces such as personal sites, project pages, books, and AzurMenton. `SET` treats this as artifact-first analytics, not a GEO runtime. Use `docs/ai-visibility-audit-contract.md`, `docs/ai-visibility-personal-site-template.md`, `docs/ai-visibility-azur-menton-template.md`, and `docs/ai-visibility-weekly-artifact-template.md`.
 
+Project-memory capability now also defines a compact OpenViking-style tiered retrieval adaptation: `L0/L1/L2` loading, a retrieval-trajectory receipt, and minimal retrieval observability. It remains provider-neutral and does not install a context server or vector runtime. See `docs/memory-capability-contract.md`.
+
 Selected `12-factor-agents` principles are adapted as local doctrine only: owned context, structured outputs, unified state, pause/resume with explicit control flow, compact error packets, small focused agents, and stateless-reducer tests. `SET` does not become a framework runtime. See `docs/twelve-factor-agent-adaptation.md`.
 
 Useful commands:
