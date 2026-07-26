@@ -104,6 +104,8 @@ Project-memory capability now also defines a compact OpenViking-style tiered ret
 
 Continuous background review is also treated as an optional local policy, not a default runtime layer. `SET` only recommends it for selected code-heavy repos and starts from `manual` or `pre-push` modes before any post-commit automation. See `docs/continuous-review-boundary-contract.md`.
 
+Chat-bot or IM-facing assistant architecture is also treated as an explicit boundary decision, not a default product direction. `SET` uses a compact chat-surface card plus source/authority/retention guards before any project adopts a chat-first surface. See `docs/chat-surface-boundary-contract.md`.
+
 Selected `12-factor-agents` principles are adapted as local doctrine only: owned context, structured outputs, unified state, pause/resume with explicit control flow, compact error packets, small focused agents, and stateless-reducer tests. `SET` does not become a framework runtime. See `docs/twelve-factor-agent-adaptation.md`.
 
 Useful commands:
@@ -154,6 +156,7 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/references/agent-orchestrators.md`
 - `docs/memory-capability-contract.md`
 - `docs/continuous-review-boundary-contract.md`
+- `docs/chat-surface-boundary-contract.md`
 - `docs/agent-governance-capability-contract.md`
 - `docs/terminal-agent-multiplexer-reference.md`
 - `docs/task-closeout-audit-contract.md`
