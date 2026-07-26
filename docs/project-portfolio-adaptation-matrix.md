@@ -57,6 +57,23 @@ for the owning-layer rule.
 | `menton` (`azurmenton`) | multilingual direct-booking/property publishing site | active | SEO/visibility audits, editorial/design review, public trust surfaces, browser-readable artifacts, content-map improvements | orchestration runtimes, private AI memory/protocol layers |
 | `cardputer` | device firmware and on-device shell | active experimental | bug-evidence/cpat patterns, runtime-path verification, troubleshooting artifacts, reduced-surface browser-readable docs, local model selection as optional backend boundary | web-growth playbooks, heavy cloud-agent orchestration, generic README beautification as priority |
 
+## Extended / secondary projects
+
+These repos should also be reviewed when new donor ideas arrive, but they sit
+behind the core portfolio above.
+
+| Repo | Role | Stage | Useful donor classes | Usually not useful |
+| --- | --- | --- | --- | --- |
+| `toki-pona-translator` | language-learning translation web app with Toki Pona output modes | active niche product | multilingual UX, language-routing, lightweight educational flows, typography/script layer rules, browser-readable help, privacy/cost boundaries for model-backed translation | brokerage/ops orchestration, heavy multi-agent control layers |
+| `pictiq` | minimal visual protocol and icon/grammar system for cross-language short messages | active protocol/design system | protocol docs, lexicon governance, printable/browser-readable artifacts, icon-pack validation, release-pack discipline, multilingual editorial review | generic app orchestration, cloud runtime receipts, business workflow automation |
+| `git-tweet` | release-to-social automation tool | active utility | conservative automation policy, outbound approval boundaries, receipt/logging, webhook safety, browser-readable operator docs, public trust/positioning | frontend taste layers as a main focus, human-profile protocol work |
+| `ABVX Shortener` | self-hosted shortener on Cloudflare Workers + KV with extension | active utility | Cloudflare boundary docs, security/trust review, extension UX checks, API receipts, operator runbooks, dependency-risk checks | complex agent orchestration, content/editorial donor patterns |
+| `YTMamp` | retro YouTube Music mini-player with desktop app plus browser extension | active product utility | desktop/browser boundary review, reduced-motion and cleanup rules, packaging/smoke artifacts, troubleshooting pages, optional design blueprint | business workflow receipts, human identity/context protocols |
+| `AsciiTheme` | portable ASCII visual layer/theme system | active library/design layer | design blueprint, frontend taste review, compatibility matrices, plugin/runtime boundary docs, example-gallery/public proof surfaces | orchestration governance, human-context lifecycle |
+| `sitelen-layer-plugin` | display-layer plugin for switching toki pona representations | active plugin/library | plugin integration docs, reduced-surface UX review, multilingual display contracts, accessibility/reduced-motion checks, packaging/testing discipline | cross-repo orchestration policy, outbound automation workflows |
+| `decision-map` | structured decision facilitation protocol/toolkit for LLM-assisted mapping | active method/protocol | decision receipts, revalidation loops, artifact-first templates, research-only routing, explainable outputs, scoped-memory boundaries | visual/frontend polish as primary work, runtime packaging details unless productized |
+| `book-landings` | monorepo for multilingual book landing pages | active publishing/product surface | editorial/design review, AI-visibility, schema/discovery, landing-page trust surfaces, book-specific system maps, browser-readable public artifacts | brokerage/device/runtime-control donor patterns |
+
 ## Near-term evolution vectors
 
 | Repo | Next useful directions |
@@ -76,6 +93,20 @@ for the owning-layer rule.
 | `menton` (`azurmenton`) | visibility/SEO loops, page-level trust upgrades, content graph strengthening |
 | `cardputer` | device troubleshooting standards, browser-readable operator docs, safe companion/local-backend experiments |
 
+## Near-term evolution vectors: extended / secondary
+
+| Repo | Next useful directions |
+| --- | --- |
+| `toki-pona-translator` | cleaner educational onboarding, script-mode clarity, safer model/cost boundaries, stronger browser-readable help |
+| `pictiq` | protocol clarity, pack/release discipline, printable + web artifact quality, lexicon governance |
+| `git-tweet` | stricter outbound policy/receipts, operator review pages, cleaner product positioning for low-noise automation |
+| `ABVX Shortener` | stronger Cloudflare/operator docs, trust/security surfacing, extension-to-worker operational clarity |
+| `YTMamp` | packaging/smoke discipline, extension-app boundary hardening, compact troubleshooting artifacts |
+| `AsciiTheme` | stronger examples/catalog, compatibility documentation, clearer design-system boundaries |
+| `sitelen-layer-plugin` | installation clarity, page-integration examples, display/accessibility contracts |
+| `decision-map` | more explicit artifact templates, research-only positioning, better integration with decision receipts/revalidation |
+| `book-landings` | sharper landing differentiation, stronger structured discovery, repeatable page-level trust/design review |
+
 ## Portfolio routing defaults
 
 When evaluating a new donor repo:
@@ -84,6 +115,10 @@ When evaluating a new donor repo:
 - then review active downstream repos:
   `index`, `CortexABV-private`, `CoqPi`, `MN7R`, `ABVXsite`, `lab.abvx`,
   `cropto`, `DMVg`, `menton`, `cardputer`;
+- then review extended / secondary projects when the donor idea has plausible
+  public-product, utility, plugin, protocol, or language-tool value:
+  `toki-pona-translator`, `pictiq`, `git-tweet`, `ABVX Shortener`, `YTMamp`,
+  `AsciiTheme`, `sitelen-layer-plugin`, `decision-map`, `book-landings`;
 - use `possible fit` only when there is a concrete path to a bounded local
   contract, artifact, or pilot;
 - avoid “good idea somewhere in the ecosystem” as a reason to install or adapt.
