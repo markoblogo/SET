@@ -102,6 +102,8 @@ AI visibility can also be tracked as a repeated local audit loop for public surf
 
 Project-memory capability now also defines a compact OpenViking-style tiered retrieval adaptation: `L0/L1/L2` loading, a retrieval-trajectory receipt, and minimal retrieval observability. It remains provider-neutral and does not install a context server or vector runtime. See `docs/memory-capability-contract.md`.
 
+Continuous background review is also treated as an optional local policy, not a default runtime layer. `SET` only recommends it for selected code-heavy repos and starts from `manual` or `pre-push` modes before any post-commit automation. See `docs/continuous-review-boundary-contract.md`.
+
 Selected `12-factor-agents` principles are adapted as local doctrine only: owned context, structured outputs, unified state, pause/resume with explicit control flow, compact error packets, small focused agents, and stateless-reducer tests. `SET` does not become a framework runtime. See `docs/twelve-factor-agent-adaptation.md`.
 
 Useful commands:
@@ -151,6 +153,7 @@ Depending on preset/config, `SET` can drive production of:
 - `docs/references/open-notebook.md`
 - `docs/references/agent-orchestrators.md`
 - `docs/memory-capability-contract.md`
+- `docs/continuous-review-boundary-contract.md`
 - `docs/agent-governance-capability-contract.md`
 - `docs/terminal-agent-multiplexer-reference.md`
 - `docs/task-closeout-audit-contract.md`
