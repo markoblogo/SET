@@ -23,7 +23,7 @@ Omit it for `baseline`. `context_package.capability_profile` records the selecte
 | `ship-router` | context budget, context-degradation review, and disabled ship-router contract | a runner needs explicit delivery-lane choice before work widens into implementation, loops, approval gates, or ship claims |
 | `git-native-context` | context budget, context-degradation review, and disabled typed-document lifecycle contract | a project needs minimal Git-reviewed ADR/RFC/rule/spec/plan/research/incident context without installing a memory runtime |
 | `bug-evidence` | context budget, context-degradation review, and disabled red-to-green evidence contract | a runner needs captured reproduction and fix evidence without adding an autonomous bug scanner |
-| `design-taste-review` | context budget, context-degradation review, and disabled taste-review contract | marketing/editorial work needs an explicit design read, bounded redesign audit, and browser verification while product UI remains evidence-routed |
+| `design-taste-review` | context budget, context-degradation review, and disabled taste-review contract | marketing/editorial work needs an explicit design read, creator-intent check, bounded redesign audit, and browser verification while product UI remains evidence-routed |
 | `agent-operations` | context budget, context-degradation review, and disabled agent-operations contract | a project needs explicit agent cards, operation and decision receipts, adaptation deltas, trust-graded scoped memory, and evidence-backed provider/tool routing without installing an agent runtime |
 | `skill-quality-pipeline` | context budget, context-degradation review, and disabled skill-quality pipeline contract | a project wants bounded, validation-gated skill improvement with rollout evidence, rejected-edit memory, and `best_skill.md` export without self-editing or auto-adoption |
 
@@ -40,6 +40,7 @@ See `docs/bounded-orchestration-contract.md` for the planner, findings, executor
 See `docs/ship-router-contract.md` for direct versus review-first versus bounded-loop versus human-gate routing before ship claims.
 See `docs/git-native-context-contract.md` for the minimal document taxonomy, human-gated lifecycle, directed relations, and code-change pattern.
 See `docs/bug-evidence-contract.md` for risk-based approval, captured checks, honest status classification, and optional `cpat` linkage.
-See `docs/design-taste-review-contract.md` for routing, relative design axes, preservation-first redesign review, and visual verification.
+See `docs/design-taste-review-contract.md` for routing, creator-intent preflight, relative design axes, preservation-first redesign review, and visual verification.
+See `docs/creator-intent-lens.md` for the compact first-use/failure/recovery/repetition lens used before creative work widens into polish.
 See `docs/agent-operations-contract.md` for agent identity, operation and decision receipts, adaptation deltas, trust-graded memory scopes, public/private state boundaries, provider/tool availability, and authority boundaries.
 See `docs/skill-quality-pipeline-contract.md` for staged, validation-gated skill improvement and the no-auto-adoption boundary.

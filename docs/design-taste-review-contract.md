@@ -8,6 +8,17 @@
 - Product UI routes first to Lazyweb evidence and the relevant UX or critique skill.
 - Existing product tasks, design systems, approved assets, accessibility requirements, and owner decisions take precedence.
 
+## Preflight lens
+
+Before styling or redesign review, state:
+
+1. what the person is actually trying to make possible;
+2. what must remain recognizably theirs;
+3. whether one sharp clarifying question is needed before a real choice can be made.
+
+Use this as an interpretation aid, not as a license to widen scope or invent
+requirements. See `docs/creator-intent-lens.md`.
+
 ## Review packet
 
 1. State one design read: surface, audience, and visual language.

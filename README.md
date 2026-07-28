@@ -172,6 +172,7 @@ Context, memory, and agent operations:
 
 Frontend, product, and content review:
 
+- [docs/creator-intent-lens.md](docs/creator-intent-lens.md)
 - [docs/design-taste-review-contract.md](docs/design-taste-review-contract.md)
 - [docs/design-blueprint-contract.md](docs/design-blueprint-contract.md)
 - [docs/readme-surface-audit-contract.md](docs/readme-surface-audit-contract.md)
