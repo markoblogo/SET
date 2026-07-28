@@ -64,6 +64,16 @@ python3 scripts/validate_registry.py
 resolve repo config -> plan -> inspect -> approve -> apply in target repo
 ```
 
+Owner-facing and agent-facing phase vocabulary stays compact:
+
+```text
+Discuss -> Plan -> Execute -> Verify -> Ship
+```
+
+In `SET`, heavy research, planning, and execution work should run in bounded
+fresh packets while the main thread stays lean. A ship claim is valid only
+after a verification artifact or receipt exists for the reviewed scope.
+
 The planner can export:
 
 - `plan.json`
