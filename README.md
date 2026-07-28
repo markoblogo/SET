@@ -111,6 +111,11 @@ Depending on preset and config, `SET` can drive production of:
 - repo maps and AI docs under `docs/ai/`
 - proof-loop artifacts under `docs/ai/tasks/<task-id>/`
 
+When execution docs or operator-facing runbooks are meant to be acted on under
+high context-switching or ADHD-style working conditions, prefer ADHD-shaped
+output: next action first, numbered bounded steps, visible current state,
+concrete estimates, and one explicit next move.
+
 ## Companion layers
 
 - `agentsgen`: repo-scoped agent context
