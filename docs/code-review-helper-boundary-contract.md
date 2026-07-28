@@ -71,6 +71,45 @@ ocr review --audience agent -b "repo-specific context" --from main --to <branch>
 ocr scan path/to/risky/file.ts
 ```
 
+## Repo-specific background templates
+
+Keep `--background` short, operational, and repo-specific.
+
+### `index`
+
+```bash
+ocr review --audience agent \
+  -b "Index/MediaHub/Cortex code. Check publish/send boundaries, scheduler and relay logic, auth/protected-public seams, and internal Cortex context-pack routes. Ignore docs-only wording."
+```
+
+### `MN7R`
+
+```bash
+ocr review --audience agent \
+  -b "MN7R application code. Check auth and route protection, monitor/reporting/scheduler behavior, Telegram relay logic, role/workflow state, and operational scripts. Ignore guide copy-only edits."
+```
+
+### `CoqPi`
+
+```bash
+ocr review --audience agent \
+  -b "CoqPi local assistant code. Check provider and realtime boundaries, IPC/session state, selected-context retrieval, governance receipts, failover, and assistant routing. Ignore Russian editorial-only changes."
+```
+
+### `CortexABV-private`
+
+```bash
+ocr review --audience agent \
+  -b "CortexABV-private protected runtime code. Check proposal-pack assembly, admission-policy seams, provider/tool routing, protected-public boundaries, memory/receipt/import policy code, and avoid outbound authority assumptions."
+```
+
+### `SET`
+
+```bash
+ocr review --audience agent \
+  -b "SET orchestration/planning code. Check repo-config planning, capability-profile exports, generated-vs-owned boundaries, route semantics, and contract drift. Ignore purely descriptive README wording unless behavior claims changed."
+```
+
 ## Boundary
 
 - no auto-publish, auto-merge, or auto-comment authority;
