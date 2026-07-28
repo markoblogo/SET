@@ -162,6 +162,7 @@ Frontend, product, and content review:
 - [docs/readme-surface-audit-contract.md](docs/readme-surface-audit-contract.md)
 - [docs/dependency-risk-check-contract.md](docs/dependency-risk-check-contract.md)
 - [docs/chat-surface-boundary-contract.md](docs/chat-surface-boundary-contract.md)
+- [docs/code-review-helper-boundary-contract.md](docs/code-review-helper-boundary-contract.md)
 
 Operational references and analytics:
 
