@@ -186,6 +186,7 @@ Frontend, product, and content review:
 
 Operational references and analytics:
 
+- [docs/agent-traversal-review-note.md](docs/agent-traversal-review-note.md)
 - [docs/terminal-agent-multiplexer-reference.md](docs/terminal-agent-multiplexer-reference.md)
 - [docs/external-ai-engineering-references.md](docs/external-ai-engineering-references.md)
 - [docs/ai-visibility-audit-contract.md](docs/ai-visibility-audit-contract.md)
