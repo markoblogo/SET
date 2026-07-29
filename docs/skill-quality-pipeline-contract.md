@@ -14,11 +14,13 @@ The contract appears at `orchestrator_bundle.context_package.skill_quality_pipel
 
 - Treat a skill as a versioned procedural artifact with measurable quality.
 - Capture rollout evidence: task, input, skill ID, skill version, trajectory reference, verifier, score, and failure class.
+- When traces contain useful failure detail, preserve that side-information and use it during proposal generation instead of collapsing everything into one scalar score.
 - Generate only bounded `add`, `delete`, or `replace` edits; do not rewrite a whole skill or expand authority.
 - Accept a candidate only when a held-out or independently selected validation set improves without protected-control regressions.
 - Keep rejected edits in a buffer with the reason so weak, duplicate, overfit, or guardrail-reducing changes are not repeated.
 - Export `best_skill.md` only after validation and explicit human acceptance.
 - Treat SkillOpt-Sleep-like output as staged review material; automatic adoption is forbidden.
+- If GEPA-style search is used later, keep it budgeted, proposal-first, and human-gated. See `docs/gepa-style-optimization-contract.md`.
 
 ## Project Fit
 
