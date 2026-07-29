@@ -166,6 +166,7 @@ Core orchestration and proof:
 Context, memory, and agent operations:
 
 - [docs/memory-capability-contract.md](docs/memory-capability-contract.md)
+- [docs/memory-mutation-receipt-contract.md](docs/memory-mutation-receipt-contract.md)
 - [docs/agent-operations-contract.md](docs/agent-operations-contract.md)
 - [docs/skill-quality-pipeline-contract.md](docs/skill-quality-pipeline-contract.md)
 - [docs/gepa-style-optimization-contract.md](docs/gepa-style-optimization-contract.md)
