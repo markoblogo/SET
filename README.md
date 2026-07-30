@@ -191,6 +191,7 @@ Operational references and analytics:
 - [docs/external-ai-engineering-references.md](docs/external-ai-engineering-references.md)
 - [docs/ai-visibility-audit-contract.md](docs/ai-visibility-audit-contract.md)
 - [docs/donor-adaptation-target-matrix.md](docs/donor-adaptation-target-matrix.md)
+- [docs/500-ai-agents-donor-shortlist.md](docs/500-ai-agents-donor-shortlist.md)
 - [docs/project-portfolio-adaptation-matrix.md](docs/project-portfolio-adaptation-matrix.md)
 - [docs/agents-marketplace-owner-routing.md](docs/agents-marketplace-owner-routing.md)
 
