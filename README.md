@@ -178,6 +178,7 @@ Context, memory, and agent operations:
 - [docs/optical-transfer-boundary-contract.md](docs/optical-transfer-boundary-contract.md)
 - [docs/agent-room-event-log-contract.md](docs/agent-room-event-log-contract.md)
 - [docs/browser-helper-boundary-contract.md](docs/browser-helper-boundary-contract.md)
+- [docs/live-web-research-boundary-contract.md](docs/live-web-research-boundary-contract.md)
 - [docs/codex-security-repo-selection-matrix.md](docs/codex-security-repo-selection-matrix.md)
 - [docs/search-discoverable-code-contract.md](docs/search-discoverable-code-contract.md)
 - [docs/twelve-factor-agent-adaptation.md](docs/twelve-factor-agent-adaptation.md)
