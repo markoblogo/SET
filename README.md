@@ -174,6 +174,7 @@ Context, memory, and agent operations:
 - [docs/email-intake-boundary-contract.md](docs/email-intake-boundary-contract.md)
 - [docs/knowledge-distillation-boundary-contract.md](docs/knowledge-distillation-boundary-contract.md)
 - [docs/knowledge-asset-generation-boundary-contract.md](docs/knowledge-asset-generation-boundary-contract.md)
+- [docs/ai-engineering-reference-index-note.md](docs/ai-engineering-reference-index-note.md)
 - [docs/codex-security-repo-selection-matrix.md](docs/codex-security-repo-selection-matrix.md)
 - [docs/search-discoverable-code-contract.md](docs/search-discoverable-code-contract.md)
 - [docs/twelve-factor-agent-adaptation.md](docs/twelve-factor-agent-adaptation.md)
