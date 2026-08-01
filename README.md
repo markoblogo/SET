@@ -171,6 +171,7 @@ Context, memory, and agent operations:
 - [docs/skill-quality-pipeline-contract.md](docs/skill-quality-pipeline-contract.md)
 - [docs/gepa-style-optimization-contract.md](docs/gepa-style-optimization-contract.md)
 - [docs/superpowers-methodology-donor-note.md](docs/superpowers-methodology-donor-note.md)
+- [docs/email-intake-boundary-contract.md](docs/email-intake-boundary-contract.md)
 - [docs/codex-security-repo-selection-matrix.md](docs/codex-security-repo-selection-matrix.md)
 - [docs/search-discoverable-code-contract.md](docs/search-discoverable-code-contract.md)
 - [docs/twelve-factor-agent-adaptation.md](docs/twelve-factor-agent-adaptation.md)
