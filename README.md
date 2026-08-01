@@ -176,6 +176,7 @@ Context, memory, and agent operations:
 - [docs/knowledge-asset-generation-boundary-contract.md](docs/knowledge-asset-generation-boundary-contract.md)
 - [docs/ai-engineering-reference-index-note.md](docs/ai-engineering-reference-index-note.md)
 - [docs/optical-transfer-boundary-contract.md](docs/optical-transfer-boundary-contract.md)
+- [docs/agent-room-event-log-contract.md](docs/agent-room-event-log-contract.md)
 - [docs/codex-security-repo-selection-matrix.md](docs/codex-security-repo-selection-matrix.md)
 - [docs/search-discoverable-code-contract.md](docs/search-discoverable-code-contract.md)
 - [docs/twelve-factor-agent-adaptation.md](docs/twelve-factor-agent-adaptation.md)
