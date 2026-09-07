@@ -113,7 +113,7 @@ inputs:
   agentsgen_ref:
     description: 'Git ref used when installing agentsgen from GitHub.'
     required: false
-    default: 'main'
+    default: 'v0.5.0'
 
 runs:
   using: 'composite'
@@ -160,9 +160,11 @@ runs:
     - name: Run ID pre_task hook
       if: ${{ env.SET_RESOLVED_ID_ENABLED == 'true' && env.SET_RESOLVED_ID_PRE_TASK == 'true' }}
       shell: bash
+      env:
+        SET_INPUT_PATH: ${{ inputs.path }}
       run: |
         set -euo pipefail
-        hook_path="${{ inputs.path }}/scripts/run_integration_hook.sh"
+        hook_path="${SET_INPUT_PATH}/scripts/run_integration_hook.sh"
         if [ ! -f "${hook_path}" ]; then
           echo "ERROR: missing repo-local ID hook runner at ${hook_path}" >&2
           exit 1
@@ -225,22 +227,28 @@ runs:
     - name: Install agentsgen
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' }}
       shell: bash
+      env:
+        SET_INPUT_AGENTSGEN_REF: ${{ inputs.agentsgen_ref }}
       run: |
         set -euo pipefail
         python -m pip install --upgrade pip
-        python -m pip install "git+https://github.com/markoblogo/AGENTS.md_generator.git@${{ inputs.agentsgen_ref }}"
+        python -m pip install "git+https://github.com/markoblogo/AGENTS.md_generator.git@${SET_INPUT_AGENTSGEN_REF}"
 
     - name: Run agentsgen init
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_INIT == 'true' }}
       shell: bash
+      env:
+        SET_INPUT_AUTODETECT: ${{ inputs.autodetect }}
+        SET_INPUT_PATH: ${{ inputs.path }}
+        SET_INPUT_PRESET: ${{ inputs.preset }}
       run: |
         set -euo pipefail
-        cmd=(agentsgen init "${{ inputs.path }}" --defaults)
-        if [ "${{ inputs.autodetect }}" = "true" ]; then
+        cmd=(agentsgen init "${SET_INPUT_PATH}" --defaults)
+        if [ "${SET_INPUT_AUTODETECT}" = "true" ]; then
           cmd+=(--autodetect)
         fi
-        if [ -n "${{ inputs.preset }}" ]; then
-          cmd+=(--preset "${{ inputs.preset }}")
+        if [ -n "${SET_INPUT_PRESET}" ]; then
+          cmd+=(--preset "${SET_INPUT_PRESET}")
         fi
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
@@ -250,10 +258,13 @@ runs:
     - name: Run agentsgen pack
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_PACK == 'true' }}
       shell: bash
+      env:
+        SET_INPUT_AUTODETECT: ${{ inputs.autodetect }}
+        SET_INPUT_PATH: ${{ inputs.path }}
       run: |
         set -euo pipefail
-        cmd=(agentsgen pack "${{ inputs.path }}")
-        if [ "${{ inputs.autodetect }}" = "true" ]; then
+        cmd=(agentsgen pack "${SET_INPUT_PATH}")
+        if [ "${SET_INPUT_AUTODETECT}" = "true" ]; then
           cmd+=(--autodetect)
         fi
         if [ "${SET_RESOLVED_SITE_PACK}" = "true" ]; then
@@ -271,23 +282,30 @@ runs:
     - name: Run agentsgen check
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_CHECK == 'true' }}
       shell: bash
+      env:
+        SET_INPUT_PATH: ${{ inputs.path }}
       run: |
         set -euo pipefail
-        agentsgen check "${{ inputs.path }}" --all --ci
+        agentsgen check "${SET_INPUT_PATH}" --all --ci
 
     - name: Run agentsgen repomap
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_REPOMAP == 'true' }}
       shell: bash
+      env:
+        SET_INPUT_PATH: ${{ inputs.path }}
+        SET_INPUT_REPOMAP_CHANGED: ${{ inputs.repomap_changed }}
+        SET_INPUT_REPOMAP_COMPACT_BUDGET: ${{ inputs.repomap_compact_budget }}
+        SET_INPUT_REPOMAP_FOCUS: ${{ inputs.repomap_focus }}
       run: |
         set -euo pipefail
-        cmd=(agentsgen understand "${{ inputs.path }}")
-        if [ -n "${{ inputs.repomap_compact_budget }}" ]; then
-          cmd+=(--compact-budget "${{ inputs.repomap_compact_budget }}")
+        cmd=(agentsgen understand "${SET_INPUT_PATH}")
+        if [ -n "${SET_INPUT_REPOMAP_COMPACT_BUDGET}" ]; then
+          cmd+=(--compact-budget "${SET_INPUT_REPOMAP_COMPACT_BUDGET}")
         fi
-        if [ -n "${{ inputs.repomap_focus }}" ]; then
-          cmd+=(--focus "${{ inputs.repomap_focus }}")
+        if [ -n "${SET_INPUT_REPOMAP_FOCUS}" ]; then
+          cmd+=(--focus "${SET_INPUT_REPOMAP_FOCUS}")
         fi
-        if [ "${{ inputs.repomap_changed }}" = "true" ]; then
+        if [ "${SET_INPUT_REPOMAP_CHANGED}" = "true" ]; then
           cmd+=(--changed)
         fi
         printf 'Running:'
@@ -298,9 +316,11 @@ runs:
     - name: Run agentsgen snippets
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_SNIPPETS == 'true' }}
       shell: bash
+      env:
+        SET_INPUT_PATH: ${{ inputs.path }}
       run: |
         set -euo pipefail
-        cmd=(agentsgen snippets "${{ inputs.path }}")
+        cmd=(agentsgen snippets "${SET_INPUT_PATH}")
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
         printf '\n'
@@ -309,13 +329,15 @@ runs:
     - name: Run agentsgen analyze
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_ANALYZE == 'true' }}
       shell: bash
+      env:
+        SET_INPUT_PATH: ${{ inputs.path }}
       run: |
         set -euo pipefail
         if [ -z "${SET_RESOLVED_ANALYZE_URL}" ]; then
           echo "ERROR: analyze_url is required when analyze=true or workflow_preset enables analyze" >&2
           exit 1
         fi
-        cmd=(agentsgen analyze "${SET_RESOLVED_ANALYZE_URL}" "${{ inputs.path }}")
+        cmd=(agentsgen analyze "${SET_RESOLVED_ANALYZE_URL}" "${SET_INPUT_PATH}")
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
         printf '\n'
@@ -324,13 +346,15 @@ runs:
     - name: Run agentsgen meta
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_META == 'true' }}
       shell: bash
+      env:
+        SET_INPUT_PATH: ${{ inputs.path }}
       run: |
         set -euo pipefail
         if [ -z "${SET_RESOLVED_META_URL}" ]; then
           echo "ERROR: meta_url is required when meta=true or workflow_preset enables meta" >&2
           exit 1
         fi
-        cmd=(agentsgen meta "${SET_RESOLVED_META_URL}" "${{ inputs.path }}")
+        cmd=(agentsgen meta "${SET_RESOLVED_META_URL}" "${SET_INPUT_PATH}")
         printf 'Running:'
         printf ' %q' "${cmd[@]}"
         printf '\n'
@@ -339,6 +363,9 @@ runs:
     - name: Run agentsgen proof loop
       if: ${{ env.SET_RESOLVED_AGENTSGEN == 'true' && env.SET_RESOLVED_PROOF_LOOP == 'true' }}
       shell: bash
+      env:
+        SET_INPUT_PATH: ${{ inputs.path }}
+        SET_INPUT_PROOF_EXPECTED_ARTIFACTS: ${{ inputs.proof_expected_artifacts }}
       run: |
         set -euo pipefail
         if [ -z "${SET_RESOLVED_PROOF_TASK_ID}" ]; then
@@ -346,19 +373,19 @@ runs:
           exit 1
         fi
         init_cmd=(
-          agentsgen task init "${SET_RESOLVED_PROOF_TASK_ID}" "${{ inputs.path }}"
-          --summary "SET proof-loop contract for ${{ inputs.path }}"
+          agentsgen task init "${SET_RESOLVED_PROOF_TASK_ID}" "${SET_INPUT_PATH}"
+          --summary "SET proof-loop contract for ${SET_INPUT_PATH}"
           --acceptance "Requested orchestration steps are captured in repo-local proof artifacts."
           --acceptance "Evidence reflects current repo state and generated artifacts."
           --acceptance "Verdict is explicit and reviewable."
         )
         evidence_cmd=(
-          agentsgen task evidence "${SET_RESOLVED_PROOF_TASK_ID}" "${{ inputs.path }}"
+          agentsgen task evidence "${SET_RESOLVED_PROOF_TASK_ID}" "${SET_INPUT_PATH}"
           --note "Automated proof bundle generated by SET."
           --note "Generated by the SET composite action after orchestration steps completed."
         )
         verdict_cmd=(
-          agentsgen task verdict "${SET_RESOLVED_PROOF_TASK_ID}" "${{ inputs.path }}"
+          agentsgen task verdict "${SET_RESOLVED_PROOF_TASK_ID}" "${SET_INPUT_PATH}"
           --status needs-review
           --summary "Automated proof bundle generated by SET. Review evidence and checks before marking pass."
         )
@@ -381,8 +408,8 @@ runs:
         if [ "${SET_RESOLVED_PACK}" = "true" ]; then
           evidence_cmd+=(--artifact "docs/ai/how-to-run.md" --artifact "llms.txt")
         fi
-        if [ -n "${{ inputs.proof_expected_artifacts }}" ]; then
-          IFS=',' read -r -a extra_expected <<< "${{ inputs.proof_expected_artifacts }}"
+        if [ -n "${SET_INPUT_PROOF_EXPECTED_ARTIFACTS}" ]; then
+          IFS=',' read -r -a extra_expected <<< "${SET_INPUT_PROOF_EXPECTED_ARTIFACTS}"
         else
           extra_expected=()
         fi
@@ -397,7 +424,7 @@ runs:
         blocking_items=()
         while IFS= read -r artifact_path; do
           [ -n "${artifact_path}" ] || continue
-          if [ ! -e "${{ inputs.path }}/${artifact_path}" ]; then
+          if [ ! -e "${SET_INPUT_PATH}/${artifact_path}" ]; then
             blocking_items+=("high: expected proof artifact is missing: ${artifact_path}")
           fi
         done < <(
@@ -436,9 +463,11 @@ runs:
     - name: Run ID weekly_review hook
       if: ${{ env.SET_RESOLVED_ID_ENABLED == 'true' && env.SET_RESOLVED_ID_WEEKLY_REVIEW == 'true' }}
       shell: bash
+      env:
+        SET_INPUT_PATH: ${{ inputs.path }}
       run: |
         set -euo pipefail
-        hook_path="${{ inputs.path }}/scripts/run_integration_hook.sh"
+        hook_path="${SET_INPUT_PATH}/scripts/run_integration_hook.sh"
         if [ ! -f "${hook_path}" ]; then
           echo "ERROR: missing repo-local ID hook runner at ${hook_path}" >&2
           exit 1

@@ -36,3 +36,31 @@ jobs:
               )
           print('workflow check ok:', workflow_check.get('status'))
           PY
+      - name: Verify installed package
+        run: |
+          python3 -m pip install build twine
+          python3 -m build
+          twine check dist/*
+          python3 -m venv /tmp/set-wheel
+          /tmp/set-wheel/bin/pip install dist/*.whl
+          python3 scripts/release_smoke.py --exe /tmp/set-wheel/bin/set-plan-config-apply
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Create isolated fixture
+        run: |
+          mkdir /tmp/set-fixture
+          echo '{"name":"example","scripts":{"test":"node --test"}}' > /tmp/set-fixture/package.json
+      - uses: ./
+        with:
+          path: /tmp/set-fixture
+          workflow_preset: repo-docs
+      - name: Require stale command detection
+        run: |
+          echo '{"name":"example","scripts":{}}' > /tmp/set-fixture/package.json
+          set +e
+          agentsgen check /tmp/set-fixture --all --ci
+          status=$?
+          set -e
+          test "$status" -eq 1

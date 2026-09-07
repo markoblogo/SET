@@ -1529,7 +1529,7 @@ def build_plan(
 
     workflow = {
         'path': '.github/workflows/set.yml',
-        'uses': 'markoblogo/SET@main',
+        'uses': 'markoblogo/SET@v0.3.0',
         'with': with_block,
     }
     review_payload = build_review_payload(
@@ -1826,9 +1826,12 @@ def export_batch(plans: list[dict[str, object]], export_dir: Path) -> list[Path]
 
 def resolve_targets(repos: list[str], use_all: bool) -> list[tuple[Path, dict[str, object]]]:
     if use_all:
-        return list_repo_configs()
+        targets = list_repo_configs()
+        if not targets:
+            raise SystemExit('No central registry found; use --config /path/to/.set.json or a source checkout')
+        return targets
     if not repos:
-        raise SystemExit('Provide at least one repo or use --all')
+        raise SystemExit('Provide --config .set.json, a repo name, or --all in a source checkout')
     return [load_config(repo) for repo in repos]
 
 
@@ -1854,6 +1857,7 @@ def resolve_repo_roots(targets: list[tuple[Path, dict[str, object]]], values: li
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Planning-only SET config apply helper.')
     parser.add_argument('repos', nargs='*', help='Repo name(s) in owner/name format')
+    parser.add_argument('--config', type=Path, help='Repo-local JSON config; no central registry entry required.')
     parser.add_argument('--all', action='store_true', help='Plan against every repo in registry/repos')
     parser.add_argument('--format', choices=('text', 'json'), default='text')
     parser.add_argument('--export-dir', help='Optional local directory for reviewable planner outputs.')
@@ -1868,7 +1872,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    targets = resolve_targets(args.repos, args.all)
+    config = args.config
+    if config is None and not args.repos and not args.all and Path('.set.json').is_file():
+        config = Path('.set.json')
+    if config is not None:
+        if args.repos or args.all:
+            raise SystemExit('--config cannot be combined with repo names or --all')
+        try:
+            from scripts.validate_registry import validate_config
+        except ModuleNotFoundError:
+            from validate_registry import validate_config
+        try:
+            targets = [(config, validate_config(config))]
+        except (OSError, ValueError) as exc:
+            raise SystemExit(f'Cannot read config {config}: {exc}') from exc
+    else:
+        targets = resolve_targets(args.repos, args.all)
     repo_roots = resolve_repo_roots(targets, args.repo_root)
     dry_run = True
     if args.dry_run:

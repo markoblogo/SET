@@ -28,7 +28,10 @@
 - lint:
   - `python3 -m json.tool .agentsgen.json`
 - contracts:
-  - `agentsgen check --all --ci`
+  - `python3 -m pytest -q tests/test_repo_docs.py`
 - pack:
   - `agentsgen pack --autodetect --check --format=json`
 <!-- AGENTSGEN:END section=verification -->
+
+These compact sections and RUNBOOK.md are maintained by SET. Use the custom
+repo-doc tests here; the default agentsgen template guard is tested on fixtures in CI.

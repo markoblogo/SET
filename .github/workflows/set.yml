@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: markoblogo/SET@main
+      - uses: markoblogo/SET@v0.3.0
         with:
           agentsgen: "true"
           autodetect: "true"

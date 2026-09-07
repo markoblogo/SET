@@ -159,8 +159,8 @@ def main() -> int:
     registry_dir = root / 'registry' / 'repos'
     configs = sorted(registry_dir.glob('*.json'))
     if not configs:
-        print('No registry configs found.')
-        return 0
+        print('No registry configs found. Use a source checkout or set-plan-config-apply --config .set.json.')
+        return 1
 
     print('SET registry validation')
     for config_path in configs:

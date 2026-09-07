@@ -1,0 +1,23 @@
+<!-- AGENTSGEN:START section=llms -->
+Project: SET
+Stack: python
+
+Agent context bundle (LLMO Pack):
+- Run guide: docs/ai/how-to-run.md
+- Test guide: docs/ai/how-to-test.md
+- Architecture: docs/ai/architecture.md
+- Data contracts: docs/ai/data-contracts.md
+- ID handoff: docs/ai/id-context.json
+- Security: SECURITY_AI.md
+- Contributing: CONTRIBUTING_AI.md
+
+Quick commands:
+- install: (not detected)
+- dev: (not detected)
+- test: python3 -m pytest -q
+- lint: python3 -m json.tool .agentsgen.json >/dev/null
+- format: (not detected)
+
+Notes:
+- Keep these files concise and command-accurate. Avoid speculative guidance.
+<!-- AGENTSGEN:END section=llms -->
