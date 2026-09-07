@@ -1,15 +1,21 @@
-name: agentsgen-pr-guard
+name: SET repo contract
 
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  agentsgen-pr-guard:
+  contract:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: markoblogo/AGENTS.md_generator/.github/actions/agentsgen-guard@main
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
-          files: AGENTS.md,RUNBOOK.md,docs/ai/task-contract.json
-          pack_check: "true"
-          comment: "false"
+          python-version: '3.11'
+      - run: python -m pip install agentsgen==0.5.0 pytest
+      # SET maintains a compact custom AGENTS.md and a handwritten RUNBOOK.
+      # Validate those with their own contract, not the generator's default template.
+      - run: pytest -q tests/test_repo_docs.py
+      - run: agentsgen pack . --autodetect --check
