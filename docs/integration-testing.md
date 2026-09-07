@@ -1,6 +1,6 @@
 # Integration and release checks
 
-Supported pair: SET 0.3.0 + agentsgen 0.5.0.
+Supported pair: SET 0.3.1 + agentsgen 0.5.0.
 
 CI runs planner/registry tests and a real composite-action workflow on an isolated
 Node fixture. That workflow generates docs, validates them, removes the configured

@@ -66,3 +66,10 @@ class ExportIdBootstrapTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_action_passes_target_to_bootstrap_exporter():
+    from pathlib import Path
+    action = (Path(__file__).resolve().parents[1] / 'action.yml').read_text()
+    step = action.split('    - name: Export ID bootstrap packet', 1)[1].split('    - name:', 1)[0]
+    assert 'INPUT_PATH: ${{ inputs.path }}' in step
