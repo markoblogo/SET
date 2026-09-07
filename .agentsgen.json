@@ -16,11 +16,15 @@
     "enabled": true,
     "llms_format": "txt",
     "output_dir": "docs/ai",
-    "files": [
-      "docs/ai/task-contract.json"
-    ]
+    "files": []
   },
   "commands": {
-    "lint": "python3 -m json.tool .agentsgen.json >/dev/null"
+    "lint": "python3 -m json.tool .agentsgen.json >/dev/null",
+    "test": "python3 -m pytest -q"
+  },
+  "project": {
+    "name": "SET",
+    "primary_stack": "python",
+    "repo_root": "."
   }
 }

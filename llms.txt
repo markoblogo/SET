@@ -1,5 +1,5 @@
 <!-- AGENTSGEN:START section=llms -->
-Project: set-audit
+Project: SET
 Stack: python
 
 Agent context bundle (LLMO Pack):
@@ -14,7 +14,7 @@ Agent context bundle (LLMO Pack):
 Quick commands:
 - install: (not detected)
 - dev: (not detected)
-- test: (not detected)
+- test: python3 -m pytest -q
 - lint: python3 -m json.tool .agentsgen.json >/dev/null
 - format: (not detected)
 

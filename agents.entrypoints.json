@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "generated_by": "agentsgen",
+  "generated_at": "2026-09-07T13:52:48Z",
+  "repo": {
+    "path": ".",
+    "stack": "python",
+    "autodetect": true
+  },
+  "commands": [
+    {
+      "id": "test",
+      "title": "Test",
+      "command": "python3 -m pytest -q",
+      "cwd": ".",
+      "source": {
+        "kind": "config",
+        "hint": ".agentsgen.json:commands.test"
+      },
+      "notes": ""
+    },
+    {
+      "id": "lint",
+      "title": "Lint",
+      "command": "python3 -m json.tool .agentsgen.json >/dev/null",
+      "cwd": ".",
+      "source": {
+        "kind": "config",
+        "hint": ".agentsgen.json:commands.lint"
+      },
+      "notes": ""
+    }
+  ]
+}
