@@ -1529,7 +1529,7 @@ def build_plan(
 
     workflow = {
         'path': '.github/workflows/set.yml',
-        'uses': 'markoblogo/SET@v0.3.0',
+        'uses': 'markoblogo/SET@v0.3.1',
         'with': with_block,
     }
     review_payload = build_review_payload(

@@ -209,6 +209,8 @@ runs:
     - name: Export ID bootstrap packet
       if: ${{ env.SET_RESOLVED_ID_ENABLED == 'true' && env.SET_RESOLVED_ID_PRE_TASK == 'true' }}
       shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.path }}
       run: |
         set -euo pipefail
         packet_output="$(python "${GITHUB_ACTION_PATH}/scripts/export_id_bootstrap.py")"

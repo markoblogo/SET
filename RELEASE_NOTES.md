@@ -1,10 +1,6 @@
-# SET 0.3.0 — portable planning, pinned execution
+# SET 0.3.1 — ID bootstrap paths
 
-- Plan from a validated repo-local `.set.json` with `--config`, including automatic discovery when no repository is specified. No central registry contribution required.
-- Keep planning exports separate from applying target changes. Existing central-registry workflows remain available in a source checkout.
-- Pin generated workflows to SET v0.3.0 and the action's agentsgen default to v0.5.0.
-- Pass action input values through environment variables instead of interpolating them as shell source.
-- Shorten onboarding, add a complete artifact-producing workflow, and link the standalone agentsgen path.
-- Test the installed wheel outside the checkout and run a real agentsgen integration in CI.
+Pass the selected repository path to the ID bootstrap exporter. With a non-root target, JSON and prompt packets now land under that target's docs/ai directory.
 
-Upgrade: `pipx upgrade abvx-set` or change your workflow to `markoblogo/SET@v0.3.0`. For immutable dependencies, use reviewed commit SHAs. An explicit `agentsgen_ref` override still takes precedence.
+Generated workflows use SET v0.3.1. agentsgen remains pinned to v0.5.0.
+This patch supports the installed hook introduced by ID 0.5.0.
