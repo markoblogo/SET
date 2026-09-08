@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: markoblogo/SET@v0.3.1
+      - uses: markoblogo/SET@v0.4.0
         with:
           workflow_preset: repo-docs
           path: "."
@@ -56,7 +56,7 @@ for read-only validation of committed instructions on every PR.
 Requires Python 3.10+ and pipx:
 
 ```sh
-pipx install abvx-set==0.3.1
+pipx install abvx-set==0.4.0
 ```
 
 Create `.set.json` in your repository:
@@ -117,7 +117,7 @@ they do not install runtimes or grant execution permissions.
 | Project | Responsibility |
 | --- | --- |
 | [agentsgen 0.5.0](https://github.com/markoblogo/AGENTS.md_generator) | Detect, generate, preserve handwritten text, validate command references |
-| SET 0.3.1 | Choose steps, export plans, invoke the pinned agentsgen version |
+| SET 0.4.0 | Choose steps, export plans, invoke the pinned agentsgen version |
 | [abvx-agent-skills](https://github.com/markoblogo/abvx-agent-skills) | Optional reusable agent workflows |
 
 See [integration checks](docs/integration-testing.md), [configuration schema](schema/repo-config.v1.json),

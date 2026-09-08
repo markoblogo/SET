@@ -51,6 +51,16 @@ def test_explicit_repomap_inputs_override_web_ui_defaults(tmp_path: Path) -> Non
     assert resolved["SET_RESOLVED_REPOMAP_CHANGED"] == "false"
 
 
+def test_explicit_clear_removes_web_ui_focus(tmp_path: Path) -> None:
+    resolved = _resolve(
+        tmp_path,
+        INPUT_WORKFLOW_PRESET="web-ui",
+        INPUT_REPOMAP_FOCUS_CLEAR="true",
+    )
+
+    assert resolved["SET_RESOLVED_REPOMAP_FOCUS"] == ""
+
+
 def test_multiline_repomap_focus_is_rejected_before_writing_github_env(tmp_path: Path) -> None:
     output = tmp_path / "github-env"
     env = os.environ.copy()

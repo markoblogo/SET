@@ -38,6 +38,10 @@ inputs:
     description: 'Optional query passed to agentsgen understand --focus.'
     required: false
     default: ''
+  repomap_focus_clear:
+    description: 'Set true to clear a workflow preset focus instead of inheriting it.'
+    required: false
+    default: 'false'
   repomap_changed:
     description: 'When true, passes --changed to agentsgen understand.'
     required: false
@@ -130,6 +134,7 @@ runs:
         INPUT_REPOMAP: ${{ inputs.repomap }}
         INPUT_REPOMAP_COMPACT_BUDGET: ${{ inputs.repomap_compact_budget }}
         INPUT_REPOMAP_FOCUS: ${{ inputs.repomap_focus }}
+        INPUT_REPOMAP_FOCUS_CLEAR: ${{ inputs.repomap_focus_clear }}
         INPUT_REPOMAP_CHANGED: ${{ inputs.repomap_changed }}
         INPUT_SNIPPETS: ${{ inputs.snippets }}
         INPUT_ANALYZE: ${{ inputs.analyze }}

@@ -4,7 +4,7 @@ Use `web-ui` for a pull request that changes browser-facing behavior: pages,
 components, routes, styles, accessibility, or client-side data flow.
 
 ```yaml
-- uses: markoblogo/SET@v0.3.1
+- uses: markoblogo/SET@v0.4.0
   with:
     workflow_preset: web-ui
     path: "."
@@ -19,6 +19,9 @@ The preset runs:
 
 Explicit `repomap_focus` and `repomap_changed` inputs override the preset. This
 makes it possible to narrow a large repository to one application or package.
+Set `repomap_focus_clear: "true"` to keep changed-only mapping without the
+frontend focus. A repo config with `repomap_policy.focus` set to `null` exports
+this input automatically.
 
 ## External companions
 

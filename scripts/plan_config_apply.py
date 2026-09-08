@@ -1493,8 +1493,11 @@ def build_plan(
         explicit_policy = agentsgen['repomap_policy']
         if isinstance(explicit_policy.get('compact_budget'), int):
             with_block['repomap_compact_budget'] = str(explicit_policy['compact_budget'])
-        if isinstance(explicit_policy.get('focus'), str) and explicit_policy['focus'].strip():
-            with_block['repomap_focus'] = explicit_policy['focus'].strip()
+        if 'focus' in explicit_policy:
+            if isinstance(explicit_policy.get('focus'), str) and explicit_policy['focus'].strip():
+                with_block['repomap_focus'] = explicit_policy['focus'].strip()
+            else:
+                with_block['repomap_focus_clear'] = 'true'
         if isinstance(explicit_policy.get('changed'), bool):
             with_block['repomap_changed'] = 'true' if explicit_policy['changed'] else 'false'
 
@@ -1548,7 +1551,7 @@ def build_plan(
 
     workflow = {
         'path': '.github/workflows/set.yml',
-        'uses': 'markoblogo/SET@v0.3.1',
+        'uses': 'markoblogo/SET@v0.4.0',
         'with': with_block,
     }
     review_payload = build_review_payload(

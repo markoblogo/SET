@@ -39,6 +39,22 @@ def test_web_ui_plan_preserves_explicit_changed_false(tmp_path: Path) -> None:
     assert plan['repomap_policy_mode'] == 'focus'
 
 
+def test_web_ui_plan_exports_explicit_empty_focus(tmp_path: Path) -> None:
+    config_path = tmp_path / '.set.json'
+    data = {
+        'version': 1,
+        'repo': 'outside/web-app',
+        'tools': {'agentsgen': {'repomap_policy': {'focus': None}}},
+        'presets': ['web-ui'],
+    }
+
+    plan = planner.build_plan(config_path, data)
+
+    workflow = plan['proposed_changes'][0]['workflow']
+    assert workflow['with']['repomap_focus_clear'] == 'true'
+    assert plan['repomap_policy_mode'] == 'changed'
+
+
 def test_build_plan_for_set_is_planning_only() -> None:
     config_path, data = planner.load_config('markoblogo/SET')
     plan = planner.build_plan(config_path, data)
