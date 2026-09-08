@@ -1486,7 +1486,16 @@ def build_plan(
             with_block[key] = 'true' if agentsgen[key] else 'false'
     if agentsgen.get('repomap') is True and repomap_policy:
         with_block['repomap_compact_budget'] = str(repomap_policy['compact_budget'])
-        if isinstance(repomap_policy.get('focus'), str) and str(repomap_policy.get('focus')).strip():
+        explicit_policy = agentsgen.get('repomap_policy')
+        focus_is_explicitly_empty = (
+            workflow_preset == 'web-ui'
+            and isinstance(explicit_policy, dict)
+            and 'focus' in explicit_policy
+            and not (isinstance(explicit_policy.get('focus'), str) and explicit_policy['focus'].strip())
+        )
+        if focus_is_explicitly_empty:
+            with_block['repomap_focus_clear'] = 'true'
+        elif isinstance(repomap_policy.get('focus'), str) and str(repomap_policy.get('focus')).strip():
             with_block['repomap_focus'] = str(repomap_policy['focus']).strip()
         with_block['repomap_changed'] = 'true' if repomap_policy.get('changed') is True else 'false'
     elif workflow_preset == 'web-ui' and isinstance(agentsgen.get('repomap_policy'), dict):
