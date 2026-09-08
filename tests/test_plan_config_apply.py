@@ -76,6 +76,22 @@ def test_web_ui_plan_clears_focus_when_repomap_is_explicitly_enabled(tmp_path: P
     assert plan['repomap_policy_mode'] == 'changed'
 
 
+def test_workflow_yaml_escapes_quotes_in_repomap_focus(tmp_path: Path) -> None:
+    config_path = tmp_path / '.set.json'
+    data = {
+        'version': 1,
+        'repo': 'outside/web-app',
+        'tools': {'agentsgen': {'repomap_policy': {'focus': 'components "admin"'}}},
+        'presets': ['web-ui'],
+    }
+
+    plan = planner.build_plan(config_path, data)
+    workflow = plan['proposed_changes'][0]['workflow']
+
+    rendered = planner.render_workflow_yaml(workflow)
+    assert 'repomap_focus: "components \\"admin\\""' in rendered
+
+
 def test_build_plan_for_set_is_planning_only() -> None:
     config_path, data = planner.load_config('markoblogo/SET')
     plan = planner.build_plan(config_path, data)

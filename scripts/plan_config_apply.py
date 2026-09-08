@@ -1128,7 +1128,7 @@ def render_workflow_yaml(workflow: dict[str, object]) -> str:
         '        with:',
     ]
     for key, value in with_block.items():
-        lines.append(f'          {key}: "{value}"')
+        lines.append(f'          {key}: {json.dumps(str(value), ensure_ascii=False)}')
     return '\n'.join(lines) + '\n'
 
 
