@@ -20,7 +20,7 @@ def main():
         assert plan['repo'] == 'external/example'
         assert plan['dry_run'] is True
         assert (root / 'review/workflow.set.yml').is_file()
-        assert 'markoblogo/SET@v0.3.1' in (root / 'review/workflow.set.yml').read_text()
+        assert 'markoblogo/SET@v0.4.0' in (root / 'review/workflow.set.yml').read_text()
         assert not (root / '.github').exists()
     print('Installed planner: local config, pinned workflow export, no target mutation: PASS')
 

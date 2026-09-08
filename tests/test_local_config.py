@@ -14,7 +14,7 @@ def test_external_repo_config_exports_without_registry_or_target_writes(tmp_path
     plan = json.loads(result.stdout)
     assert plan['repo'] == 'outside/project'
     assert plan['dry_run'] is True
-    assert plan['proposed_changes'][0]['workflow']['uses'] == 'markoblogo/SET@v0.3.1'
+    assert plan['proposed_changes'][0]['workflow']['uses'] == 'markoblogo/SET@v0.4.0'
     assert (tmp_path / 'review/workflow.set.yml').exists()
     assert not (tmp_path / '.github').exists()
 

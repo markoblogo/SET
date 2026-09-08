@@ -1,5 +1,5 @@
 name: 'SET'
-description: 'Thin orchestration entrypoint for agentsgen repo-docs, site-ai, and check flows.'
+description: 'Thin orchestration entrypoint for agentsgen repo-docs, web-ui, site-ai, and check flows.'
 
 inputs:
   agentsgen:
@@ -38,6 +38,10 @@ inputs:
     description: 'Optional query passed to agentsgen understand --focus.'
     required: false
     default: ''
+  repomap_focus_clear:
+    description: 'Set true to clear a workflow preset focus instead of inheriting it.'
+    required: false
+    default: 'false'
   repomap_changed:
     description: 'When true, passes --changed to agentsgen understand.'
     required: false
@@ -99,7 +103,7 @@ inputs:
     required: false
     default: 'true'
   workflow_preset:
-    description: 'Optional orchestration preset: minimal, repo-docs, or site-ai.'
+    description: 'Optional orchestration preset: minimal, repo-docs, web-ui, or site-ai.'
     required: false
     default: ''
   preset:
@@ -130,6 +134,7 @@ runs:
         INPUT_REPOMAP: ${{ inputs.repomap }}
         INPUT_REPOMAP_COMPACT_BUDGET: ${{ inputs.repomap_compact_budget }}
         INPUT_REPOMAP_FOCUS: ${{ inputs.repomap_focus }}
+        INPUT_REPOMAP_FOCUS_CLEAR: ${{ inputs.repomap_focus_clear }}
         INPUT_REPOMAP_CHANGED: ${{ inputs.repomap_changed }}
         INPUT_SNIPPETS: ${{ inputs.snippets }}
         INPUT_ANALYZE: ${{ inputs.analyze }}
@@ -295,9 +300,9 @@ runs:
       shell: bash
       env:
         SET_INPUT_PATH: ${{ inputs.path }}
-        SET_INPUT_REPOMAP_CHANGED: ${{ inputs.repomap_changed }}
+        SET_INPUT_REPOMAP_CHANGED: ${{ env.SET_RESOLVED_REPOMAP_CHANGED }}
         SET_INPUT_REPOMAP_COMPACT_BUDGET: ${{ inputs.repomap_compact_budget }}
-        SET_INPUT_REPOMAP_FOCUS: ${{ inputs.repomap_focus }}
+        SET_INPUT_REPOMAP_FOCUS: ${{ env.SET_RESOLVED_REPOMAP_FOCUS }}
       run: |
         set -euo pipefail
         cmd=(agentsgen understand "${SET_INPUT_PATH}")
@@ -489,8 +494,8 @@ runs:
       shell: bash
       env:
         INPUT_REPOMAP_COMPACT_BUDGET: ${{ inputs.repomap_compact_budget }}
-        INPUT_REPOMAP_FOCUS: ${{ inputs.repomap_focus }}
-        INPUT_REPOMAP_CHANGED: ${{ inputs.repomap_changed }}
+        INPUT_REPOMAP_FOCUS: ${{ env.SET_RESOLVED_REPOMAP_FOCUS }}
+        INPUT_REPOMAP_CHANGED: ${{ env.SET_RESOLVED_REPOMAP_CHANGED }}
         INPUT_ID_OWNER_ID: ${{ inputs.id_owner_id }}
         INPUT_ID_TARGET: ${{ inputs.id_target }}
         INPUT_WORKFLOW_PRESET: ${{ inputs.workflow_preset }}

@@ -35,7 +35,11 @@ See [docs/config-apply-planning.md](config-apply-planning.md) and
 ## Workflow presets
 
 - `repo-docs`: `init + pack + check`
+- `web-ui`: `repo-docs + changed frontend-focused repo map`
 - `site-ai`: `repo-docs + site pack + analyze + meta`
+
+See [docs/web-ui-preset.md](web-ui-preset.md) for companion-tool and data-sharing
+boundaries.
 - `minimal`: bootstrap-only baseline
 
 ## ID integration

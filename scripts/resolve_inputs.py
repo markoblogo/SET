@@ -59,6 +59,17 @@ def main() -> int:
     resolved['SET_RESOLVED_PROOF_TASK_ID'] = os.environ.get('INPUT_PROOF_TASK_ID', '').strip() or preset.get('PROOF_TASK_ID', '')
     resolved['SET_RESOLVED_ID_OWNER_ID'] = os.environ.get('INPUT_ID_OWNER_ID', '').strip() or preset.get('ID_OWNER_ID', '')
     resolved['SET_RESOLVED_ID_TARGET'] = os.environ.get('INPUT_ID_TARGET', '').strip() or preset.get('ID_TARGET', 'set') or 'set'
+    repomap_focus_clear = os.environ.get('INPUT_REPOMAP_FOCUS_CLEAR', '').strip() == 'true'
+    resolved['SET_RESOLVED_REPOMAP_FOCUS'] = (
+        '' if repomap_focus_clear else os.environ.get('INPUT_REPOMAP_FOCUS', '').strip() or preset.get('REPOMAP_FOCUS', '')
+    )
+    resolved['SET_RESOLVED_REPOMAP_CHANGED'] = _resolve_flag(
+        os.environ.get('INPUT_REPOMAP_CHANGED', ''), preset, 'REPOMAP_CHANGED', 'false'
+    )
+
+    for key, value in resolved.items():
+        if '\n' in value or '\r' in value:
+            raise SystemExit(f'{key} must be a single-line value')
 
     output_path = os.environ['GITHUB_ENV']
     with open(output_path, 'a', encoding='utf-8') as fh:

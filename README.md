@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: markoblogo/SET@v0.3.1
+      - uses: markoblogo/SET@v0.4.0
         with:
           workflow_preset: repo-docs
           path: "."
@@ -56,7 +56,7 @@ for read-only validation of committed instructions on every PR.
 Requires Python 3.10+ and pipx:
 
 ```sh
-pipx install abvx-set==0.3.1
+pipx install abvx-set==0.4.0
 ```
 
 Create `.set.json` in your repository:
@@ -87,7 +87,26 @@ Explicit repo names and `--all` still support the central registry in a source c
 | --- | --- |
 | minimal | Bootstrap docs |
 | repo-docs | Init, context pack, validation |
+| web-ui | Repo docs plus a focused map of changed frontend code |
 | site-ai | Repo docs plus site analysis; consult advanced requirements |
+
+Use `workflow_preset: web-ui` when reviewing a meaningful browser-facing
+change. It focuses `agentsgen understand` on changed frontend files while
+keeping analysis local to the workflow. It does not install a browser tool,
+call a model, or publish code and diagrams to an external service. See the
+[web UI preset guide](docs/web-ui-preset.md).
+
+### What `web-ui` adds
+
+![SET web-ui architecture: the preset resolves into the existing repo-docs checks and a focused changed-code map](https://raw.githubusercontent.com/markoblogo/SET/pr-lens/docs/web-ui/architecture-dark.svg)
+
+The existing repo-docs path stays intact. The new branch narrows
+`agentsgen understand` to changed frontend code, and explicit inputs can still
+override its defaults.
+
+### Review flow
+
+![SET web-ui review flow: preset selection, repo-docs checks, focused mapping, and review artifacts](https://raw.githubusercontent.com/markoblogo/SET/pr-lens/docs/web-ui/review-flow-dark.svg)
 
 Optional ID hooks, proof artifacts, and capability profiles are described in the
 [advanced guide](docs/advanced-guide.md). Profile exports describe contracts;
@@ -98,7 +117,7 @@ they do not install runtimes or grant execution permissions.
 | Project | Responsibility |
 | --- | --- |
 | [agentsgen 0.5.0](https://github.com/markoblogo/AGENTS.md_generator) | Detect, generate, preserve handwritten text, validate command references |
-| SET 0.3.1 | Choose steps, export plans, invoke the pinned agentsgen version |
+| SET 0.4.0 | Choose steps, export plans, invoke the pinned agentsgen version |
 | [abvx-agent-skills](https://github.com/markoblogo/abvx-agent-skills) | Optional reusable agent workflows |
 
 See [integration checks](docs/integration-testing.md), [configuration schema](schema/repo-config.v1.json),
