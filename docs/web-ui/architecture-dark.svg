@@ -50,7 +50,7 @@
 <g class="cardsh"><rect class="card card-added" x="648" y="92" width="180" height="52" rx="10"/>
 <rect class="chip" x="662" y="105" width="26" height="26" rx="7"/><g><path class="glyph-stroke" d="M669,118 l4,4 l8,-8"/></g>
 <text class="ntitle" x="698" y="123" font-size="11.5">Preset contract tests</text>
-<g class="bdg bdg-neutral"><rect x="707.78" y="84" width="66.67" height="16" rx="8"/><text x="741.12" y="95" text-anchor="middle">37 passing</text></g>
+<g class="bdg bdg-neutral"><rect x="707.78" y="84" width="66.67" height="16" rx="8"/><text x="741.12" y="95" text-anchor="middle">38 passing</text></g>
 <g class="bdg bdg-added"><rect x="780.45" y="84" width="40.55" height="16" rx="8"/><text x="800.72" y="95" text-anchor="middle">NEW</text></g></g>
 <g class="cardsh"><rect class="card card-added" x="456" y="196" width="372" height="52" rx="10"/>
 <rect class="chip" x="470" y="209" width="26" height="26" rx="7"/><g><path class="glyph-stroke" d="M476,218 h14"/>
