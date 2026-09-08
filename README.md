@@ -87,7 +87,14 @@ Explicit repo names and `--all` still support the central registry in a source c
 | --- | --- |
 | minimal | Bootstrap docs |
 | repo-docs | Init, context pack, validation |
+| web-ui | Repo docs plus a focused map of changed frontend code |
 | site-ai | Repo docs plus site analysis; consult advanced requirements |
+
+Use `workflow_preset: web-ui` when reviewing a meaningful browser-facing
+change. It focuses `agentsgen understand` on changed frontend files while
+keeping analysis local to the workflow. It does not install a browser tool,
+call a model, or publish code and diagrams to an external service. See the
+[web UI preset guide](docs/web-ui-preset.md).
 
 Optional ID hooks, proof artifacts, and capability profiles are described in the
 [advanced guide](docs/advanced-guide.md). Profile exports describe contracts;

@@ -1093,7 +1093,7 @@ def load_config(repo: str) -> tuple[Path, dict[str, object]]:
 
 
 def pick_workflow_preset(presets: list[str]) -> str | None:
-    for name in ('site-ai', 'repo-docs', 'minimal'):
+    for name in ('site-ai', 'web-ui', 'repo-docs', 'minimal'):
         if name in presets:
             return name
     return None

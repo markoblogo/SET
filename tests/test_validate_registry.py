@@ -36,6 +36,14 @@ def test_validate_config_accepts_valid_payload(tmp_path: Path) -> None:
     assert validate_config(path) == valid_config()
 
 
+def test_validate_config_accepts_web_ui_preset(tmp_path: Path) -> None:
+    payload = valid_config()
+    payload['presets'] = ['web-ui']
+    path = write_json(tmp_path / 'repo.json', payload)
+
+    assert validate_config(path) == payload
+
+
 def test_validate_config_rejects_unknown_top_level_keys(tmp_path: Path) -> None:
     invalid = valid_config()
     invalid['oops'] = 'boom'

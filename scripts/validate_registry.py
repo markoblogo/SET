@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-ALLOWED_PRESETS = {'minimal', 'repo-docs', 'site-ai'}
+ALLOWED_PRESETS = {'minimal', 'repo-docs', 'site-ai', 'web-ui'}
 ALLOWED_TOP_LEVEL = {'version', 'repo', 'site', 'tools', 'presets', 'capability_profile'}
 ALLOWED_CAPABILITY_PROFILES = {
     'baseline',

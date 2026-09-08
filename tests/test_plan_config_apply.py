@@ -5,6 +5,22 @@ from pathlib import Path
 import scripts.plan_config_apply as planner
 
 
+def test_web_ui_preset_is_exported_to_the_reviewable_workflow(tmp_path: Path) -> None:
+    config_path = tmp_path / '.set.json'
+    data = {
+        'version': 1,
+        'repo': 'outside/web-app',
+        'tools': {'agentsgen': {}},
+        'presets': ['web-ui'],
+    }
+
+    plan = planner.build_plan(config_path, data)
+
+    workflow = plan['proposed_changes'][0]['workflow']
+    assert workflow['with']['workflow_preset'] == 'web-ui'
+    assert plan['orchestrator_bundle']['target_workflow']['preset'] == 'web-ui'
+
+
 def test_build_plan_for_set_is_planning_only() -> None:
     config_path, data = planner.load_config('markoblogo/SET')
     plan = planner.build_plan(config_path, data)

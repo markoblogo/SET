@@ -76,6 +76,7 @@ We can still add a YAML view later if the dashboard or authoring flow benefits f
 - `repo` is required and must be `owner/name`
 - `tools` is required
 - `presets` is optional but must use known names
+- known presets are `minimal`, `repo-docs`, `web-ui`, and `site-ai`
 - explicit tool fields win over preset defaults
 - `agentsgen.repomap_policy` is optional and currently supports `compact_budget`, `top_ranked_files`, `focus`, and `changed`
 - `agentsgen.proof_loop` is optional and currently supports `enabled`, `task_id`, and `expected_artifacts`

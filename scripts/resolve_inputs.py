@@ -59,6 +59,10 @@ def main() -> int:
     resolved['SET_RESOLVED_PROOF_TASK_ID'] = os.environ.get('INPUT_PROOF_TASK_ID', '').strip() or preset.get('PROOF_TASK_ID', '')
     resolved['SET_RESOLVED_ID_OWNER_ID'] = os.environ.get('INPUT_ID_OWNER_ID', '').strip() or preset.get('ID_OWNER_ID', '')
     resolved['SET_RESOLVED_ID_TARGET'] = os.environ.get('INPUT_ID_TARGET', '').strip() or preset.get('ID_TARGET', 'set') or 'set'
+    resolved['SET_RESOLVED_REPOMAP_FOCUS'] = os.environ.get('INPUT_REPOMAP_FOCUS', '').strip() or preset.get('REPOMAP_FOCUS', '')
+    resolved['SET_RESOLVED_REPOMAP_CHANGED'] = _resolve_flag(
+        os.environ.get('INPUT_REPOMAP_CHANGED', ''), preset, 'REPOMAP_CHANGED', 'false'
+    )
 
     output_path = os.environ['GITHUB_ENV']
     with open(output_path, 'a', encoding='utf-8') as fh:
