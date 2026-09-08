@@ -96,6 +96,18 @@ keeping analysis local to the workflow. It does not install a browser tool,
 call a model, or publish code and diagrams to an external service. See the
 [web UI preset guide](docs/web-ui-preset.md).
 
+### What `web-ui` adds
+
+![SET web-ui architecture: the preset resolves into the existing repo-docs checks and a focused changed-code map](https://raw.githubusercontent.com/markoblogo/SET/pr-lens/docs/web-ui/architecture-dark.svg)
+
+The existing repo-docs path stays intact. The new branch narrows
+`agentsgen understand` to changed frontend code, and explicit inputs can still
+override its defaults.
+
+### Review flow
+
+![SET web-ui review flow: preset selection, repo-docs checks, focused mapping, and review artifacts](https://raw.githubusercontent.com/markoblogo/SET/pr-lens/docs/web-ui/review-flow-dark.svg)
+
 Optional ID hooks, proof artifacts, and capability profiles are described in the
 [advanced guide](docs/advanced-guide.md). Profile exports describe contracts;
 they do not install runtimes or grant execution permissions.

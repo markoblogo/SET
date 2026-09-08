@@ -49,3 +49,27 @@ def test_explicit_repomap_inputs_override_web_ui_defaults(tmp_path: Path) -> Non
 
     assert resolved["SET_RESOLVED_REPOMAP_FOCUS"] == "packages/admin"
     assert resolved["SET_RESOLVED_REPOMAP_CHANGED"] == "false"
+
+
+def test_multiline_repomap_focus_is_rejected_before_writing_github_env(tmp_path: Path) -> None:
+    output = tmp_path / "github-env"
+    env = os.environ.copy()
+    env.update(
+        {
+            "GITHUB_ENV": str(output),
+            "INPUT_WORKFLOW_PRESET": "web-ui",
+            "INPUT_REPOMAP_FOCUS": "frontend\nSET_RESOLVED_ANALYZE=true",
+        }
+    )
+
+    completed = subprocess.run(
+        [sys.executable, str(SCRIPT)],
+        cwd=ROOT,
+        env=env,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode != 0
+    assert "single-line" in completed.stderr

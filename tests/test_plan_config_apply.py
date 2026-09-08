@@ -19,6 +19,24 @@ def test_web_ui_preset_is_exported_to_the_reviewable_workflow(tmp_path: Path) ->
     workflow = plan['proposed_changes'][0]['workflow']
     assert workflow['with']['workflow_preset'] == 'web-ui'
     assert plan['orchestrator_bundle']['target_workflow']['preset'] == 'web-ui'
+    assert plan['repomap_policy_mode'] == 'focus+changed'
+    assert plan['orchestrator_bundle']['context_package']['repomap_policy_mode'] == 'focus+changed'
+
+
+def test_web_ui_plan_preserves_explicit_changed_false(tmp_path: Path) -> None:
+    config_path = tmp_path / '.set.json'
+    data = {
+        'version': 1,
+        'repo': 'outside/web-app',
+        'tools': {'agentsgen': {'repomap_policy': {'changed': False}}},
+        'presets': ['web-ui'],
+    }
+
+    plan = planner.build_plan(config_path, data)
+
+    workflow = plan['proposed_changes'][0]['workflow']
+    assert workflow['with']['repomap_changed'] == 'false'
+    assert plan['repomap_policy_mode'] == 'focus'
 
 
 def test_build_plan_for_set_is_planning_only() -> None:

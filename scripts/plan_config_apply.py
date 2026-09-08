@@ -31,6 +31,13 @@ DEFAULT_REPOMAP_POLICY = {
     'changed': False,
 }
 
+WEB_UI_REPOMAP_FOCUS = 'frontend web UI browser HTML CSS JavaScript TypeScript components routes styles'
+WEB_UI_REPOMAP_POLICY = {
+    **DEFAULT_REPOMAP_POLICY,
+    'focus': WEB_UI_REPOMAP_FOCUS,
+    'changed': True,
+}
+
 DEFAULT_MEMORY_CAPABILITY = {
     'enabled': False,
     'kind': 'optional-memory-capability',
@@ -1009,13 +1016,18 @@ def build_capabilities(data: dict[str, object]) -> list[dict[str, object]]:
     return capabilities
 
 
-def resolve_repomap_policy(agentsgen: dict[str, object]) -> dict[str, object] | None:
-    repomap_enabled = agentsgen.get('repomap') is True
+def resolve_repomap_policy(
+    agentsgen: dict[str, object], workflow_preset: str | None = None
+) -> dict[str, object] | None:
+    repomap_setting = agentsgen.get('repomap')
+    repomap_enabled = repomap_setting is True or (
+        not isinstance(repomap_setting, bool) and workflow_preset == 'web-ui'
+    )
     policy = agentsgen.get('repomap_policy')
     if not repomap_enabled and not isinstance(policy, dict):
         return None
 
-    resolved = dict(DEFAULT_REPOMAP_POLICY)
+    resolved = dict(WEB_UI_REPOMAP_POLICY if workflow_preset == 'web-ui' else DEFAULT_REPOMAP_POLICY)
     if isinstance(policy, dict):
         compact_budget = policy.get('compact_budget')
         top_ranked_files = policy.get('top_ranked_files')
@@ -1025,9 +1037,9 @@ def resolve_repomap_policy(agentsgen: dict[str, object]) -> dict[str, object] | 
             resolved['compact_budget'] = compact_budget
         if isinstance(top_ranked_files, int) and top_ranked_files > 0:
             resolved['top_ranked_files'] = top_ranked_files
-        if focus is None or isinstance(focus, str):
+        if 'focus' in policy and (focus is None or isinstance(focus, str)):
             resolved['focus'] = focus
-        if isinstance(changed, bool):
+        if 'changed' in policy and isinstance(changed, bool):
             resolved['changed'] = changed
     return resolved
 
@@ -1461,7 +1473,7 @@ def build_plan(
     agentsgen = tools.get('agentsgen', {}) if isinstance(tools.get('agentsgen'), dict) else {}
     presets = data.get('presets', []) if isinstance(data.get('presets'), list) else []
     workflow_preset = pick_workflow_preset([p for p in presets if isinstance(p, str)])
-    repomap_policy = resolve_repomap_policy(agentsgen)
+    repomap_policy = resolve_repomap_policy(agentsgen, workflow_preset)
     proof_loop = resolve_proof_loop_config(agentsgen)
     id_config = resolve_id_config(tools)
 
@@ -1476,8 +1488,15 @@ def build_plan(
         with_block['repomap_compact_budget'] = str(repomap_policy['compact_budget'])
         if isinstance(repomap_policy.get('focus'), str) and str(repomap_policy.get('focus')).strip():
             with_block['repomap_focus'] = str(repomap_policy['focus']).strip()
-        if repomap_policy.get('changed') is True:
-            with_block['repomap_changed'] = 'true'
+        with_block['repomap_changed'] = 'true' if repomap_policy.get('changed') is True else 'false'
+    elif workflow_preset == 'web-ui' and isinstance(agentsgen.get('repomap_policy'), dict):
+        explicit_policy = agentsgen['repomap_policy']
+        if isinstance(explicit_policy.get('compact_budget'), int):
+            with_block['repomap_compact_budget'] = str(explicit_policy['compact_budget'])
+        if isinstance(explicit_policy.get('focus'), str) and explicit_policy['focus'].strip():
+            with_block['repomap_focus'] = explicit_policy['focus'].strip()
+        if isinstance(explicit_policy.get('changed'), bool):
+            with_block['repomap_changed'] = 'true' if explicit_policy['changed'] else 'false'
 
     site = data.get('site') if isinstance(data.get('site'), dict) else {}
     site_url = site.get('url') if isinstance(site, dict) else None

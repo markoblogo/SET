@@ -67,6 +67,8 @@ def main() -> int:
     output_path = os.environ['GITHUB_ENV']
     with open(output_path, 'a', encoding='utf-8') as fh:
         for key, value in resolved.items():
+            if '\n' in value or '\r' in value:
+                raise SystemExit(f'{key} must be a single-line value')
             fh.write(f'{key}={value}\n')
 
     summary = (
