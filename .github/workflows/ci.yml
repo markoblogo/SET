@@ -6,11 +6,22 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: set-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.10'
       - name: Install test tooling
         run: python3 -m pip install --upgrade pytest
       - name: Run contract tests
@@ -46,8 +57,9 @@ jobs:
           python3 scripts/release_smoke.py --exe /tmp/set-wheel/bin/set-plan-config-apply
   integration:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Create isolated fixture
         run: |
           mkdir /tmp/set-fixture

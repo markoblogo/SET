@@ -6,6 +6,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_cli_reports_release_version():
+    result = subprocess.run(
+        [sys.executable, str(ROOT / 'scripts/plan_config_apply.py'), '--version'],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0
+    assert result.stdout.strip() == 'plan_config_apply.py 0.5.0'
+
+
 def test_external_repo_config_exports_without_registry_or_target_writes(tmp_path):
     config = tmp_path / '.set.json'
     config.write_text(json.dumps({'version': 1, 'repo': 'outside/project', 'tools': {'agentsgen': {'init': True, 'pack': True, 'check': True}}, 'presets': ['repo-docs']}))
@@ -14,7 +24,7 @@ def test_external_repo_config_exports_without_registry_or_target_writes(tmp_path
     plan = json.loads(result.stdout)
     assert plan['repo'] == 'outside/project'
     assert plan['dry_run'] is True
-    assert plan['proposed_changes'][0]['workflow']['uses'] == 'markoblogo/SET@v0.4.0'
+    assert plan['proposed_changes'][0]['workflow']['uses'] == 'markoblogo/SET@v0.5.0'
     assert (tmp_path / 'review/workflow.set.yml').exists()
     assert not (tmp_path / '.github').exists()
 

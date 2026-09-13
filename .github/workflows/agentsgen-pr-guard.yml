@@ -9,12 +9,13 @@ permissions:
 jobs:
   contract:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
-      - run: python -m pip install agentsgen==0.5.0 pytest
+      - run: python -m pip install agentsgen==0.5.1 pytest
       # SET maintains a compact custom AGENTS.md and a handwritten RUNBOOK.
       # Validate those with their own contract, not the generator's default template.
       - run: pytest -q tests/test_repo_docs.py

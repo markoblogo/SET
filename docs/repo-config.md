@@ -152,9 +152,10 @@ This checks:
 The first registry entries are:
 
 - `markoblogo/AGENTS.md_generator`
+- `markoblogo/ID`
+- `markoblogo/SET`
+- `markoblogo/decision-map`
 - `markoblogo/lab.abvx`
 
-They are examples of two different repo shapes:
-
-- repo-docs only
-- repo-docs + site-ai
+Together they cover repo-docs, optional ID hooks, reusable skill documentation,
+and site-aware planning without changing the v1 config contract.
