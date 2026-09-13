@@ -3,12 +3,16 @@ name: SET
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   set:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: markoblogo/SET@v0.4.0
+      - uses: actions/checkout@v7
+      - uses: markoblogo/SET@v0.5.0
         with:
           agentsgen: "true"
           autodetect: "true"

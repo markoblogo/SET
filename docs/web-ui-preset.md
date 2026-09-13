@@ -4,7 +4,7 @@ Use `web-ui` for a pull request that changes browser-facing behavior: pages,
 components, routes, styles, accessibility, or client-side data flow.
 
 ```yaml
-- uses: markoblogo/SET@v0.4.0
+- uses: markoblogo/SET@v0.5.0
   with:
     workflow_preset: web-ui
     path: "."

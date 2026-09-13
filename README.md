@@ -4,6 +4,9 @@ Run agentsgen in GitHub Actions, or preview a workflow for your repository befor
 
 [![CI](https://github.com/markoblogo/SET/actions/workflows/ci.yml/badge.svg)](https://github.com/markoblogo/SET/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/markoblogo/SET)](https://github.com/markoblogo/SET/releases)
+[![PyPI](https://img.shields.io/pypi/v/abvx-set)](https://pypi.org/project/abvx-set/)
+[![Python](https://img.shields.io/pypi/pyversions/abvx-set)](https://pypi.org/project/abvx-set/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 SET is an optional orchestration layer for [agentsgen](https://github.com/markoblogo/AGENTS.md_generator).
 Use agentsgen directly if you only need to generate or check AGENTS.md.
@@ -23,8 +26,8 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: markoblogo/SET@v0.4.0
+      - uses: actions/checkout@v7
+      - uses: markoblogo/SET@v0.5.0
         with:
           workflow_preset: repo-docs
           path: "."
@@ -41,7 +44,7 @@ jobs:
             docs/ai/
 ```
 
-The `repo-docs` preset runs init, pack, and check using **agentsgen v0.5.0**.
+The `repo-docs` preset runs init, pack, and check using **agentsgen v0.5.1**.
 Download and review the artifact before committing it. SET does not commit or push.
 Existing handwritten files without markers produce generated siblings; a failing
 check means adoption needs review. For an existing config, set `init: "false"`
@@ -56,7 +59,7 @@ for read-only validation of committed instructions on every PR.
 Requires Python 3.10+ and pipx:
 
 ```sh
-pipx install abvx-set==0.4.0
+pipx install abvx-set==0.5.0
 ```
 
 Create `.set.json` in your repository:
@@ -74,6 +77,7 @@ Create `.set.json` in your repository:
 
 ```sh
 set-plan-config-apply --config .set.json --repo-root . --format json --export-dir .set-plan
+set-plan-config-apply --version
 ```
 
 Inspect `.set-plan/workflow.set.yml` and `.set-plan/pr-body.md`. The planner exports
@@ -98,7 +102,7 @@ call a model, or publish code and diagrams to an external service. See the
 
 ### What `web-ui` adds
 
-![SET web-ui architecture: the preset resolves into the existing repo-docs checks and a focused changed-code map](https://raw.githubusercontent.com/markoblogo/SET/pr-lens/docs/web-ui/architecture-dark.svg)
+![SET web-ui architecture: the preset resolves into the existing repo-docs checks and a focused changed-code map](docs/web-ui/architecture-dark.svg)
 
 The existing repo-docs path stays intact. The new branch narrows
 `agentsgen understand` to changed frontend code, and explicit inputs can still
@@ -106,7 +110,7 @@ override its defaults.
 
 ### Review flow
 
-![SET web-ui review flow: preset selection, repo-docs checks, focused mapping, and review artifacts](https://raw.githubusercontent.com/markoblogo/SET/pr-lens/docs/web-ui/review-flow-dark.svg)
+![SET web-ui review flow: preset selection, repo-docs checks, focused mapping, and review artifacts](docs/web-ui/review-flow-dark.svg)
 
 Optional ID hooks, proof artifacts, and capability profiles are described in the
 [advanced guide](docs/advanced-guide.md). Profile exports describe contracts;
@@ -116,10 +120,11 @@ they do not install runtimes or grant execution permissions.
 
 | Project | Responsibility |
 | --- | --- |
-| [agentsgen 0.5.0](https://github.com/markoblogo/AGENTS.md_generator) | Detect, generate, preserve handwritten text, validate command references |
-| SET 0.4.0 | Choose steps, export plans, invoke the pinned agentsgen version |
+| [agentsgen 0.5.1](https://github.com/markoblogo/AGENTS.md_generator) | Detect, generate, preserve handwritten text, validate command references |
+| SET 0.5.0 | Choose steps, export plans, invoke the pinned agentsgen version |
+| [ID 0.5.2](https://github.com/markoblogo/ID) | Optional repo-local human context hooks and bootstrap packets |
 | [abvx-agent-skills](https://github.com/markoblogo/abvx-agent-skills) | Optional reusable agent workflows |
 
 See [integration checks](docs/integration-testing.md), [configuration schema](schema/repo-config.v1.json),
-and [contributing](CONTRIBUTING.md). Report reproducible failures with both versions
-and a redacted minimal `.set.json`.
+[changelog](CHANGELOG.md), [security policy](SECURITY.md), and [contributing](CONTRIBUTING.md).
+Report reproducible failures with both versions and a redacted minimal `.set.json`.

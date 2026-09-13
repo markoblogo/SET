@@ -5,6 +5,8 @@ import difflib
 import json
 from pathlib import Path
 
+SET_VERSION = '0.5.0'
+
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_DIR = ROOT / 'registry' / 'repos'
 
@@ -1119,11 +1121,15 @@ def render_workflow_yaml(workflow: dict[str, object]) -> str:
         'on:',
         '  workflow_dispatch:',
         '',
+        'permissions:',
+        '  contents: read',
+        '',
         'jobs:',
         '  set:',
         '    runs-on: ubuntu-latest',
+        '    timeout-minutes: 20',
         '    steps:',
-        '      - uses: actions/checkout@v4',
+        '      - uses: actions/checkout@v7',
         f"      - uses: {workflow['uses']}",
         '        with:',
     ]
@@ -1560,7 +1566,7 @@ def build_plan(
 
     workflow = {
         'path': '.github/workflows/set.yml',
-        'uses': 'markoblogo/SET@v0.4.0',
+        'uses': f'markoblogo/SET@v{SET_VERSION}',
         'with': with_block,
     }
     review_payload = build_review_payload(
@@ -1887,6 +1893,7 @@ def resolve_repo_roots(targets: list[tuple[Path, dict[str, object]]], values: li
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Planning-only SET config apply helper.')
+    parser.add_argument('--version', action='version', version=f'%(prog)s {SET_VERSION}')
     parser.add_argument('repos', nargs='*', help='Repo name(s) in owner/name format')
     parser.add_argument('--config', type=Path, help='Repo-local JSON config; no central registry entry required.')
     parser.add_argument('--all', action='store_true', help='Plan against every repo in registry/repos')

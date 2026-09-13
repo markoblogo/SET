@@ -1,4 +1,11 @@
-# SET 0.4.0 — focused web UI reviews
+# SET 0.5.0 — current toolchain and durable review assets
+
+Update the supported pair to SET 0.5.0 and agentsgen 0.5.1. Generated plans now
+pin SET v0.5.0, the CLI reports its version, and the `web-ui` pilot diagrams live
+on the default branch. CI and release actions use current majors with narrower
+default permissions.
+
+## SET 0.4.0 — focused web UI reviews
 
 Add the optional `web-ui` preset for repo-docs validation plus a changed-only,
 frontend-focused repository map. Explicit focus and changed-file overrides stay
