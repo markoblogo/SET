@@ -128,3 +128,14 @@ they do not install runtimes or grant execution permissions.
 See [integration checks](docs/integration-testing.md), [configuration schema](schema/repo-config.v1.json),
 [changelog](CHANGELOG.md), [security policy](SECURITY.md), and [contributing](CONTRIBUTING.md).
 Report reproducible failures with both versions and a redacted minimal `.set.json`.
+
+<!-- ABVX:ECOSYSTEM:BEGIN -->
+## ABVX ecosystem
+
+- [AGENTS.md_generator](https://agentsmd.abvx.xyz/) — Composes reviewable workflows around generated repository context. Current release: `v0.5.1`.
+- [ID](https://pypi.org/project/id-protocol/) — Consumes reviewed, privacy-filtered context exports. Current release: `v0.5.2`.
+- [AGENTS.md_generator](https://agentsmd.abvx.xyz/) — Keeps repository guidance and machine-readable context current. Current release: `v0.5.1`.
+- [abvx-agent-skills](https://abvx.xyz/work/abvx-agent-skills) — Uses shared, reviewable agent capabilities during maintenance. Current release: `v0.15.0`.
+
+_This block is generated from the reviewed ABVX ecosystem registry._
+<!-- ABVX:ECOSYSTEM:END -->
