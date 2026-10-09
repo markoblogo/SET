@@ -116,6 +116,8 @@ Optional ID hooks, proof artifacts, and capability profiles are described in the
 [advanced guide](docs/advanced-guide.md). Profile exports describe contracts;
 they do not install runtimes or grant execution permissions.
 
+For related background, see the [workflow and orchestration guide](https://abvx.xyz/editorial/systems/workflow-orchestration?utm_source=github&utm_medium=readme&utm_campaign=abvx_guides_2026_10&utm_content=set) and the [AGENTS.md Generator worked example](https://abvx.xyz/work/agents-md-generator?utm_source=github&utm_medium=readme&utm_campaign=abvx_guides_2026_10&utm_content=set).
+
 ## Compatibility and ownership
 
 | Project | Responsibility |
