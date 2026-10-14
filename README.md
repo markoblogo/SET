@@ -127,6 +127,10 @@ For related background, see the [workflow and orchestration guide](https://abvx.
 | [ID 0.5.2](https://github.com/markoblogo/ID) | Optional repo-local human context hooks and bootstrap packets |
 | [abvx-agent-skills](https://github.com/markoblogo/abvx-agent-skills) | Optional reusable agent workflows |
 
+For optional video-production planning, see the
+[Framewright handoff](docs/framewright-integration.md). Framewright owns video
+recipes and QA evidence; SET neither installs nor executes its toolchain by default.
+
 See [integration checks](docs/integration-testing.md), [configuration schema](schema/repo-config.v1.json),
 [changelog](CHANGELOG.md), [security policy](SECURITY.md), and [contributing](CONTRIBUTING.md).
 Report reproducible failures with both versions and a redacted minimal `.set.json`.
